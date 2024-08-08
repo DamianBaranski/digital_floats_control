@@ -8,7 +8,7 @@ enable_language(CXX ASM)
 set(EXECUTABLE ${PROJECT_NAME}.elf)
 
 add_executable(${EXECUTABLE})
-add_subdirectory(${CMAKE_SOURCE_DIR}/../common common)
+add_subdirectory(${CMAKE_SOURCE_DIR}/common common)
 target_sources(${EXECUTABLE} PUBLIC
 app/main.cpp
 app/system_stm32f1xx.c
@@ -23,7 +23,7 @@ target_compile_definitions(${EXECUTABLE} PRIVATE
 
 
 target_link_options(${EXECUTABLE} PRIVATE
-	-T${CMAKE_SOURCE_DIR}/STM32F103XB_FLASH.ld
+        -T${CMAKE_CURRENT_LIST_DIR}/STM32F103XB_FLASH.ld
         -mcpu=cortex-m3
         -mthumb
         #-lc
@@ -37,9 +37,6 @@ target_link_options(${EXECUTABLE} PRIVATE
         -Wl,--print-memory-usage
         -flto
 )
-
-set(CMAKE_C_FLAGS "-mcpu=cortex-m3 -mthumb -DUSE_HAL_DRIVER -Og -F dwarf -Wall -fdata-sections -ffunction-sections -Wl,--gc-sections -flto")
-set(CMAKE_CXX_FLAGS "-mcpu=cortex-m3 -mthumb -DUSE_HAL_DRIVER -Og -F dwarf -Wall -fdata-sections -ffunction-sections -Wl,--gc-sections -flto -fno-exceptions -fno-rtti")
 
 # Print executable size
 add_custom_command(TARGET ${EXECUTABLE}
