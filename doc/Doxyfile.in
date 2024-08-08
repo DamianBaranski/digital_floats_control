@@ -1,0 +1,9 @@
+# Doxyfile.in
+PROJECT_NAME           = DigitalFloatsControl
+INPUT                  = ../application ../common ../bootloader
+OUTPUT_DIRECTORY       = doc
+RECURSIVE              = YES
+EXTRACT_ALL            = YES
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+EXCLUDE_PATTERNS       = */CMSIS/* */stm32f1xx_hal_driver/*
