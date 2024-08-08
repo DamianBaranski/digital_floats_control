@@ -8,9 +8,10 @@
 /// @brief Interface class for UART (Universal Asynchronous Receiver/Transmitter) operations.
 ///
 /// This class provides an abstract interface for UART communication, including
-/// methods to send data, check if data is being sent, and register a callback
-/// for transmission completion.
-class IUart {
+/// methods to send data, check if data is being sent, and register callbacks
+/// for transmission and reception completion.
+class IUart
+{
 public:
     /// @brief Sends data via UART.
     ///
@@ -39,6 +40,13 @@ public:
     /// @param callback A std::function object representing the callback function.
     virtual void registerTxCallback(std::function<void()> callback) = 0;
 
+    /// @brief Registers a callback function to be called when data is received via UART.
+    ///
+    /// This pure virtual method must be implemented by derived classes to
+    /// register a callback function that will be called when data is received
+    /// via UART.
+    ///
+    /// @param callback A std::function object representing the callback function.
     virtual void registerRxCallback(std::function<void(uint8_t)> callback) = 0;
 };
 
