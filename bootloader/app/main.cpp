@@ -44,8 +44,7 @@ int main()
     memset(buff, 0, sizeof(buff));
     if (UartStream::getInstance()->readLine(buff, sizeof(buff), 0))
     {
-      i=0;
-      //Logger()<< "Reecived:" << buff;
+      i = 0;
       protocol.handleData(buff);
     }
     else

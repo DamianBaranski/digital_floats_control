@@ -1,7 +1,6 @@
 #ifndef BASE64_H
 #define BASE64_H
 
-#include <iostream>
 #include <cstring>
 
 class Base64 {
@@ -19,11 +18,11 @@ private:
     }
 
 public:
-    static size_t calculateBase64EncodedSize(size_t input_len) {
+    static size_t encodedSize(size_t input_len) {
         return 4 * ((input_len + 2) / 3) + 1; // +1 for the null terminator
     }
 
-    static size_t calculateBase64DecodedSize(const char *input) {
+    static size_t decodedSize(const char *input) {
         size_t input_len = strlen(input);
         size_t padding = 0;
 
@@ -35,7 +34,7 @@ public:
         return (input_len / 4) * 3 - padding;
     }
 
-    static void toBase64(const unsigned char *input, size_t len, char *output) __attribute__ ((optimize(0))) {
+    static void encode(const unsigned char *input, size_t len, char *output) {
         size_t i, j;
         size_t enc_len = 4 * ((len + 2) / 3);
 
@@ -58,7 +57,7 @@ public:
         output[enc_len] = '\0'; // Null-terminate the string
     }
 
-    static bool fromBase64(const char *input, unsigned char *output, size_t *out_len) __attribute__ ((optimize(0))) {
+    static bool decode(const char *input, unsigned char *output, size_t *out_len) {
         size_t input_len = strlen(input);
 
         if (input_len % 4 != 0) return false;

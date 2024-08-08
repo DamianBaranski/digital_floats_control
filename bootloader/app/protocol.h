@@ -31,9 +31,9 @@ class Protocol
 public:
   Protocol() : mFileSize(-1), mFlashPtr(0), mSectors(0) {}
 
-  bool handleData(const char *encodedData)  __attribute__ ((optimize(0)))
+  bool handleData(const char *encodedData)
   {
-    if (strlen(encodedData) > Base64::calculateBase64EncodedSize(sizeof(ProtocolData)) - 1)
+    if (strlen(encodedData) > Base64::encodedSize(sizeof(ProtocolData)) - 1)
     {
       Logger() << "Response: Too long data!!!";
       return false;
@@ -41,7 +41,7 @@ public:
 
 
     size_t out_len;
-    if (!Base64::fromBase64(encodedData, reinterpret_cast<uint8_t *>(&data), &out_len))
+    if (!Base64::decode(encodedData, reinterpret_cast<uint8_t *>(&data), &out_len))
     {
       Logger() << "Response: Invalid Base64 data!";
       return false;
@@ -60,7 +60,7 @@ public:
   }
 
 private:
-  bool handleLoadCommand(size_t size)  __attribute__ ((optimize(0)))
+  bool handleLoadCommand(size_t size)
   {
     //Logger() << "Command L received.";
     mFileSize = size;
@@ -77,7 +77,7 @@ private:
     return true;
   }
 
-  bool handleChunkCommand(const uint8_t *data_chunk, size_t data_chunk_size)  __attribute__ ((optimize(0)))
+  bool handleChunkCommand(const uint8_t *data_chunk, size_t data_chunk_size)
   {
     if (mFileSize <= 0)
     {

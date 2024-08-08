@@ -114,4 +114,6 @@ class Logger {
     }
 };
 
+#define LOG Logger() << "LOG: "
+
 #endif
