@@ -206,7 +206,7 @@ bool Protocol<InType, OutType, N>::decodeInput(const char *instr, InData &inData
 template <typename InType, typename OutType, size_t N>
 bool Protocol<InType, OutType, N>::encodeOutput(const OutData &outData, char *outstr, size_t outlen)
 {
-    Base64::encode(reinterpret_cast<const uint8_t *>(&outData), outlen+sizeof(char)+sizeof(uint16_t), outstr);
+    Base64::encode(reinterpret_cast<const uint8_t *>(&outData), outlen+sizeof(char)+sizeof(uint16_t)+1, outstr);
     return true;
 }
 
