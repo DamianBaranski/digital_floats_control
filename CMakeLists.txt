@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 project(DigitalFloatsControl)
 
 # Add subdirectories
-add_subdirectory(bootloader)
+#add_subdirectory(bootloader)
 add_subdirectory(application)
 
 # Check if Doxygen is available

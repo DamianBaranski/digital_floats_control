@@ -32,8 +32,9 @@ target_link_options(${EXECUTABLE} PRIVATE
         --specs=nano.specs
         -Wl,-Map=${PROJECT_NAME}.map,--cref
         -Wl,--gc-sections
-        -g 
-        -F dwarf
+        #-g
+        -O2
+        #-F dwarf
         -Wl,--print-memory-usage
         -flto
 )
