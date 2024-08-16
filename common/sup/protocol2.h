@@ -1,3 +1,6 @@
+#ifndef PROTOCOL_H
+#define PROTOCOL_H
+
 #include "base64.h"
 #include <cstdint>
 #include <functional>
@@ -239,3 +242,5 @@ bool Protocol<InType, OutType, N>::findAndExecuteCommand(const InData &inData, O
     }
     return false;
 }
+
+#endif

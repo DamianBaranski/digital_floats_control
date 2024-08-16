@@ -2,94 +2,43 @@
 #define BASE64_H
 
 #include <cstring>
+#include <cstdint>
 
+/// @class Base64
+/// @brief A utility class for encoding and decoding data in Base64 format.
 class Base64 {
 private:
-    static const char base64_table[];
-    static const char base64_pad = '=';
+    static const char base64_table[]; ///< Base64 encoding table.
+    static const char base64_pad = '='; ///< Padding character used in Base64 encoding.
 
-    static int base64_char_index(char c) {
-        if ('A' <= c && c <= 'Z') return c - 'A';
-        if ('a' <= c && c <= 'z') return c - 'a' + 26;
-        if ('0' <= c && c <= '9') return c - '0' + 52;
-        if (c == '+') return 62;
-        if (c == '/') return 63;
-        return -1;
-    }
+    /// @brief Gets the index of a Base64 character in the encoding table.
+    /// @param c The Base64 character.
+    /// @return The index of the character in the Base64 table, or -1 if the character is invalid.
+    static int base64_char_index(char c);
 
 public:
-    static size_t encodedSize(size_t input_len) {
-        return 4 * ((input_len + 2) / 3) + 1; // +1 for the null terminator
-    }
+    /// @brief Calculates the size of the Base64 encoded output given an input length.
+    /// @param input_len The length of the input data in bytes.
+    /// @return The size of the encoded data in bytes, including the null terminator.
+    static size_t encodedSize(size_t input_len);
 
-    static size_t decodedSize(const char *input) {
-        size_t input_len = strlen(input);
-        size_t padding = 0;
+    /// @brief Calculates the size of the decoded output given a Base64 encoded input.
+    /// @param input The Base64 encoded input string.
+    /// @return The size of the decoded data in bytes.
+    static size_t decodedSize(const char *input);
 
-        if (input_len >= 2 && input[input_len - 1] == '=')
-            padding++;
-        if (input_len >= 2 && input[input_len - 2] == '=')
-            padding++;
+    /// @brief Encodes a binary input into a Base64 encoded string.
+    /// @param input The binary data to encode.
+    /// @param len The length of the binary data.
+    /// @param output The output buffer to store the Base64 encoded string. This buffer should be large enough to hold the encoded data plus a null terminator.
+    static void encode(const unsigned char *input, size_t len, char *output);
 
-        return (input_len / 4) * 3 - padding;
-    }
-
-    static void encode(const unsigned char *input, size_t len, char *output) {
-        size_t i, j;
-        size_t enc_len = 4 * ((len + 2) / 3);
-
-        for (i = 0, j = 0; i < len;) {
-            uint32_t octet_a = i < len ? input[i++] : 0;
-            uint32_t octet_b = i < len ? input[i++] : 0;
-            uint32_t octet_c = i < len ? input[i++] : 0;
-
-            uint32_t triple = (octet_a << 0x10) + (octet_b << 0x08) + octet_c;
-
-            output[j++] = base64_table[(triple >> 3 * 6) & 0x3F];
-            output[j++] = base64_table[(triple >> 2 * 6) & 0x3F];
-            output[j++] = base64_table[(triple >> 1 * 6) & 0x3F];
-            output[j++] = base64_table[(triple >> 0 * 6) & 0x3F];
-        }
-
-        for (i = 0; i < (3 - len % 3) % 3; i++)
-            output[enc_len - 1 - i] = '=';
-
-        output[enc_len] = '\0'; // Null-terminate the string
-    }
-
-    static bool decode(const char *input, unsigned char *output, size_t *out_len) {
-        size_t input_len = strlen(input);
-
-        if (input_len % 4 != 0) return false;
-
-        *out_len = input_len / 4 * 3;
-        if (input[input_len - 1] == '=') (*out_len)--;
-        if (input[input_len - 2] == '=') (*out_len)--;
-
-        size_t i, j;
-        uint32_t triple;
-        for (i = 0, j = 0; i < input_len;) {
-            int sextet_a = input[i] == '=' ? 0 & i++ : base64_char_index(input[i++]);
-            int sextet_b = input[i] == '=' ? 0 & i++ : base64_char_index(input[i++]);
-            int sextet_c = input[i] == '=' ? 0 & i++ : base64_char_index(input[i++]);
-            int sextet_d = input[i] == '=' ? 0 & i++ : base64_char_index(input[i++]);
-
-            if (sextet_a == -1 || sextet_b == -1 || sextet_c == -1 || sextet_d == -1) return false;
-
-            triple = (sextet_a << 3 * 6)
-                            + (sextet_b << 2 * 6)
-                            + (sextet_c << 1 * 6)
-                            + (sextet_d << 0 * 6);
-
-            if (j < *out_len) output[j++] = (triple >> 2 * 8) & 0xFF;
-            if (j < *out_len) output[j++] = (triple >> 1 * 8) & 0xFF;
-            if (j < *out_len) output[j++] = (triple >> 0 * 8) & 0xFF;
-        }
-
-        return true;
-    }
+    /// @brief Decodes a Base64 encoded string into binary data.
+    /// @param input The Base64 encoded input string.
+    /// @param output The output buffer to store the decoded binary data.
+    /// @param out_len The length of the decoded data.
+    /// @return True if the decoding was successful, false if the input is invalid.
+    static bool decode(const char *input, unsigned char *output, size_t *out_len);
 };
-
-const char Base64::base64_table[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 #endif

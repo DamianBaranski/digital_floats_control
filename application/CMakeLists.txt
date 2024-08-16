@@ -10,6 +10,7 @@ add_executable(${EXECUTABLE})
 add_subdirectory(${CMAKE_SOURCE_DIR}/common common)
 target_sources(${EXECUTABLE} PUBLIC
 app/main.cpp
+app/application.cpp
 app/system_stm32f1xx.c
 )
 
