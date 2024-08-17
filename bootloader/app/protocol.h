@@ -85,13 +85,13 @@ private:
       return false;
     }
 
-    for (size_t idx = 0; idx < data_chunk_size; idx+=2)
-    {
-      if (!mFlash.write(0x08004000+mFlashPtr + idx, (static_cast<uint16_t>(data_chunk[idx+1])<<8)+data_chunk[idx]))
-      {
-        sendResponse("Write failed");
-        return false;
-      }
+    if(data_chunk_size%sizeof(uint64_t) != 0) {
+      assert(false);
+      return false;
+    }
+
+    if(!mFlash.write(mFlashPtr, data_chunk, data_chunk_size)) {
+      return false;
     }
 
     mFlashPtr += data_chunk_size;

@@ -12,6 +12,12 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/common common)
 target_sources(${EXECUTABLE} PUBLIC
 app/main.cpp
 app/system_stm32f1xx.c
+bsp/stm32f103/bsp.cpp
+)
+
+target_include_directories(${EXECUTABLE} PUBLIC 
+app
+bsp/stm32f103
 )
 
 set_property(TARGET ${EXECUTABLE} PROPERTY CXX_STANDARD 11)

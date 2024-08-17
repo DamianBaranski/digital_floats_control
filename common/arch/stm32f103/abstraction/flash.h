@@ -1,42 +1,37 @@
 #ifndef FLASH_H
 #define FLASH_H
 
-#include "stm32f1xx_hal.h"
+#include <cstdint>
+#include <cstddef>
 
-#include "logger.h"
-
+/// @brief Class to manage flash memory operations such as erasing, writing, and reading.
+/// @todo Seperate class interface
 class Flash
 {
 public:
-    bool erase(uint32_t address, size_t no_sectors)
-    {
-        //Logger() << "Erasing " << no_sectors << " from address:" << address;
-        FLASH_EraseInitTypeDef EraseInitStruct;
-        uint32_t PAGEError;
-        HAL_FLASH_Unlock();
-        EraseInitStruct.TypeErase = FLASH_TYPEERASE_PAGES;
-        EraseInitStruct.PageAddress = address;
-        EraseInitStruct.NbPages = no_sectors;
-        HAL_StatusTypeDef result = HAL_FLASHEx_Erase(&EraseInitStruct, &PAGEError);
-        CLEAR_BIT(FLASH->CR, (FLASH_CR_PER));
-        HAL_FLASH_Lock();
-        return result == HAL_OK;
-    }
+    /// @brief Erases the specified number of sectors starting from the given address.
+    /// @param address The starting address of the flash memory to erase.
+    /// @param no_sectors The number of sectors to erase.
+    /// @return `true` if the sectors were successfully erased, `false` otherwise.
+    bool erase(uint32_t address, size_t no_sectors);
 
-    bool write(uint32_t address, const uint16_t data)
-    {
-        // Simulate flash write
-        //Logger() << "Writing data to address " << address;
-        HAL_FLASH_Unlock();
-        HAL_StatusTypeDef result = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, address, data);
-        HAL_FLASH_Lock();
-        return result == HAL_OK;
-    }
+    /// @brief Writes data to flash memory starting at the given address.
+    /// @param address The starting address in flash memory where data will be written.
+    /// @param data Pointer to the data to be written to flash memory.
+    /// @param size The size of the data to be written in bytes.
+    /// @return `true` if the data was successfully written, `false` otherwise.
+    bool write(uint32_t address, const uint8_t* data, size_t size);
 
-    static size_t getSectorSize()
-    {
-        return 1024;
-    }
+    /// @brief Reads data from flash memory starting at the given address.
+    /// @param address The starting address in flash memory from where data will be read.
+    /// @param data Pointer to the buffer where the read data will be stored.
+    /// @param size The size of the data to be read in bytes.
+    /// @return `true` if the data was successfully read, `false` otherwise.
+    bool read(uint32_t address, uint8_t* data, size_t size);
+
+    /// @brief Returns the size of a flash memory sector.
+    /// @return The size of a flash memory sector in bytes.
+    static size_t getSectorSize();
 };
 
-#endif
+#endif // FLASH_H

@@ -2,7 +2,7 @@
 #include "logger.h"
 #include "protocol.h"
 
-#define ETX_APP_START_ADDRESS 0x08004000
+#define ETX_APP_START_ADDRESS 0x08005000
 
 UartStream *UartStream::mInstance = nullptr;
 
