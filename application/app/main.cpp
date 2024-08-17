@@ -3,6 +3,7 @@
 #include "protocol2.h"
 #include "control_channel.h"
 #include "application.h"
+#include "ws2812.h"
 
 UartStream *UartStream::mInstance = nullptr;
 
