@@ -28,6 +28,13 @@ public:
     std::unique_ptr<IUart> uartBus;
 
     std::unique_ptr<IGpio> ledPin;
+
+    std::unique_ptr<IGpio> ledDataPin;
+
+    std::unique_ptr<IGpio> testSwitch;
+    std::unique_ptr<IGpio> ldgSwitch;
+    std::unique_ptr<IGpio> rudSwitch;
+    
 private:
     /// @brief Unique pointer to the GPIO pin used for SDA.
     ///

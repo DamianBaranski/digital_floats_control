@@ -4,6 +4,98 @@
 #include <cstddef>
 #include <igpio.h>
 
+#include "stm32f1xx_hal.h"
+TIM_HandleTypeDef htim2;
+DMA_HandleTypeDef hdma_tim2_ch2_ch4;
+void Error_Handler()
+{
+    while (true)
+        ;
+}
+static void MX_TIM2_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    GPIO_InitStruct.Pin = GPIO_PIN_1;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+
+    __HAL_RCC_TIM2_CLK_ENABLE();
+    htim2.Instance = TIM2;
+    htim2.Init.Prescaler = 0;
+    htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
+    htim2.Init.Period = 79;
+    htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+    htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+
+    if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+    sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+    if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
+    {
+        Error_Handler();
+    }
+    
+    if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+TIM_MasterConfigTypeDef sMasterConfig = {0};
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+    TIM_OC_InitTypeDef sConfigOC = {0};
+    sConfigOC.OCMode = TIM_OCMODE_PWM1;
+    sConfigOC.Pulse = 0;//58; //20
+    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+    if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    hdma_tim2_ch2_ch4.Instance = DMA1_Channel7;
+    hdma_tim2_ch2_ch4.Init.Direction = DMA_MEMORY_TO_PERIPH;
+    hdma_tim2_ch2_ch4.Init.PeriphInc = DMA_PINC_DISABLE;
+    hdma_tim2_ch2_ch4.Init.MemInc = DMA_MINC_ENABLE;
+    hdma_tim2_ch2_ch4.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
+    hdma_tim2_ch2_ch4.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
+    hdma_tim2_ch2_ch4.Init.Mode = DMA_NORMAL;
+    hdma_tim2_ch2_ch4.Init.Priority = DMA_PRIORITY_HIGH;
+    if (HAL_DMA_Init(&hdma_tim2_ch2_ch4) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    __HAL_LINKDMA(&htim2, hdma[TIM_DMA_ID_CC2], hdma_tim2_ch2_ch4);
+}
+
+/**
+ * Enable DMA controller clock
+ */
+static void MX_DMA_Init(void)
+{
+
+    /* DMA controller clock enable */
+    __HAL_RCC_DMA1_CLK_ENABLE();
+
+    /* DMA interrupt init */
+    /* DMA1_Channel7_IRQn interrupt configuration */
+    HAL_NVIC_SetPriority(DMA1_Channel7_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(DMA1_Channel7_IRQn);
+}
+
 /// @brief A template class to control a WS2812 LED strip.
 ///
 /// This class provides methods to set the color of individual LEDs on a WS2812 LED strip
@@ -40,35 +132,6 @@ public:
     void setColor(size_t led_id, uint32_t color);
 
 private:
-    /// @brief A rough delay function calibrated for nanoseconds.
-    ///
-    /// This function creates a delay by performing a busy-wait loop, with each iteration
-    /// corresponding to approximately one clock cycle.
-    ///
-    /// @param ns The delay duration in nanoseconds.
-    void delay_ns(uint32_t ns);
-
-    /// @brief Sends a single bit to the WS2812 LED strip.
-    ///
-    /// This method sets the GPIO high for a specific duration based on the bit value (0 or 1),
-    /// then pulls it low for the remaining period.
-    ///
-    /// @param bit The bit to send (0 or 1).
-    void sendBit(uint8_t bit);
-
-    /// @brief Sends a single byte to the WS2812 LED strip.
-    ///
-    /// This method sends each bit of the byte to the LED strip using the `sendBit` method,
-    /// starting with the most significant bit.
-    ///
-    /// @param byte The byte to send.
-    void sendByte(uint8_t byte);
-
-    /// @brief Sends a reset signal to the WS2812 LED strip.
-    ///
-    /// This method sends a reset signal to the LED strip by holding the GPIO pin low
-    /// for a period longer than 50 µs, which latches the color data into the LEDs.
-    void sendReset();
 
     /// @brief Structure to represent the color of an LED.
     struct Color
@@ -80,21 +143,51 @@ private:
 
     Color mColors[S]; ///< Array to store the colors for all LEDs in the strip.
     IGpio &mGpio;     ///< Reference to the GPIO interface used to control the WS2812 strip.
+    uint16_t mPwmData[24*S+50];
 };
 
 template <size_t S>
-Ws2812<S>::Ws2812(IGpio &gpio) : mColors{}, mGpio(gpio) {}
+Ws2812<S>::Ws2812(IGpio &gpio) : mColors{}, mGpio(gpio), mPwmData{}
+{
+        MX_DMA_Init();
+    MX_TIM2_Init();
+
+}
 
 template <size_t S>
 void Ws2812<S>::update()
 {
-    for (size_t i = 0; i < S; i++)
-    {
-        sendByte(mColors[i].red);
-        sendByte(mColors[i].green);
-        sendByte(mColors[i].blue);
+    for(size_t i=0; i<S; i++) {
+        for(size_t bit=0; bit<8; bit++) {
+            uint16_t value = 0;
+            if(mColors[i].green & (1<<bit)) {
+                value=59;
+            } else {
+                value = 18;
+            }
+            mPwmData[i*24+bit] = value;
+        }
+        for(size_t bit=0; bit<8; bit++) {
+            uint16_t value = 0;
+            if(mColors[i].red & (1<<(7-bit))) {
+                value=59;
+            } else {
+                value = 18;
+            }
+            mPwmData[i*24+8+bit] = value;
+        }
+        for(size_t bit=0; bit<8; bit++) {
+            uint16_t value = 0;
+            if(mColors[i].blue & (1<<bit)) {
+                value=59;
+            } else {
+                value = 18;
+            }
+            mPwmData[i*24+16+bit] = value;
+        }
     }
-    sendReset();
+
+    HAL_TIM_PWM_Start_DMA(&htim2, TIM_CHANNEL_2, (uint32_t *)mPwmData, sizeof(mPwmData)/sizeof(mPwmData[0]));
 }
 
 template <size_t S>
@@ -111,49 +204,6 @@ void Ws2812<S>::setColor(size_t led_id, uint32_t color)
     mColors[led_id].red = color & 0xFF;
     mColors[led_id].green = (color >> 8) & 0xFF;
     mColors[led_id].blue = (color >> 16) & 0xFF;
-}
-
-template <size_t S>
-void Ws2812<S>::delay_ns(uint32_t ns)
-{
-    uint32_t cycles = (72 * ns) / 1000; // Convert ns to clock cycles
-    while (cycles--)
-        ;
-}
-
-template <size_t S>
-void Ws2812<S>::sendBit(uint8_t bit)
-{
-    if (bit)
-    {
-        mGpio.set();
-        delay_ns(900); // WS2812B_DELAY_T1H
-        mGpio.reset();
-        delay_ns(350); // WS2812B_DELAY_T1L
-    }
-    else
-    {
-        mGpio.set();
-        delay_ns(350); // WS2812B_DELAY_T0H
-        mGpio.reset();
-        delay_ns(900); // WS2812B_DELAY_T0L
-    }
-}
-
-template <size_t S>
-void Ws2812<S>::sendByte(uint8_t byte)
-{
-    for (int i = 7; i >= 0; i--)
-    {
-        sendBit((byte >> i) & 0x01);
-    }
-}
-
-template <size_t S>
-void Ws2812<S>::sendReset()
-{
-    mGpio.reset();
-    delay_ns(100000); // Hold low for more than 50 µs to reset the LED strip
 }
 
 #endif

@@ -8,6 +8,13 @@ Application::Application(Bsp &bsp) : mBsp(bsp)
                           { return this->resetDevice(in, out, outlen); });
     mProtocol.registerCmd('s', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen)
                           { return this->scanI2cDevices(in, out, outlen); });
+
+    LOG << "I2C scan";
+    for(size_t i=0; i<127; i++) {
+      if(mBsp.i2cBus->isDeviceReady(i)) {
+        LOG << i;
+      }
+    }
   }
 
   void Application::spin()

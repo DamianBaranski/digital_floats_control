@@ -20,12 +20,19 @@ Bsp::Bsp()
 
   ledPin.reset(new Gpio(GPIOC, GPIO_PIN_13, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0));
   ledPin->reset();
+
+  ledDataPin.reset(new Gpio(GPIOA, GPIO_PIN_3, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
+  ledDataPin->reset();
+
+  testSwitch.reset(new Gpio(GPIOC, GPIO_PIN_5, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
+  ldgSwitch.reset(new Gpio(GPIOC, GPIO_PIN_3, GPIO_MODE_INPUT, GPIO_NOPULL, 0));
+  rudSwitch.reset(new Gpio(GPIOC, GPIO_PIN_4, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
 }
 	
 
 void Bsp::initClock()
 {
-	  RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+	RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Initializes the RCC Oscillators according to the specified parameters
@@ -34,20 +41,23 @@ void Bsp::initClock()
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+  RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+  RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI_DIV2;
+  RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL16;
   HAL_RCC_OscConfig(&RCC_OscInitStruct);
 
   /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
-  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0);
+  HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
 }
-
+extern DMA_HandleTypeDef hdma_tim2_ch2_ch4;
+extern TIM_HandleTypeDef htim2;
 extern "C"
 {
   void SysTick_Handler()
@@ -182,9 +192,14 @@ extern "C"
   }
   void DMA1_Channel7_IRQHandler(void)
   {
-    while (true)
-      ;
+HAL_DMA_IRQHandler(&hdma_tim2_ch2_ch4);
   }
+
+  void HAL_TIM_PWM_PulseFinishedCallback(TIM_HandleTypeDef *htim)
+{
+	HAL_TIM_PWM_Stop_DMA(&htim2, TIM_CHANNEL_2);
+}
+
   void ADC1_2_IRQHandler(void)
   {
     while (true)
