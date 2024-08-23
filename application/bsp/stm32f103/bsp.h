@@ -4,6 +4,7 @@
 #include "igpio.h"
 #include "ii2c_master.h"
 #include "iuart.h"
+#include "ipwm_dma.h"
 #include <memory>
 
 /// @class Bsp
@@ -27,14 +28,10 @@ public:
     /// This pointer is used to manage the UART bus.
     std::unique_ptr<IUart> uartBus;
 
-    std::unique_ptr<IGpio> ledPin;
-
-    std::unique_ptr<IGpio> ledDataPin;
-
     std::unique_ptr<IGpio> testSwitch;
     std::unique_ptr<IGpio> ldgSwitch;
     std::unique_ptr<IGpio> rudSwitch;
-    
+    std::unique_ptr<IPwmDma> leds;
 private:
     /// @brief Unique pointer to the GPIO pin used for SDA.
     ///
@@ -55,6 +52,8 @@ private:
     ///
     /// This pointer is used to manage the TX GPIO pin.
     std::unique_ptr<IGpio> mTxPin;
+
+    std::unique_ptr<IGpio> mLedDataPin;
 
     /// @brief Initializes the clock for the board.
     ///

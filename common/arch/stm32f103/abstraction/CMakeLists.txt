@@ -3,6 +3,7 @@ gpio.cpp
 i2c_master.cpp
 uart.cpp
 flash.cpp
+pwm_dma.cpp
 )
 
 target_include_directories(${EXECUTABLE} PUBLIC 

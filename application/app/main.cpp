@@ -4,6 +4,20 @@
 #include "control_channel.h"
 #include "application.h"
 #include "ws2812.h"
+// Relays 1
+// LOG: 38
+// LOG: 64
+// LOG: 68
+//
+// Relays 2
+// LOG: 39
+// LOG: 65
+// LOG: 79
+//
+// Relays 3
+// LOG: 37
+// LOG: 76
+// LOG: 77
 
 UartStream *UartStream::mInstance = nullptr;
 
@@ -34,12 +48,11 @@ int main()
   settings.max_voltage_limit = 160; // 16V
   settings.min_voltage_limit = 100; // 10V
 
-
-  Ws2812<6> leds(*bsp.ledDataPin);
+  Ws2812<6> leds(*bsp.leds);
   sleep(100);
 
-  
-  for(size_t i=0; i<6; i++) {
+  for (size_t i = 0; i < 6; i++)
+  {
     leds.setColor(i, 0xFF, 0x00, 0x00);
   }
   leds.update();
@@ -51,17 +64,17 @@ int main()
   uint32_t color = 0xFF;
   while (true)
   {
-    for(size_t i=0; i<5; i++) {
-    leds.setColor(i, color);
-  color = color << 8;
-  if(color == 0xFF000000) {
-    color = 0xFF;
-  }
-
-  }
+    for (size_t i = 0; i < 5; i++)
+    {
+      leds.setColor(i, color);
+      color = color << 8;
+      if (color == 0xFF000000)
+      {
+        color = 0xFF;
+      }
+    }
 
     leds.update();
-    bsp.ledPin->toggle();
     controlChannel.setMotor(false, 1, dir);
     dir = !dir;
     controlChannel.setMotor(true, 1, dir);

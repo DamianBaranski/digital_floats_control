@@ -2,99 +2,7 @@
 #define WS2812_H
 
 #include <cstddef>
-#include <igpio.h>
-
-#include "stm32f1xx_hal.h"
-TIM_HandleTypeDef htim2;
-DMA_HandleTypeDef hdma_tim2_ch2_ch4;
-void Error_Handler()
-{
-    while (true)
-        ;
-}
-static void MX_TIM2_Init(void)
-{
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
-    __HAL_RCC_GPIOA_CLK_ENABLE();
-    GPIO_InitStruct.Pin = GPIO_PIN_1;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-
-    __HAL_RCC_TIM2_CLK_ENABLE();
-    htim2.Instance = TIM2;
-    htim2.Init.Prescaler = 0;
-    htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-    htim2.Init.Period = 79;
-    htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-
-    if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-    sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-    if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    
-    if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-TIM_MasterConfigTypeDef sMasterConfig = {0};
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim2, &sMasterConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-
-    TIM_OC_InitTypeDef sConfigOC = {0};
-    sConfigOC.OCMode = TIM_OCMODE_PWM1;
-    sConfigOC.Pulse = 0;//58; //20
-    sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-    sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-    if (HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    hdma_tim2_ch2_ch4.Instance = DMA1_Channel7;
-    hdma_tim2_ch2_ch4.Init.Direction = DMA_MEMORY_TO_PERIPH;
-    hdma_tim2_ch2_ch4.Init.PeriphInc = DMA_PINC_DISABLE;
-    hdma_tim2_ch2_ch4.Init.MemInc = DMA_MINC_ENABLE;
-    hdma_tim2_ch2_ch4.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-    hdma_tim2_ch2_ch4.Init.MemDataAlignment = DMA_MDATAALIGN_HALFWORD;
-    hdma_tim2_ch2_ch4.Init.Mode = DMA_NORMAL;
-    hdma_tim2_ch2_ch4.Init.Priority = DMA_PRIORITY_HIGH;
-    if (HAL_DMA_Init(&hdma_tim2_ch2_ch4) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    __HAL_LINKDMA(&htim2, hdma[TIM_DMA_ID_CC2], hdma_tim2_ch2_ch4);
-}
-
-/**
- * Enable DMA controller clock
- */
-static void MX_DMA_Init(void)
-{
-
-    /* DMA controller clock enable */
-    __HAL_RCC_DMA1_CLK_ENABLE();
-
-    /* DMA interrupt init */
-    /* DMA1_Channel7_IRQn interrupt configuration */
-    HAL_NVIC_SetPriority(DMA1_Channel7_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(DMA1_Channel7_IRQn);
-}
+#include "ipwm_dma.h"
 
 /// @brief A template class to control a WS2812 LED strip.
 ///
@@ -108,8 +16,8 @@ class Ws2812
 public:
     /// @brief Construct a new Ws2812 object.
     ///
-    /// @param gpio A reference to an IGpio object to control the data line of the WS2812 strip.
-    Ws2812(IGpio &gpio);
+    /// @param pwm A reference to an IPwmDma object to control the data line of the WS2812 strip.
+    Ws2812(IPwmDma &pwm);
 
     /// @brief Sends the current color data to the WS2812 LED strip.
     ///
@@ -142,17 +50,13 @@ private:
     };
 
     Color mColors[S]; ///< Array to store the colors for all LEDs in the strip.
-    IGpio &mGpio;     ///< Reference to the GPIO interface used to control the WS2812 strip.
+    IPwmDma &mPwm;     ///< Reference to the PwmDma interface used to control the WS2812 strip.
     uint16_t mPwmData[24*S+50];
 };
 
 template <size_t S>
-Ws2812<S>::Ws2812(IGpio &gpio) : mColors{}, mGpio(gpio), mPwmData{}
-{
-        MX_DMA_Init();
-    MX_TIM2_Init();
-
-}
+Ws2812<S>::Ws2812(IPwmDma &pwm) : mColors{}, mPwm(pwm), mPwmData{}
+{}
 
 template <size_t S>
 void Ws2812<S>::update()
@@ -186,8 +90,7 @@ void Ws2812<S>::update()
             mPwmData[i*24+16+bit] = value;
         }
     }
-
-    HAL_TIM_PWM_Start_DMA(&htim2, TIM_CHANNEL_2, (uint32_t *)mPwmData, sizeof(mPwmData)/sizeof(mPwmData[0]));
+    mPwm.start(mPwmData, sizeof(mPwmData)/sizeof(mPwmData[0]));
 }
 
 template <size_t S>
