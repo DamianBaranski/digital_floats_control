@@ -11,8 +11,10 @@ public:
     /// @brief Constructor for the Ina219 class.
     /// @param i2c Reference to an I2C master interface.
     /// @param addr The I2C address of the INA219 device.
-    Ina219(II2cMaster &i2c, uint8_t addr);
+    Ina219(II2cMaster &i2c);
 
+    void setAddress(uint8_t address);
+    
     /// @brief Tests the connection to the INA219 device.
     /// @return True if the device is ready, false otherwise.
     bool connectionTest() const;

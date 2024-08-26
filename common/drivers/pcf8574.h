@@ -10,8 +10,9 @@ class Pcf8574
 public:
     /// @brief Constructor for the Pcf8574 class.
     /// @param i2c Reference to an I2C master interface.
-    /// @param addr The I2C address of the PCF8574 device.
-    Pcf8574(II2cMaster &i2c, uint8_t addr);
+    Pcf8574(II2cMaster &i2c);
+
+    void setAddress(uint8_t address);
 
     /// @brief Tests the connection to the PCF8574 device.
     /// @return True if the device is ready, false otherwise.

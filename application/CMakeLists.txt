@@ -12,6 +12,7 @@ target_sources(${EXECUTABLE} PUBLIC
 app/main.cpp
 app/application.cpp
 app/system_stm32f1xx.c
+app/control_channel.cpp
 bsp/stm32f103/bsp.cpp
 )
 

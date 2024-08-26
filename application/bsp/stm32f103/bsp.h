@@ -61,4 +61,6 @@ private:
     void initClock();
 };
 
+void sleep(uint32_t time_ms);
+uint32_t getTime();
 #endif // BSP_H

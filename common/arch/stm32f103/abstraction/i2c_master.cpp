@@ -17,7 +17,7 @@ I2cMaster::I2cMaster(I2C_TypeDef *instance)
     }
 
     mI2cHandler.Instance = instance;
-    mI2cHandler.Init.ClockSpeed = 100000;
+    mI2cHandler.Init.ClockSpeed = 10000;
     mI2cHandler.Init.DutyCycle = I2C_DUTYCYCLE_2;
     mI2cHandler.Init.OwnAddress1 = 0;
     mI2cHandler.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -46,6 +46,9 @@ I2cMaster::~I2cMaster()
 
 bool I2cMaster::isDeviceReady(uint8_t addr) const
 {
+    if(addr == 0) {
+        return false;
+    }
     HAL_StatusTypeDef result;
     result = HAL_I2C_IsDeviceReady(&mI2cHandler, (uint16_t)(addr << 1), 1, 1);
     return result == HAL_OK;

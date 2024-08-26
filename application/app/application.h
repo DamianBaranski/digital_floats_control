@@ -3,8 +3,10 @@
 
 #include "protocol2.h"
 #include "bsp.h"
+#include "control_channel.h"
 #include "logger.h"
 #include "settings.h"
+#include "ws2812.h"
 
 #define APP_VER "Application BS v1.0"
 
@@ -69,9 +71,25 @@ private:
   /// @return true Always returns true.
   bool scanI2cDevices(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
+  void testSwitchProcedure();
+
+  void loadSettings();
+
+  bool getLdgGearSwitch();
+
+  bool getRudderSwitch();
+
 private:
+  static constexpr size_t NO_CHANNELS = 6;
   Protocol<InProtocolData, OutProtocolData, 10> mProtocol; ///< Protocol object for handling commands.
   Bsp &mBsp; ///< Reference to the Board Support Package for hardware interactions.
+  Ws2812<NO_CHANNELS> mLeds;
+  ControlChannel mChannels[NO_CHANNELS];
+
+  struct Settings {
+    ControlChannelSettings channelSettings[NO_CHANNELS];
+  };
+
 };
 
 #endif

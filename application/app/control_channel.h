@@ -1,8 +1,41 @@
+#ifndef CONTROL_CHANNEL_H
+#define CONTROL_CHANNEL_H
+
 #include <cstdint>
+#include "bit_mask.h"
 #include "ii2c_master.h"
 #include "logger.h"
 #include "ina219.h"
 #include "pcf8574.h"
+
+enum class Warnings {
+  LOW_MOTOR_IMPEDANCE,
+  HIGH_MOTOR_IMPEDANCE,
+  LOW_POWER_VOLTAGE,
+  HIGH_POWER_VOLTAGE,
+};
+
+enum class Errors {
+  NONE,
+  OPEN_CIRCUIT,
+  SHORT_CIRCUIT,
+  TIME_EXCEEDED,
+  PCF_COMMUNICATION_ISSUE,
+  INA_COMMUNICATION_ISSUE,
+  ENDSTOP_SHORT_CIRCUIT,
+};
+
+enum class State {
+  UP,
+  DOWN,
+  MOVING,
+  ERROR,
+};
+
+enum class LimitSwitch {
+  UP,
+  DOWN
+};
 
 typedef struct
 {
@@ -12,6 +45,7 @@ typedef struct
     uint8_t inverse_up_limit_switch : 1;
     uint8_t inverse_down_limit_switch : 1;
     uint8_t inverse_limit_switch : 1;
+    uint8_t rudder : 1;
     uint8_t ina_addr;
     uint16_t ina_callibration; // 0.01 Ohm
     uint8_t pcf_addr;
@@ -25,10 +59,13 @@ typedef struct
 class ControlChannel
 {
 public:
-    ControlChannel(const ControlChannelSettings &settings, II2cMaster &i2c);
-    bool connectionTest() const;
+    ControlChannel(II2cMaster &i2c);
+    bool setSettings(const ControlChannelSettings &settings);
+    bool connectionTest();
     bool setMotor(bool enable, uint8_t channel, bool dir);
     bool getPowerSensorStatus();
+    bool isRudder() const;
+    State getChannelState();
 
 private:
     static constexpr uint8_t cPcfCfg = 0x0F;
@@ -36,80 +73,18 @@ private:
     static constexpr uint8_t cMotor1LeftDirMask = 0x20;
     static constexpr uint8_t cMotor2RightDirMask = 0x40;
     static constexpr uint8_t cMotor2LeftDirMask = 0x80;
-    static constexpr uint8_t cMotor1UpSensorMask = 0x01;
-    static constexpr uint8_t cMotor1DownSensorMask = 0x02;
-    static constexpr uint8_t cMotor2UpSensorMask = 0x04;
-    static constexpr uint8_t cMotor2DownSensorMask = 0x08;
+    static constexpr uint8_t cMotor1UpLimitSwitchMask = 0x01;
+    static constexpr uint8_t cMotor1DownLimitSwitchMask = 0x02;
+    static constexpr uint8_t cMotor2UpLimitSwitchMask = 0x04;
+    static constexpr uint8_t cMotor2DownLimitSwitchMask = 0x08;
 
     bool configure();
-    const ControlChannelSettings &mSettings;
+    bool getLimitSwitchState(LimitSwitch limit_switch);
+    ControlChannelSettings mSettings;
     Ina219 mCurrentSensor;
     Pcf8574 mExpanderIO;
+    BitMask<Errors> mErrors;
+    BitMask<Warnings> mWarnings;
 };
 
-ControlChannel::ControlChannel(const ControlChannelSettings &settings, II2cMaster &i2c) : mSettings(settings), mCurrentSensor(i2c, settings.ina_addr),
-                                                                                          mExpanderIO(i2c, settings.pcf_addr)
-{
-    configure();
-}
-
-bool ControlChannel::configure()
-{
-    return mExpanderIO.write(cPcfCfg);
-}
-
-bool ControlChannel::connectionTest() const
-{
-    if (mSettings.enable == false)
-    {
-        return true;
-    }
-
-    return mCurrentSensor.connectionTest() && mExpanderIO.connectionTest();
-}
-
-bool ControlChannel::setMotor(bool enable, uint8_t channel, bool dir)
-{
-    uint8_t data = mExpanderIO.read() | cPcfCfg;
-    uint8_t mask;
-
-    if (channel == 0)
-    {
-        if (dir)
-        {
-            mask = cMotor1RightDirMask;
-        }
-        else
-        {
-            mask = cMotor1LeftDirMask;
-        }
-    }
-    else if (channel == 1)
-    {
-        if (dir)
-        {
-            mask = cMotor2RightDirMask;
-        }
-        else
-        {
-            mask = cMotor2LeftDirMask;
-        }
-    }
-
-    if (enable)
-    {
-        data |= mask;
-    }
-    else
-    {
-        data &= ~mask;
-    }
-
-    return mExpanderIO.write(data);
-}
-
-bool ControlChannel::getPowerSensorStatus() {
-    LOG << "Voltage: " << mCurrentSensor.readBusVoltage() << "mv";
-    LOG << "Current: " << mCurrentSensor.readCurrnet() << "mA";
-    return true;
-}
+#endif

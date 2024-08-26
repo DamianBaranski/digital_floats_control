@@ -10,7 +10,7 @@
 /// and to send the updated color data to the strip using bit-banging through a GPIO interface.
 ///
 /// @tparam S Number of LEDs in the strip.
-template <size_t S>
+template <size_t S = 1>
 class Ws2812
 {
 public:
@@ -39,7 +39,17 @@ public:
     /// @param color A 24-bit color value in the format 0xRRGGBB.
     void setColor(size_t led_id, uint32_t color);
 
+    /// @brief Sets the same color for all LEDs on the strip.
+    ///
+    /// @param color A 24-bit color value in the format 0xRRGGBB.
+    void setColor(uint32_t color);
+
 private:
+    /// @brief Short pulse duration for the WS2812 protocol.
+    static constexpr uint16_t cShortPulse = 18;
+
+    /// @brief Long pulse duration for the WS2812 protocol.
+    static constexpr uint16_t cLongPulse = 59;
 
     /// @brief Structure to represent the color of an LED.
     struct Color
@@ -50,47 +60,40 @@ private:
     };
 
     Color mColors[S]; ///< Array to store the colors for all LEDs in the strip.
-    IPwmDma &mPwm;     ///< Reference to the PwmDma interface used to control the WS2812 strip.
-    uint16_t mPwmData[24*S+50];
+    IPwmDma &mPwm;    ///< Reference to the PwmDma interface used to control the WS2812 strip.
+    uint16_t mPwmData[24 * S + 50]; ///< Array to store the PWM data to be sent to the strip.
+
+    /// @brief Helper function to set the PWM data for a single LED color channel.
+    ///
+    /// @param color_channel The color channel value (0-255).
+    /// @param start_index The starting index in the PWM data array.
+    void setPwmData(uint8_t color_channel, size_t start_index);
 };
 
 template <size_t S>
 Ws2812<S>::Ws2812(IPwmDma &pwm) : mColors{}, mPwm(pwm), mPwmData{}
-{}
+{
+}
 
 template <size_t S>
 void Ws2812<S>::update()
 {
-    for(size_t i=0; i<S; i++) {
-        for(size_t bit=0; bit<8; bit++) {
-            uint16_t value = 0;
-            if(mColors[i].green & (1<<bit)) {
-                value=59;
-            } else {
-                value = 18;
-            }
-            mPwmData[i*24+bit] = value;
-        }
-        for(size_t bit=0; bit<8; bit++) {
-            uint16_t value = 0;
-            if(mColors[i].red & (1<<(7-bit))) {
-                value=59;
-            } else {
-                value = 18;
-            }
-            mPwmData[i*24+8+bit] = value;
-        }
-        for(size_t bit=0; bit<8; bit++) {
-            uint16_t value = 0;
-            if(mColors[i].blue & (1<<bit)) {
-                value=59;
-            } else {
-                value = 18;
-            }
-            mPwmData[i*24+16+bit] = value;
-        }
+    for (size_t i = 0; i < S; i++)
+    {
+        setPwmData(mColors[i].green, i * 24);
+        setPwmData(mColors[i].red, i * 24 + 8);
+        setPwmData(mColors[i].blue, i * 24 + 16);
     }
-    mPwm.start(mPwmData, sizeof(mPwmData)/sizeof(mPwmData[0]));
+    mPwm.start(mPwmData, sizeof(mPwmData) / sizeof(mPwmData[0]));
+}
+
+template <size_t S>
+void Ws2812<S>::setPwmData(uint8_t color_channel, size_t start_index)
+{
+    for (size_t bit = 0; bit < 8; bit++)
+    {
+        mPwmData[start_index + bit] = (color_channel & (1 << (7 - bit))) ? cLongPulse : cShortPulse;
+    }
 }
 
 template <size_t S>
@@ -107,6 +110,15 @@ void Ws2812<S>::setColor(size_t led_id, uint32_t color)
     mColors[led_id].red = color & 0xFF;
     mColors[led_id].green = (color >> 8) & 0xFF;
     mColors[led_id].blue = (color >> 16) & 0xFF;
+}
+
+template <size_t S>
+void Ws2812<S>::setColor(uint32_t color)
+{
+    for (size_t i = 0; i < S; i++)
+    {
+        setColor(i, color);
+    }
 }
 
 #endif

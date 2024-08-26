@@ -1,8 +1,12 @@
 #include "pcf8574.h"
 #include "logger.h"
 
-Pcf8574::Pcf8574(II2cMaster &i2c, uint8_t addr) : mI2c(i2c), mAddr(addr)
+Pcf8574::Pcf8574(II2cMaster &i2c) : mI2c(i2c), mAddr(0)
 {
+}
+
+void Pcf8574::setAddress(uint8_t address) {
+    mAddr = address;
 }
 
 bool Pcf8574::connectionTest() const

@@ -16,14 +16,14 @@ Bsp::Bsp()
 	i2cBus.reset(new I2cMaster(I2C1));
 
 	mRxPin.reset(new Gpio(GPIOA, GPIO_PIN_9, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
-	mTxPin.reset(new Gpio(GPIOA, GPIO_PIN_10, GPIO_MODE_INPUT, GPIO_NOPULL, 0));
+	mTxPin.reset(new Gpio(GPIOA, GPIO_PIN_10, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
   uartBus.reset(new Uart(USART1, 115200));
 
   mLedDataPin.reset(new Gpio(GPIOA, GPIO_PIN_1, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
 
-  testSwitch.reset(new Gpio(GPIOC, GPIO_PIN_5, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
-  ldgSwitch.reset(new Gpio(GPIOC, GPIO_PIN_3, GPIO_MODE_INPUT, GPIO_NOPULL, 0));
-  rudSwitch.reset(new Gpio(GPIOC, GPIO_PIN_4, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
+  testSwitch.reset(new Gpio(GPIOC, GPIO_PIN_5, GPIO_MODE_INPUT, GPIO_PULLUP, 0));
+  ldgSwitch.reset(new Gpio(GPIOC, GPIO_PIN_3, GPIO_MODE_INPUT, GPIO_PULLUP, 0));
+  rudSwitch.reset(new Gpio(GPIOC, GPIO_PIN_4, GPIO_MODE_INPUT, GPIO_PULLUP, 0));
 
   leds.reset(new PwmDma(TIM2, TIM_CHANNEL_2, DMA1_Channel7, 79));
 }
@@ -54,6 +54,14 @@ void Bsp::initClock()
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
   HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
+}
+
+void sleep(uint32_t time_ms) {
+    HAL_Delay(time_ms);
+}
+
+uint32_t getTime() {
+  return HAL_GetTick();
 }
 
 extern "C"
