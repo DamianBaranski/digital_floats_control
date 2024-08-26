@@ -19,6 +19,15 @@ public:
     /// @brief Predefined blue color (0x0000FF).
     static constexpr uint32_t BLUE = 0x0000FF;
 
+    /// @brief Predefined orange color (0xFF7F00).
+    static constexpr uint32_t ORANGE = 0xFF7F00;
+
+    /// @brief Predefined violet color (0x7F00FF).
+    static constexpr uint32_t VIOLET = 0x7F00FF;
+
+    /// @brief Predefined yellow color (0xFFFF00).
+    static constexpr uint32_t YELLOW = 0xFFFF00;
+
     /// @brief Adjust the brightness of a color.
     ///
     /// This method scales the RGB components of the color based on the provided brightness level.
