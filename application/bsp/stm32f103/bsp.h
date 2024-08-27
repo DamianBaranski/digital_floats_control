@@ -5,6 +5,8 @@
 #include "ii2c_master.h"
 #include "iuart.h"
 #include "ipwm_dma.h"
+#include "ispi.h"
+#include "iflash.h"
 #include <memory>
 
 /// @class Bsp
@@ -32,6 +34,8 @@ public:
     std::unique_ptr<IGpio> ldgSwitch;
     std::unique_ptr<IGpio> rudSwitch;
     std::unique_ptr<IPwmDma> leds;
+    std::unique_ptr<IFlash> extFlash;
+
 private:
     /// @brief Unique pointer to the GPIO pin used for SDA.
     ///
@@ -54,6 +58,16 @@ private:
     std::unique_ptr<IGpio> mTxPin;
 
     std::unique_ptr<IGpio> mLedDataPin;
+
+    std::unique_ptr<IGpio> mSpiClk;
+
+    std::unique_ptr<IGpio> mSpiMosi;
+
+    std::unique_ptr<IGpio> mSpiMiso;
+
+    std::unique_ptr<ISpi> mSpi;
+
+    std::unique_ptr<IGpio> mSpiCsPin;
 
     /// @brief Initializes the clock for the board.
     ///

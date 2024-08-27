@@ -64,7 +64,7 @@ private:
   {
     //Logger() << "Command L received.";
     mFileSize = size;
-    mSectors = (mFileSize + Flash::getSectorSize() - 1) / Flash::getSectorSize();
+    mSectors = (mFileSize + mFlash.getSectorSize() - 1) / mFlash.getSectorSize();
     mFlashPtr = 0;
 
     if (!mFlash.erase(0x08004000, mSectors))

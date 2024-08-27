@@ -4,6 +4,8 @@
 #include "i2c_master.h"
 #include "uart.h"
 #include "pwm_dma.h"
+#include "spi.h"
+#include "w25x_flash.h"
 
 Bsp::Bsp()
 {
@@ -26,6 +28,14 @@ Bsp::Bsp()
   rudSwitch.reset(new Gpio(GPIOC, GPIO_PIN_4, GPIO_MODE_INPUT, GPIO_PULLUP, 0));
 
   leds.reset(new PwmDma(TIM2, TIM_CHANNEL_2, DMA1_Channel7, 79));
+
+  mSpiCsPin.reset(new Gpio(GPIOA, GPIO_PIN_4, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0));
+  mSpiClk.reset(new Gpio(GPIOA, GPIO_PIN_5, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
+  mSpiMiso.reset(new Gpio(GPIOA, GPIO_PIN_6, GPIO_MODE_AF_INPUT, GPIO_NOPULL, 0));
+  mSpiMosi.reset(new Gpio(GPIOA, GPIO_PIN_7, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
+  mSpi.reset(new Spi(SPI1));
+
+  extFlash.reset(new W25xFlash(*mSpi, *mSpiCsPin));
 }
 	
 

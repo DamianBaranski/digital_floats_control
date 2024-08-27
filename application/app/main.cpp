@@ -13,6 +13,8 @@ int main()
 
   LOG << "Application BS";
   Application app(bsp);
+  uint8_t data;
+  bsp.extFlash->read(0, &data, 1);
 
   while(true) {
     app.spin();

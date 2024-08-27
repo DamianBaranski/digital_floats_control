@@ -3,6 +3,7 @@
 
 #include "igpio.h"
 #include "iuart.h"
+#include "iflash.h"
 #include <memory>
 
 /// @class Bsp
@@ -22,6 +23,8 @@ public:
     std::unique_ptr<IUart> uartBus;
 
     std::unique_ptr<IGpio> ledPin;
+
+    std::unique_ptr<IFlash> intFlash;
 private:
     /// @brief Unique pointer to the GPIO pin used for RX.
     ///

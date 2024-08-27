@@ -9,7 +9,8 @@ Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
                                                ControlChannel(*mBsp.i2cBus),
                                                ControlChannel(*mBsp.i2cBus),
                                                ControlChannel(*mBsp.i2cBus),
-                                               ControlChannel(*mBsp.i2cBus)} {
+                                               ControlChannel(*mBsp.i2cBus)},
+                                     mChannelsSettings(*mBsp.extFlash, 1024), mUserSettings(*mBsp.extFlash, 0) {
     mProtocol.registerCmd('v', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendAppVersion(in, out, outlen); });
     mProtocol.registerCmd('r', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->resetDevice(in, out, outlen); });
     mProtocol.registerCmd('s', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->scanI2cDevices(in, out, outlen); });
@@ -22,6 +23,7 @@ Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
     }
 
     loadSettings();
+    setBrightness();
 }
 
 bool waitForPushRelease(uint32_t time_ms, IGpio &pin, bool expectedState) {
@@ -88,17 +90,17 @@ void Application::testSwitchProcedure() {
 }
 
 void Application::loadSettings() {
-    Settings settings = {
-        .channelSettings = {
-            {true, true, false, false, false, false, true, 64, 50, 38, 0, 160, 100, 50, 5},
-            {true, false, false, false, false, false, true, 64, 50, 38, 0, 160, 100, 50, 5},
-            {false, false, false, false, false, false, false, 65, 50, 39, 0, 160, 100, 50, 5},
-            {false, false, false, false, false, false, false, 79, 50, 39, 1, 160, 100, 50, 5},
-            {false, false, false, false, false, false, false, 76, 50, 37, 0, 160, 100, 50, 5},
-            {false, false, false, false, false, false, false, 77, 50, 37, 1, 160, 100, 50, 5}}};
+    mUserSettings.load();
+    mChannelsSettings.get().channelSettings[0] = {true, true, false, false, false, false, true, 64, 50, 38, 0, 160, 100, 50, 5};
+    mChannelsSettings.get().channelSettings[1] = {true, false, false, false, false, false, true, 64, 50, 38, 0, 160, 100, 50, 5};
+    mChannelsSettings.get().channelSettings[2] = {false, false, false, false, false, false, false, 65, 50, 39, 0, 160, 100, 50, 5};
+    mChannelsSettings.get().channelSettings[3] = {false, false, false, false, false, false, false, 79, 50, 39, 1, 160, 100, 50, 5};
+    mChannelsSettings.get().channelSettings[4] = {false, false, false, false, false, false, false, 76, 50, 37, 0, 160, 100, 50, 5};
+    mChannelsSettings.get().channelSettings[5] = {false, false, false, false, false, false, false, 77, 50, 37, 1, 160, 100, 50, 5};
+    mChannelsSettings.save();
 
     for (size_t i = 0; i < NO_CHANNELS; ++i) {
-        mChannels[i].setSettings(settings.channelSettings[i]);
+        mChannels[i].setSettings(mChannelsSettings.get().channelSettings[i]);
     }
 }
 
@@ -139,7 +141,7 @@ void Application::processChannel(size_t channel, bool rudderSwitchState, bool ld
         break;
     }
 
-    color = Colors::setBrightness(color, 10);
+    color = Colors::setBrightness(color, mUserSettings.get().brightness);
     mLeds.setColor(channel, color);
 }
 
@@ -147,9 +149,9 @@ uint32_t Application::getColorForDownState(bool isRudder, bool rudderSwitchState
     uint32_t color = 0;
     if (isRudder) {
         if (rudderSwitchState) {
-            color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
+            color = ldgGearSwitchState ? Colors::ORANGE : Colors::BLUE;
         } else {
-            color = ldgGearSwitchState ? Colors::BLUE : Colors::ORANGE;
+            color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
         }
     } else {
         if (ldgGearSwitchState) {
@@ -165,9 +167,9 @@ uint32_t Application::getColorForUpState(bool isRudder, bool rudderSwitchState, 
     uint32_t color = 0;
     if (isRudder) {
         if (rudderSwitchState) {
-            color = Colors::GREEN;
+            color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);            
         } else {
-            color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
+            color = Colors::GREEN;
         }
     } else {
         if (ldgGearSwitchState) {
@@ -183,7 +185,7 @@ uint32_t Application::getColorForMovingState(bool isRudder, bool rudderSwitchSta
     uint32_t color = 0;
     if (isRudder) {
         if (rudderSwitchState) {
-            color = ldgGearSwitchState ? Colors::GREEN : Colors::BLUE;
+            color = ldgGearSwitchState ? Colors::ORANGE : Colors::BLUE;
         } else {
             color = Colors::GREEN;
         }
@@ -200,6 +202,24 @@ void Application::handleUartCommunication() {
     if (UartStream::getInstance()->readLine(inBuff, sizeof(inBuff), 0)) {
         if (mProtocol.process(inBuff, outBuff, sizeof(outBuff))) {
             Logger() << outBuff;
+        }
+    }
+}
+
+void Application::setBrightness() {
+    if (waitForPushRelease(5000, *mBsp.testSwitch, true)) {
+        return;
+    }
+
+    for (size_t i = 0; i < 10; i++) {
+        for (uint8_t b = 0xF; b < 0xFF; b += 0x18) {
+            mLeds.setColor(Colors::setBrightness(Colors::WHITE, b));
+            mLeds.update();
+            if (waitForPushRelease(500, *mBsp.testSwitch, true)) {
+                mUserSettings.get().brightness = b;
+                mUserSettings.save();
+                return;
+            }
         }
     }
 }

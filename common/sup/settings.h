@@ -1,7 +1,7 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-#include "flash.h"
+#include "iflash.h"
 
 /// @brief A template class for managing settings stored in flash memory.
 /// @tparam T The type of the settings data to be managed.
@@ -13,7 +13,7 @@ public:
     /// @brief Constructor that initializes the Settings class.
     /// @param flash Reference to the Flash object used for reading and writing to flash memory.
     /// @param address The address in flash memory where the settings are stored.
-    Settings(Flash &flash, uint32_t address);
+    Settings(IFlash &flash, uint32_t address);
 
     /// @brief Loads the settings from flash memory.
     /// @return `true` if the settings were successfully loaded, `false` otherwise.
@@ -28,7 +28,7 @@ public:
     T &get();
 
 private:
-    Flash &mFlash;         ///< Reference to the Flash object for flash memory operations.
+    IFlash &mFlash;         ///< Reference to the Flash object for flash memory operations.
     uint32_t mAddress;     ///< The address in flash memory where the settings are stored.
     
     /// @brief Structure to hold the settings data and its associated CRC.
@@ -39,7 +39,7 @@ private:
 };
 
 template <typename T>
-Settings<T>::Settings(Flash &flash, uint32_t address): mFlash(flash), mAddress(address) {
+Settings<T>::Settings(IFlash &flash, uint32_t address): mFlash(flash), mAddress(address) {
     load();
 }
 
