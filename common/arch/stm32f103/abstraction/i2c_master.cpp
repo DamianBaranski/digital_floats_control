@@ -17,7 +17,7 @@ I2cMaster::I2cMaster(I2C_TypeDef *instance)
     }
 
     mI2cHandler.Instance = instance;
-    mI2cHandler.Init.ClockSpeed = 10000;
+    mI2cHandler.Init.ClockSpeed = 100000;
     mI2cHandler.Init.DutyCycle = I2C_DUTYCYCLE_2;
     mI2cHandler.Init.OwnAddress1 = 0;
     mI2cHandler.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -63,6 +63,9 @@ bool I2cMaster::write(uint8_t addr, const uint8_t *data, uint8_t len) {
 bool I2cMaster::read(uint8_t addr, uint8_t *data, uint8_t len) {
     HAL_StatusTypeDef result;
     result = HAL_I2C_Master_Receive(&mI2cHandler, addr<<1, data, len, 100);
+    if(result != HAL_OK) {
+        reinit();
+    }
     return result == HAL_OK;
 }
 
@@ -76,4 +79,8 @@ bool I2cMaster::readRegister(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t l
     HAL_StatusTypeDef result;
     result = HAL_I2C_Mem_Read(&mI2cHandler, addr<<1, reg, sizeof(reg), data, len, 100);
     return result == HAL_OK;
+}
+
+void I2cMaster::reinit() {
+    HAL_I2C_Init(&mI2cHandler);
 }

@@ -74,6 +74,7 @@ public:
     virtual bool readRegister(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t len) override;
 
 private:
+void reinit();
     /// @brief I2C handler structure used by the HAL library.
     /// 
     /// This structure holds the configuration and status information for the I2C peripheral.

@@ -81,8 +81,8 @@ void Ws2812<S>::update()
     for (size_t i = 0; i < S; i++)
     {
         setPwmData(mColors[i].green, i * 24);
-        setPwmData(mColors[i].red, i * 24 + 8);
-        setPwmData(mColors[i].blue, i * 24 + 16);
+        setPwmData(mColors[i].blue, i * 24 + 8);
+        setPwmData(mColors[i].red, i * 24 + 16);
     }
     mPwm.start(mPwmData, sizeof(mPwmData) / sizeof(mPwmData[0]));
 }

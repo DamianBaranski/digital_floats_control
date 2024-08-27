@@ -79,13 +79,7 @@ public:
     /// @return true if all connections are successful, false otherwise.
     bool connectionTest();
 
-    /// @brief Sets the motor state and direction.
-    ///
-    /// @param enable Enable or disable the motor.
-    /// @param channel The channel number (0 or 1).
-    /// @param dir The direction of the motor (true for forward, false for reverse).
-    /// @return true if the motor state was successfully set, false otherwise.
-    bool setMotor(bool enable, uint8_t channel, bool dir);
+    bool setMotor(bool dir);
 
     bool getPowerSensorStatus();
 
@@ -111,6 +105,14 @@ private:
     /// @return true if the limit switch is active, false otherwise.
     bool getLimitSwitchState(LimitSwitch limit_switch);
 
+    /// @brief Sets the motor state and direction.
+    ///
+    /// @param enable Enable or disable the motor.
+    /// @param channel The channel number (0 or 1).
+    /// @param dir The direction of the motor (true for forward, false for reverse).
+    /// @return true if the motor state was successfully set, false otherwise.
+    bool setMotor(bool enable, uint8_t channel, bool dir);
+    
     ControlChannelSettings mSettings; ///< The settings for the control channel.
     Ina219 mCurrentSensor;            ///< The current sensor (INA219).
     Pcf8574 mExpanderIO;              ///< The IO expander (PCF8574).

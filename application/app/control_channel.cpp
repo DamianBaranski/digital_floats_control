@@ -59,11 +59,16 @@ bool ControlChannel::connectionTest()
 
 bool ControlChannel::setMotor(bool enable, uint8_t channel, bool dir)
 {
+    if(!mSettings.enable) {
+        return true;
+    }
+
     uint8_t data = mExpanderIO.read() | cPcfCfg;
     uint8_t mask;
 
     if (channel == 0)
     {
+        data &= ~(cMotor1RightDirMask | cMotor1LeftDirMask);
         if (dir)
         {
             mask = cMotor1RightDirMask;
@@ -75,6 +80,7 @@ bool ControlChannel::setMotor(bool enable, uint8_t channel, bool dir)
     }
     else if (channel == 1)
     {
+        data &= ~(cMotor2RightDirMask | cMotor2LeftDirMask);
         if (dir)
         {
             mask = cMotor2RightDirMask;
@@ -89,13 +95,17 @@ bool ControlChannel::setMotor(bool enable, uint8_t channel, bool dir)
     {
         data |= mask;
     }
-    else
-    {
-        data &= ~mask;
-    }
 
     return mExpanderIO.write(data);
 }
+
+ bool ControlChannel::setMotor(bool dir) {
+    if((dir && !getLimitSwitchState(LimitSwitch::DOWN)) || (!dir && !getLimitSwitchState(LimitSwitch::UP))) {
+        return setMotor(true, mSettings.pcf_channel, dir);
+    } else {
+        return setMotor(false, mSettings.pcf_channel, dir);
+    }
+ }
 
 bool ControlChannel::getPowerSensorStatus()
 {

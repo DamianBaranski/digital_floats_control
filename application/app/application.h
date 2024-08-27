@@ -79,17 +79,23 @@ private:
 
   bool getRudderSwitch();
 
+  void processChannel(size_t channel, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time);
+  uint32_t getColorForDownState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time);
+  uint32_t getColorForUpState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time);
+  uint32_t getColorForMovingState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time);
+  void handleUartCommunication();
+
 private:
   static constexpr size_t NO_CHANNELS = 6;
   Protocol<InProtocolData, OutProtocolData, 10> mProtocol; ///< Protocol object for handling commands.
-  Bsp &mBsp; ///< Reference to the Board Support Package for hardware interactions.
+  Bsp &mBsp;                                               ///< Reference to the Board Support Package for hardware interactions.
   Ws2812<NO_CHANNELS> mLeds;
   ControlChannel mChannels[NO_CHANNELS];
 
-  struct Settings {
+  struct Settings
+  {
     ControlChannelSettings channelSettings[NO_CHANNELS];
   };
-
 };
 
 #endif
