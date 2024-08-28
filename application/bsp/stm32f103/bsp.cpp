@@ -31,7 +31,7 @@ Bsp::Bsp()
 
   mSpiCsPin.reset(new Gpio(GPIOA, GPIO_PIN_4, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0));
   mSpiClk.reset(new Gpio(GPIOA, GPIO_PIN_5, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
-  mSpiMiso.reset(new Gpio(GPIOA, GPIO_PIN_6, GPIO_MODE_AF_INPUT, GPIO_NOPULL, 0));
+  mSpiMiso.reset(new Gpio(GPIOA, GPIO_PIN_6, GPIO_MODE_INPUT, GPIO_NOPULL, 0));
   mSpiMosi.reset(new Gpio(GPIOA, GPIO_PIN_7, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
   mSpi.reset(new Spi(SPI1));
 

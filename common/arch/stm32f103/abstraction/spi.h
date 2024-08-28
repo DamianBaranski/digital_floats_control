@@ -9,6 +9,9 @@ class Spi : public ISpi {
     Spi(SPI_TypeDef *spi);
     virtual bool transmit(const uint8_t *data, size_t len) override;
     virtual bool receive(uint8_t *data, size_t len) override;
+    virtual bool start() override;
+    virtual bool stop() override;
+
 };
 
 #endif

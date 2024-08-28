@@ -93,11 +93,11 @@ void Application::loadSettings() {
     mUserSettings.load();
     mChannelsSettings.get().channelSettings[0] = {true, true, false, false, false, false, true, 64, 50, 38, 0, 160, 100, 50, 5};
     mChannelsSettings.get().channelSettings[1] = {true, false, false, false, false, false, true, 64, 50, 38, 0, 160, 100, 50, 5};
-    mChannelsSettings.get().channelSettings[2] = {false, false, false, false, false, false, false, 65, 50, 39, 0, 160, 100, 50, 5};
-    mChannelsSettings.get().channelSettings[3] = {false, false, false, false, false, false, false, 79, 50, 39, 1, 160, 100, 50, 5};
-    mChannelsSettings.get().channelSettings[4] = {false, false, false, false, false, false, false, 76, 50, 37, 0, 160, 100, 50, 5};
-    mChannelsSettings.get().channelSettings[5] = {false, false, false, false, false, false, false, 77, 50, 37, 1, 160, 100, 50, 5};
-    mChannelsSettings.save();
+    mChannelsSettings.get().channelSettings[2] = {true, false, false, false, false, false, false, 65, 50, 39, 0, 160, 100, 50, 5};
+    mChannelsSettings.get().channelSettings[3] = {true, false, false, false, false, false, false, 79, 50, 39, 1, 160, 100, 50, 5};
+    mChannelsSettings.get().channelSettings[4] = {true, false, false, false, false, false, false, 76, 50, 37, 0, 160, 100, 50, 5};
+    mChannelsSettings.get().channelSettings[5] = {true, false, false, false, false, false, false, 77, 50, 37, 1, 160, 100, 50, 5};
+    //mChannelsSettings.save();
 
     for (size_t i = 0; i < NO_CHANNELS; ++i) {
         mChannels[i].setSettings(mChannelsSettings.get().channelSettings[i]);
