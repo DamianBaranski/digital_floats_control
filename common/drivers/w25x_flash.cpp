@@ -62,7 +62,7 @@ bool W25xFlash::write(uint32_t addr, const uint8_t *data, size_t len) {
         return false;
     }
 
-    mSpi.start(); // Assert CS
+    mSpi.start();
     mCsPin.reset();
     mSpi.transmit(cmd, sizeof(cmd)); // Send Page Program command followed by address
     mSpi.transmit(data, len);        // Transmit data to be programmed

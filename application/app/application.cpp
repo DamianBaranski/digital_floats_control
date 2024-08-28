@@ -155,9 +155,9 @@ uint32_t Application::getColorForDownState(bool isRudder, bool rudderSwitchState
         }
     } else {
         if (ldgGearSwitchState) {
-            color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
-        } else {
             color = Colors::GREEN;
+        } else {
+            color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
         }
     }
     return color;
@@ -173,9 +173,9 @@ uint32_t Application::getColorForUpState(bool isRudder, bool rudderSwitchState, 
         }
     } else {
         if (ldgGearSwitchState) {
-            color = Colors::BLUE;
-        } else {
             color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
+        } else {
+            color = Colors::BLUE;
         }
     }
     return color;
