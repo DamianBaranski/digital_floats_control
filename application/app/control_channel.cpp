@@ -57,6 +57,47 @@ bool ControlChannel::connectionTest()
     return result;
 }
 
+bool ControlChannel::relaysTest() {
+    bool result = true;
+    uint8_t mask = 0;
+
+    if(!mSettings.enable) {
+        return true;
+    }
+
+    if(mSettings.pcf_channel == 0) {
+        mask = cMotor1RightDirMask | cMotor1LeftDirMask;
+    } else if(mSettings.pcf_channel == 1) {
+        mask = cMotor2RightDirMask | cMotor2LeftDirMask;
+    }
+
+    if(!mExpanderIO.write(mask | cPcfCfg)) {
+        return false;
+    }
+
+    uint16_t voltage = mCurrentSensor.readBusVoltage();
+    uint16_t current = mCurrentSensor.readCurrnet();
+
+    if(mSettings.max_voltage_limit*100 < voltage) { //max_voltage_limit [0.1V], voltage [1mV]
+        result = false;
+        mWarnings.set(Warnings::HIGH_POWER_VOLTAGE);
+    }
+    if(mSettings.min_voltage_limit*100 > voltage) { //min_voltage_limit [0.1V], voltage [1mV]
+        result = false;
+        mWarnings.set(Warnings::LOW_POWER_VOLTAGE);
+    }
+    if(current != 0) {
+        result = false;
+        mErrors.set(Errors::RELAYS_ISSUE);
+    }
+
+
+    if(!mExpanderIO.write(cPcfCfg)) {
+        return false;
+    }
+    return result;
+}
+
 bool ControlChannel::setMotor(bool enable, uint8_t channel, bool dir)
 {
     if(!mSettings.enable) {
@@ -118,6 +159,17 @@ State ControlChannel::getChannelState()
 {
     bool upSwitch = getLimitSwitchState(LimitSwitch::UP);
     bool downSwitch = getLimitSwitchState(LimitSwitch::DOWN);
+    if(!upSwitch && !downSwitch) { //ToDo change to motor on check
+        int16_t current = mCurrentSensor.readCurrnet();
+        getPowerSensorStatus();
+        if(abs(current) > mSettings.max_current_limit) {
+            mWarnings.set(Warnings::LOW_MOTOR_IMPEDANCE);
+        }
+
+        if(abs(current) < mSettings.min_current_limit) {
+            mWarnings.set(Warnings::HIGH_MOTOR_IMPEDANCE);
+        }
+    }
 
     if (upSwitch && !downSwitch)
     {

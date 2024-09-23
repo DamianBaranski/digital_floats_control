@@ -18,7 +18,6 @@ uint8_t Pcf8574::read()
 {
     uint8_t data = 0;
     mI2c.read(mAddr, &data, sizeof(data));
-    LOG << "r:" << (data & 0xF);
     return data;
 }
 

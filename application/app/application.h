@@ -83,6 +83,7 @@ private:
   uint32_t getColorForDownState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time);
   uint32_t getColorForUpState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time);
   uint32_t getColorForMovingState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time);
+  bool relaysTest();
   void handleUartCommunication();
   void setBrightness();
 

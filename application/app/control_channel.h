@@ -25,6 +25,7 @@ enum class Errors {
     PCF_COMMUNICATION_ISSUE,
     INA_COMMUNICATION_ISSUE,
     ENDSTOP_SHORT_CIRCUIT,
+    RELAYS_ISSUE,
 };
 
 /// @brief Enumeration representing the state of the control channel.
@@ -78,6 +79,8 @@ public:
     ///
     /// @return true if all connections are successful, false otherwise.
     bool connectionTest();
+
+    bool relaysTest();
 
     bool setMotor(bool dir);
 

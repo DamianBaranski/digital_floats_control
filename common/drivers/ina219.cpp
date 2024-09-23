@@ -1,4 +1,5 @@
 #include "ina219.h"
+#include "logger.h"
 
 Ina219::Ina219(II2cMaster &i2c) : mI2c(i2c), mAddr(0)
 {
@@ -24,15 +25,14 @@ uint16_t Ina219::readBusVoltage()
     return (rawData >> 3) * 4;
 }
 
-int16_t Ina219::readCurrnet()
-{
+int16_t Ina219::readCurrnet() {
     int16_t shuntVoltage = 0;
     int16_t tmp;
     mI2c.readRegister(mAddr, cShuntVoltageRegister, reinterpret_cast<uint8_t *>(&shuntVoltage), sizeof(shuntVoltage));
     tmp = shuntVoltage;
-    shuntVoltage = tmp >> 8;
-    shuntVoltage |= (tmp << 8) & 0xFF;
-    float voltage = shuntVoltage * 100; // 1mV per LSB
-    float current = voltage / 50;       // 50mOhm shunt resistor
+    shuntVoltage = (tmp >> 8) & 0xFF;
+    shuntVoltage |= (tmp & 0xFF) << 8;
+    float voltage = shuntVoltage * 10; // 1mV per LSB
+    float current = voltage / 50.0;       // 50mOhm shunt resistor
     return current;
 }

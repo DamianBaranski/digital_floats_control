@@ -24,6 +24,7 @@ Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
 
     loadSettings();
     setBrightness();
+    relaysTest();
 }
 
 bool waitForPushRelease(uint32_t time_ms, IGpio &pin, bool expectedState) {
@@ -55,7 +56,7 @@ void Application::spin() {
     mLeds.update();
 
     handleUartCommunication();
-    sleep(1);
+    sleep(100);
 }
 
 bool Application::sendAppVersion(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
@@ -91,8 +92,8 @@ void Application::testSwitchProcedure() {
 
 void Application::loadSettings() {
     mUserSettings.load();
-    mChannelsSettings.get().channelSettings[0] = {true, true, false, false, false, false, true, 64, 50, 38, 0, 160, 100, 50, 5};
-    mChannelsSettings.get().channelSettings[1] = {true, false, false, false, false, false, true, 64, 50, 38, 0, 160, 100, 50, 5};
+    mChannelsSettings.get().channelSettings[0] = {true, true, false, false, false, false, true, 68, 50, 38, 0, 160, 100, 50, 5};
+    mChannelsSettings.get().channelSettings[1] = {true, false, false, false, false, false, true, 68, 50, 38, 0, 160, 100, 50, 5};
     mChannelsSettings.get().channelSettings[2] = {true, false, false, false, false, false, false, 65, 50, 39, 0, 160, 100, 50, 5};
     mChannelsSettings.get().channelSettings[3] = {true, false, false, false, false, false, false, 79, 50, 39, 1, 160, 100, 50, 5};
     mChannelsSettings.get().channelSettings[4] = {true, false, false, false, false, false, false, 76, 50, 37, 0, 160, 100, 50, 5};
@@ -193,6 +194,14 @@ uint32_t Application::getColorForMovingState(bool isRudder, bool rudderSwitchSta
         color = ldgGearSwitchState ? Colors::GREEN : Colors::BLUE;
     }
     return Colors::blinking(500, time, color);
+}
+
+bool Application::relaysTest() {
+    bool result = true;
+    for(size_t i=0; i<NO_CHANNELS; ++i) {
+        result &= mChannels[i].relaysTest();
+    }
+    return result;
 }
 
 void Application::handleUartCommunication() {
