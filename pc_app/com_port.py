@@ -4,6 +4,7 @@ import serial
 class ComPort:
     def __init__(self):
         self.serial = serial.Serial()
+        self.logs = ""
 
     def open(self, port):
         self.serial.close()
@@ -25,5 +26,22 @@ class ComPort:
     def read(self):
         while True:
             result = self.serial.readline().decode().strip()
-            if not 'LOG:' in result:
-                return result 
+            if 'LOG:' in result:
+                self._addLogs(result)
+            else:
+                return result
+
+    def getLogs(self):
+        while self.isOpen() and self.serial.inWaiting():
+            result = self.serial.readline().decode().strip()
+            if 'LOG:' in result:
+                self._addLogs(result)
+
+        logs = self.logs
+        self.logs = ''
+        return logs
+
+    def _addLogs(self, log):
+        self.logs.append(log)
+
+        

@@ -40,7 +40,7 @@ class DigitalFloatsApp(tk.Frame):
         self.ui_status_tab = StatusFrameWidget(self.ui_tabs, self.app_protocol)
         self.ui_settings_tab = SettingsFrameWidget(self.ui_tabs)
         self.ui_monitoring_tab = MonitoringFrameWidget(self.ui_tabs)
-        self.ui_logs_tab = LogsFrameWidget(self.ui_tabs)
+        self.ui_logs_tab = LogsFrameWidget(self.ui_tabs, self.app_protocol)
 
         self.ui_tabs.add(self.ui_status_tab, text="Status")
         self.ui_tabs.add(self.ui_settings_tab, text="Settings")
@@ -60,6 +60,7 @@ class DigitalFloatsApp(tk.Frame):
     def update(self):
         self.ui_port.update()
         self.ui_status_tab.update()
+        self.ui_logs_tab.update()
         # call this function again in one second
         self.after(1000, self.update)
 

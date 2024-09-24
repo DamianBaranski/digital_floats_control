@@ -52,6 +52,7 @@ class AppProtocol:
     def __init__(self, comport):
         self.protocol = Protocol[Union[bytes, int], Union[bytes, int]]()
         self.uart = comport
+        self.logs = ""
 
     def getVersion(self):
         if not self.uart.isOpen():
@@ -65,3 +66,6 @@ class AppProtocol:
         print(f"response:{response}")
         decoded_response = self.protocol.decode_response(response)
         return str(decoded_response)
+
+    def getLogs(self):
+        return self.uart.getLogs()
