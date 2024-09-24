@@ -50,8 +50,9 @@ class TableWidget(tk.Frame):
                 if column["type"] == "bool":
                     # Create a checkbox for boolean values
                     var = tk.BooleanVar()
-                    b = tk.Frame(self.table_frame, background='white', highlightthickness=1, highlightbackground='red', highlightcolor='red')
-                    a = tk.Checkbutton(b, variable=var)
+                    color = self.cget("bg")
+                    b = tk.Frame(self.table_frame, background='white', highlightthickness=1, highlightbackground=color, highlightcolor=color)
+                    a = tk.Checkbutton(b, variable=var,  background='white')
                     a.pack(fill='none', expand=True)
 
                     row_entries.append(var)  # Store BooleanVar for the checkbox
