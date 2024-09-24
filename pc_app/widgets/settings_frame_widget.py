@@ -27,22 +27,34 @@ class SettingsFrameWidget(tk.Frame):
         ]
   
         tk.Frame.__init__(self, parent)
-        self.channels_settings_label = tk.Label(self, text="Channels settings")
-        self.table = TableWidget(self, columns)
-        self.channel_settings_load = tk.Button(self, text="Load")
-        self.channel_settings_save = tk.Button(self, text="Save")
-        self.channel_settings_autodetect = tk.Button(self, text="Autodetect")
 
-        self.user_settings = tk.Label(self, text="User settings")
+        # Frame for Channel Settings
+        channel_frame = tk.Frame(self)
+        channel_frame.pack(side="top", fill="x", padx=10, pady=10)
+
+        self.channels_settings_label = tk.Label(channel_frame, text="Channels settings")
         self.channels_settings_label.pack(side="top", fill="x")
+        
+        self.table = TableWidget(channel_frame, columns)
         self.table.pack(side="top", fill="x")
-        self.channel_settings_load.pack(side="top", fill="x")
-        self.channel_settings_save.pack(side="top", fill="x")
-        self.channel_settings_autodetect.pack(side="top", fill="x")
+
+        # Frame for Buttons (Load, Save, Autodetect)
+        button_frame = tk.Frame(channel_frame)
+        button_frame.pack(side="top", fill="x", pady=10)
+
+        self.channel_settings_load = tk.Button(button_frame, text="Load")
+        self.channel_settings_load.pack(side="left", expand=True)
+
+        self.channel_settings_save = tk.Button(button_frame, text="Save")
+        self.channel_settings_save.pack(side="left", expand=True)
+
+        self.channel_settings_autodetect = tk.Button(button_frame, text="Autodetect")
+        self.channel_settings_autodetect.pack(side="left", expand=True)
+
+        # Frame for User Settings
+        user_frame = tk.Frame(self)
+        user_frame.pack(side="top", fill="x", padx=10, pady=10)
+
+        self.user_settings = tk.Label(user_frame, text="User settings")
         self.user_settings.pack(side="top", fill="x")
 
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.geometry("600x400")  # Set window size
-    SettingsFrameWidget(root).pack(fill="both", expand=True, padx=10)
-    root.mainloop()

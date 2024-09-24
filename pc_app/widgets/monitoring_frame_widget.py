@@ -18,7 +18,10 @@ class MonitoringFrameWidget(tk.Frame):
             {"name": "Down limit switch", "width": 10, "type": "bool"},
         ]
         tk.Frame.__init__(self, parent)
-        self.label = tk.Label(self, text="Monitoring")
-        self.table = TableWidget(self, columns)
+        frame = tk.Frame(self)
+        frame.pack(side="top", fill="x", padx=10, pady=10)
+        
+        self.label = tk.Label(frame, text="Monitoring")
+        self.table = TableWidget(frame, columns)
         self.label.pack(side="top", fill="x")
         self.table.pack(side="top", fill="x", padx=20)
