@@ -1,40 +1,58 @@
-try:
-    # python 3.x
-    import tkinter as tk
-    from tkinter.ttk import *
-except ImportError:
-    # python 2.x
-    import Tkinter as tk
+import tkinter as tk
+from tkinter import colorchooser
+from tkinter import ttk
 from .table_widget import TableWidget
+
+class UserSettingField(tk.Frame):
+    def __init__(self, parent, name, input_type="entry"):
+        tk.Frame.__init__(self, parent)
+        self.label = tk.Label(self, text=f"{name}:")
+        self.label.pack(side="left", padx=5, pady=5)
+
+        if input_type == "entry":
+            self.entry = tk.Entry(self)
+            self.entry.pack(side="left", padx=5, pady=5, fill='x', expand=True)
+        elif input_type == "color":
+            self.color_button = tk.Button(self, text="Choose Color", command=self.choose_color)
+            self.color_button.pack(side="left", padx=5, pady=5)
+            self.color_display = tk.Label(self, width=10, bg="white", relief="sunken")
+            self.color_display.pack(side="left", padx=5, pady=5)
+
+    def choose_color(self):
+        # Open color chooser dialog and set color
+        color = colorchooser.askcolor()[1]
+        if color:
+            self.color_display.config(bg=color)
 
 class SettingsFrameWidget(tk.Frame):
     def __init__(self, parent):
-        columns = [
-            {"name": "Bridge", "width": 10, "type": "bool"},
-            {"name": "Inverse motor", "width": 10, "type": "bool"},
-            {"name": "Inverse up limit switch", "width": 10, "type": "bool"},
-            {"name": "Inverse down limit switch", "width": 10, "type": "bool"},
-            {"name": "Inverse limit switch", "width": 10, "type": "bool"},
-            {"name": "Rudder", "width": 10, "type": "bool"},
-            {"name": "Ina address", "width": 100, "type": "int"},
-            {"name": "Ina calibration", "width": 100, "type": "int"},
-            {"name": "Pcf address", "width": 100, "type": "int"},
-            {"name": "Pcf channel", "width": 100, "type": "int"},
-            {"name": "Max voltage", "width": 100, "type": "int"},
-            {"name": "Min voltage", "width": 100, "type": "int"},
-            {"name": "Max current", "width": 100, "type": "int"},
-            {"name": "Min current", "width": 100, "type": "int"},
-        ]
-  
         tk.Frame.__init__(self, parent)
 
         # Frame for Channel Settings
         channel_frame = tk.Frame(self)
         channel_frame.pack(side="top", fill="x", padx=10, pady=10)
 
-        self.channels_settings_label = tk.Label(channel_frame, text="Channels settings")
+        self.channels_settings_label = tk.Label(channel_frame, text="Channels Settings", font=("Helvetica", 12, "bold"))
         self.channels_settings_label.pack(side="top", fill="x")
-        
+
+        # Assume TableWidget exists to handle channel settings
+        columns = [
+            {"name": "Bridge", "width": 10, "type": "bool"},
+            {"name": "Inverse Motor", "width": 10, "type": "bool"},
+            {"name": "Inverse Up Limit Switch", "width": 10, "type": "bool"},
+            {"name": "Inverse Down Limit Switch", "width": 10, "type": "bool"},
+            {"name": "Inverse Limit Switch", "width": 10, "type": "bool"},
+            {"name": "Rudder", "width": 10, "type": "bool"},
+            {"name": "INA Address", "width": 100, "type": "int"},
+            {"name": "INA Calibration", "width": 100, "type": "int"},
+            {"name": "PCF Address", "width": 100, "type": "int"},
+            {"name": "PCF Channel", "width": 100, "type": "int"},
+            {"name": "Max Voltage", "width": 100, "type": "int"},
+            {"name": "Min Voltage", "width": 100, "type": "int"},
+            {"name": "Max Current", "width": 100, "type": "int"},
+            {"name": "Min Current", "width": 100, "type": "int"},
+        ]
+
         self.table = TableWidget(channel_frame, columns)
         self.table.pack(side="top", fill="x")
 
@@ -43,18 +61,55 @@ class SettingsFrameWidget(tk.Frame):
         button_frame.pack(side="top", fill="x", pady=10)
 
         self.channel_settings_load = tk.Button(button_frame, text="Load")
-        self.channel_settings_load.pack(side="left", expand=True)
+        self.channel_settings_load.pack(side="right", padx=5)
 
         self.channel_settings_save = tk.Button(button_frame, text="Save")
-        self.channel_settings_save.pack(side="left", expand=True)
+        self.channel_settings_save.pack(side="right", padx=5)
 
         self.channel_settings_autodetect = tk.Button(button_frame, text="Autodetect")
-        self.channel_settings_autodetect.pack(side="left", expand=True)
+        self.channel_settings_autodetect.pack(side="right", padx=5)
 
         # Frame for User Settings
         user_frame = tk.Frame(self)
         user_frame.pack(side="top", fill="x", padx=10, pady=10)
 
-        self.user_settings = tk.Label(user_frame, text="User settings")
-        self.user_settings.pack(side="top", fill="x")
+        self.user_settings_label = tk.Label(user_frame, text="User Settings", font=("Helvetica", 12, "bold"))
+        self.user_settings_label.pack(side="top", fill="x")
 
+        # Create a frame to group user setting fields
+        user_settings_group = tk.Frame(user_frame)
+        user_settings_group.pack(side="top", fill="x", pady=(5, 10))
+
+        # Add user setting fields
+        self.brightness = UserSettingField(user_settings_group, "Brightness")
+        self.ldg_up_color = UserSettingField(user_settings_group, "LDG Up Color", input_type="color")
+        self.ldg_down_color = UserSettingField(user_settings_group, "LDG Down Color", input_type="color")
+        self.rudder_up_color = UserSettingField(user_settings_group, "Rudder Up Color", input_type="color")
+        self.rudder_down_color = UserSettingField(user_settings_group, "Rudder Down Color", input_type="color")
+        self.rudder_inactive_color = UserSettingField(user_settings_group, "Rudder Inactive Color", input_type="color")
+        self.warning_color = UserSettingField(user_settings_group, "Warning Color", input_type="color")
+        self.error_color = UserSettingField(user_settings_group, "Error Color", input_type="color")
+
+
+        self.brightness.pack(side="top", fill="x", pady=5)
+        self.ldg_up_color.pack(side="top", fill="x", pady=5)
+        self.ldg_down_color.pack(side="top", fill="x", pady=5)
+        self.rudder_up_color.pack(side="top", fill="x", pady=5)
+        self.rudder_down_color.pack(side="top", fill="x", pady=5)
+        self.rudder_inactive_color.pack(side="top", fill="x", pady=5)
+        self.warning_color.pack(side="top", fill="x", pady=5)
+        self.error_color.pack(side="top", fill="x", pady=5)
+
+        # Add Save and load buttons
+        button_frame = tk.Frame(self)
+        button_frame.pack(side="top", fill="x", padx=10, pady=(5, 10))
+
+        self.load_button = tk.Button(button_frame, text="Load")
+        self.load_button.pack(side="right", padx=5)
+
+        self.save_button = tk.Button(button_frame, text="Save")
+        self.save_button.pack(side="right", padx=5)
+        
+        self.default_button = tk.Button(button_frame, text="Load default")
+        self.default_button.pack(side="right", padx=5)        
+      
