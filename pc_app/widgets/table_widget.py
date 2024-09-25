@@ -5,6 +5,7 @@ try:
 except ImportError:
     # python 2.x
     import Tkinter as tk
+    from Tkinter.ttk import *
 
 class TableWidget(tk.Frame):
     def __init__(self, parent, columns):
@@ -19,16 +20,15 @@ class TableWidget(tk.Frame):
         self.h_scrollbar = tk.Scrollbar(self, orient="horizontal", command=self.canvas.xview)
         self.h_scrollbar.pack(side="bottom", fill="x")
 
+        # Configure canvas to use the scrollbar
         self.canvas.configure(xscrollcommand=self.h_scrollbar.set)
 
         # Create a frame inside the canvas for the table content
         self.table_frame = tk.Frame(self.canvas)
-        self.canvas.create_window((0, 0), window=self.table_frame, anchor="nw")
+        self.canvas_window = self.canvas.create_window((0, 0), window=self.table_frame, anchor="nw")
 
-        # Bind the canvas scroll region
+        # Bind events to handle scrolling and resizing
         self.table_frame.bind("<Configure>", self.on_frame_configure)
-
-        # Bind window resizing events to adjust scrollbar visibility
         self.canvas.bind("<Configure>", self.on_canvas_resize)
 
         self.entries = []  # Store references to Entry widgets for navigation
@@ -39,59 +39,67 @@ class TableWidget(tk.Frame):
 
         # Create the header row
         for i, column in enumerate(self.columns):
-            a = tk.Label(self.table_frame, text=column['name'], wraplength=85)
-            a.config(font=("Courier", 10))
-            a.grid(row=0, column=i, sticky="nsew")
+            header = tk.Label(self.table_frame, text=column['name'], wraplength=85)
+            header.config(font=("Courier", 10))
+            header.grid(row=0, column=i, sticky="nsew")
 
         # Create the table rows with appropriate widgets (Entry or Checkbutton)
         for i in range(6):
             row_entries = []
             for j, column in enumerate(self.columns):
+                # Create a container frame for each cell
+                cell_frame = tk.Frame(self.table_frame, background='white', highlightthickness=1)
+
                 if column["type"] == "bool":
                     # Create a checkbox for boolean values
                     var = tk.BooleanVar()
-                    color = self.cget("bg")
-                    b = tk.Frame(self.table_frame, background='white', highlightthickness=1, highlightbackground=color, highlightcolor=color)
-                    a = tk.Checkbutton(b, variable=var,  background='white')
-                    a.pack(fill='none', expand=True)
-
+                    checkbox = tk.Checkbutton(cell_frame, variable=var, background='white')
+                    checkbox.pack(fill='none', expand=True)
                     row_entries.append(var)  # Store BooleanVar for the checkbox
+
                 else:
                     # Create Entry widget for other types
-                    b = Entry(self.table_frame, validate="key")
-                    
+                    entry = Entry(cell_frame, validate="key")
+
                     # Bind data validation functions according to column type
                     if column["type"] == "int":
-                        b.config(validatecommand=(self.register(self.validate_int), '%P'))  # Validate integer input
+                        entry.config(validatecommand=(self.register(self.validate_int), '%P'))  # Validate integer input
                     elif column["type"] == "str":
-                        b.config(validatecommand=(self.register(self.validate_str), '%P'))  # Validate string input
+                        entry.config(validatecommand=(self.register(self.validate_str), '%P'))  # Validate string input
 
-                    row_entries.append(b)  # Store Entry widget
+                    row_entries.append(entry)  # Store Entry widget
 
-                b.grid(row=i+1, column=j, sticky="nsew")
-                if column["type"] != "bool":
-                    # Bind Enter, Up, Down keys for navigation, only for Entry widgets
-                    b.bind("<Return>", self.focus_next_cell)
-                    b.bind("<Down>", self.focus_next_row)
-                    b.bind("<Up>", self.focus_prev_row)
+                    # Bind Enter, Up, Down keys for navigation
+                    entry.bind("<Return>", self.focus_next_cell)
+                    entry.bind("<Down>", self.focus_next_row)
+                    entry.bind("<Up>", self.focus_prev_row)
+
+                    # Add the Entry widget to the cell_frame
+                    entry.pack(fill='both', expand=True)
+
+                # Add the cell_frame to the grid
+                cell_frame.grid(row=i+1, column=j, sticky="nsew")
 
             self.entries.append(row_entries)
 
     def on_frame_configure(self, event):
-        """Reset the scroll region to encompass the inner frame."""
+        """Update the scroll region to encompass the inner frame."""
         self.canvas.configure(scrollregion=self.canvas.bbox("all"))
-
+        self.update_scrollbar_visibility()
+    
     def on_canvas_resize(self, event):
-        """Hide or show the scrollbar based on the table size relative to the canvas width."""
-        canvas_width = event.width
+        """Adjust the canvas window width and manage the scrollbar visibility."""
+        self.update_scrollbar_visibility()
+
+    def update_scrollbar_visibility(self):
+        """Show or hide the scrollbar based on the table width."""
+        canvas_width = self.canvas.winfo_width()
         table_width = self.table_frame.winfo_reqwidth()
 
-        # If table is smaller than canvas, hide the scrollbar
-        if table_width <= canvas_width:
-            self.canvas.itemconfig(self.canvas.create_window((0, 0), window=self.table_frame), width=canvas_width)
-            self.h_scrollbar.pack_forget()
-        else:
+        if table_width > canvas_width:
             self.h_scrollbar.pack(side="bottom", fill="x")
+        else:
+            self.h_scrollbar.pack_forget()
 
     def validate_int(self, value_if_allowed):
         """Ensure only integer input is allowed."""
@@ -123,7 +131,7 @@ class TableWidget(tk.Frame):
             # If the next cell exists, focus on it
             if next_row < len(self.entries):
                 next_widget = self.entries[next_row][next_col]
-                if isinstance(next_widget, tk.Entry):  # Only focus on Entry widgets
+                if isinstance(next_widget, tk.Entry):
                     next_widget.focus()
 
     def focus_next_row(self, event):
@@ -141,7 +149,7 @@ class TableWidget(tk.Frame):
             next_row, col = current_index[0] + 1, current_index[1]
             if next_row < len(self.entries):
                 next_widget = self.entries[next_row][col]
-                if isinstance(next_widget, tk.Entry):  # Only focus on Entry widgets
+                if isinstance(next_widget, tk.Entry):
                     next_widget.focus()
 
     def focus_prev_row(self, event):
@@ -159,5 +167,5 @@ class TableWidget(tk.Frame):
             prev_row, col = current_index[0] - 1, current_index[1]
             if prev_row >= 0:
                 prev_widget = self.entries[prev_row][col]
-                if isinstance(prev_widget, tk.Entry):  # Only focus on Entry widgets
+                if isinstance(prev_widget, tk.Entry):
                     prev_widget.focus()
