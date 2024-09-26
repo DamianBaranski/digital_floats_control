@@ -20,7 +20,7 @@ class DigitalFloatsApp(tk.Frame):
         parent.title("Digital Floats App")
 
         # Initialize the ComPort
-        self.comport = ComPort()
+        self.comport = ComPort(self.on_connected)
         self.app_protocol = AppProtocol(self.comport)
 
         # Create a frame for the left column (including ComPortWidget and other widgets, if needed)
@@ -37,8 +37,8 @@ class DigitalFloatsApp(tk.Frame):
 
         # Create and add tabs to the notebook
         self.ui_status_tab = StatusFrameWidget(self.ui_tabs, self.app_protocol)
-        self.ui_settings_tab = SettingsFrameWidget(self.ui_tabs)
-        self.ui_monitoring_tab = MonitoringFrameWidget(self.ui_tabs)
+        self.ui_settings_tab = SettingsFrameWidget(self.ui_tabs, self.app_protocol)
+        self.ui_monitoring_tab = MonitoringFrameWidget(self.ui_tabs, self.app_protocol)
         self.ui_logs_tab = LogsFrameWidget(self.ui_tabs, self.app_protocol)
 
         self.ui_tabs.add(self.ui_status_tab, text="Status")
@@ -62,10 +62,13 @@ class DigitalFloatsApp(tk.Frame):
 
     def update(self):
         self.ui_port.update()
-        self.ui_status_tab.update()
         self.ui_logs_tab.update()
         # call this function again in one second
         self.after(1000, self.update)
+        
+    def on_connected(self, status):
+        if status:
+            self.ui_status_tab.update()
 
 if __name__ == "__main__":
     root = tk.Tk()

@@ -16,9 +16,8 @@ Bsp::Bsp()
 	mSdaPin.reset(new Gpio(GPIOB, GPIO_PIN_6, GPIO_MODE_AF_OD, GPIO_PULLUP, 0));
 	mSclPin.reset(new Gpio(GPIOB, GPIO_PIN_7, GPIO_MODE_AF_OD, GPIO_PULLUP, 0));
 	i2cBus.reset(new I2cMaster(I2C1));
-
 	mRxPin.reset(new Gpio(GPIOA, GPIO_PIN_9, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
-	mTxPin.reset(new Gpio(GPIOA, GPIO_PIN_10, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
+	mTxPin.reset(new Gpio(GPIOA, GPIO_PIN_10, GPIO_MODE_INPUT, GPIO_NOPULL, 0));
   uartBus.reset(new Uart(USART1, 115200));
 
   mLedDataPin.reset(new Gpio(GPIOA, GPIO_PIN_1, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));

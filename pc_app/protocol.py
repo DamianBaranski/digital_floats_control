@@ -23,14 +23,16 @@ class Protocol(Generic[DataInType, DataOutType]):
     def encode_output(self, in_data: 'Protocol.InData') -> bytes:
         try:
             data_bytes = bytes(in_data.data)
-            frame = bytes([ord(in_data.cmd)]) + bytes([in_data.len]) + data_bytes + in_data.crc.to_bytes(2, 'big')
-            return base64.b64encode(frame)
+            frame = bytes([in_data.len]) + data_bytes + in_data.crc.to_bytes(2, 'big')
+            frame =  base64.b64encode(bytes([ord(in_data.cmd)])+frame)+b'\r'
+            return frame
         except Exception as e:
             print(f"Encoding error: {e}")
             return ""
 
     def decode_response(self, instr: str) -> Optional[Union[DataOutType]]:
         try:
+            print("Received:", instr)
             decoded_bytes = base64.b64decode(instr)
             print(decoded_bytes)
             cmd = chr(decoded_bytes[0])
@@ -60,12 +62,21 @@ class AppProtocol:
         
         cmd_str = self.protocol.InData(cmd='v')
         encoded_cmd = self.protocol.encode_output(cmd_str)
-        print(f"encoded:{encoded_cmd}")
         self.uart.send(encoded_cmd)
         response = self.uart.read()
-        print(f"response:{response}")
         decoded_response = self.protocol.decode_response(response)
-        return str(decoded_response)
+        return decoded_response.decode('utf-8').rstrip('\x00')
 
     def getLogs(self):
         return self.uart.getLogs()
+    
+    def scanI2c(self, address):
+        if not self.uart.isOpen():
+            return False
+        
+        cmd_str = self.protocol.InData(cmd='s', data=address.to_bytes())
+        encoded_cmd = self.protocol.encode_output(cmd_str)
+        self.uart.send(encoded_cmd)
+        response = self.uart.read()
+        decoded_response = self.protocol.decode_response(response)
+        return decoded_response

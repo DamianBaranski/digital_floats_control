@@ -2,16 +2,21 @@ from serial.tools.list_ports import comports
 import serial
 
 class ComPort:
-    def __init__(self):
+    def __init__(self, onconnected=None):
         self.serial = serial.Serial()
         self.logs = ""
+        self.onconnected = onconnected
 
     def open(self, port):
         self.serial.close()
-        self.serial = serial.Serial(port=port, baudrate=115200, timeout=1.0)
+        self.serial = serial.Serial(port=port, baudrate=115200, timeout=1)
+        if self.isOpen() and self.onconnected!=None:
+            self.onconnected(True)
 
     def close(self):
-        return self.serial.close()
+        self.serial.close()
+        if (not self.isOpen()) and self.onconnected!=None:
+            self.onconnected(False)            
     
     def isOpen(self):
         return self.serial.is_open
@@ -20,6 +25,7 @@ class ComPort:
         return [port.device for port in comports()]
 
     def send(self, data):
+        print("write", data)
         self.serial.write(data)
         return True
     
@@ -42,6 +48,6 @@ class ComPort:
         return logs
 
     def _addLogs(self, log):
-        self.logs.append(log)
+        self.logs = self.logs + log + '\n'
 
         

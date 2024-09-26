@@ -15,6 +15,17 @@
 class Application
 {
 private:
+  struct UserSettings {
+    uint8_t brightness;
+    uint32_t ldgUpColor;
+    uint32_t ldgDownColor;
+    uint32_t rudderUpColor;
+    uint32_t rudderDownColor;
+    uint32_t rudderInactiveColor;
+    uint32_t warningColor;
+    uint32_t errorColor;
+  };
+
   /// @union InProtocolData
   /// @brief A union representing different input data types for protocol commands.
   union InProtocolData
@@ -38,6 +49,8 @@ private:
     {
       bool result; ///< Result of the I2C scan (true if device is ready).
     } i2cScan;
+
+    //struct UserSettings userSettings;
   };
 
 public:
@@ -71,6 +84,8 @@ private:
   /// @return true Always returns true.
   bool scanI2cDevices(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
+  bool sendUserSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
+
   void testSwitchProcedure();
 
   void loadSettings();
@@ -92,10 +107,6 @@ private:
   struct ChannelsSettings
   {
     ControlChannelSettings channelSettings[NO_CHANNELS];
-  };
-  
-  struct UserSettings {
-    uint8_t brightness;
   };
 
   Protocol<InProtocolData, OutProtocolData, 10> mProtocol; ///< Protocol object for handling commands.

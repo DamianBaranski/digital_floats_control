@@ -8,7 +8,7 @@ except ImportError:
 from .table_widget import TableWidget
 
 class MonitoringFrameWidget(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, protocol):
         columns = [
             {"name": "Ina address", "width": 10, "type": "text"},
             {"name": "Pcf address", "width": 10, "type": "text"},

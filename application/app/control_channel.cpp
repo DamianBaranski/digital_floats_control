@@ -150,8 +150,8 @@ bool ControlChannel::setMotor(bool enable, uint8_t channel, bool dir)
 
 bool ControlChannel::getPowerSensorStatus()
 {
-    LOG << "Voltage: " << mCurrentSensor.readBusVoltage() << "mv";
-    LOG << "Current: " << mCurrentSensor.readCurrnet() << "mA";
+    //LOG << "Voltage: " << mCurrentSensor.readBusVoltage() << "mv";
+    //LOG << "Current: " << mCurrentSensor.readCurrnet() << "mA";
     return true;
 }
 

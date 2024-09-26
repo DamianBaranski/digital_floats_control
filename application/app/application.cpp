@@ -14,13 +14,7 @@ Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
     mProtocol.registerCmd('v', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendAppVersion(in, out, outlen); });
     mProtocol.registerCmd('r', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->resetDevice(in, out, outlen); });
     mProtocol.registerCmd('s', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->scanI2cDevices(in, out, outlen); });
-
-    LOG << "I2C scan";
-    for (size_t i = 0; i < 127; i++) {
-        if (mBsp.i2cBus->isDeviceReady(i)) {
-            LOG << i;
-        }
-    }
+    mProtocol.registerCmd('u', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendUserSettings(in, out, outlen); });
 
     loadSettings();
     setBrightness();
@@ -73,9 +67,18 @@ bool Application::resetDevice(const InProtocolData &in, OutProtocolData &out, si
 
 bool Application::scanI2cDevices(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
     bool result = mBsp.i2cBus->isDeviceReady(in.i2cScan.i2cAddress);
+    if(result) {
+        LOG << "Found I2C device:" << in.i2cScan.i2cAddress;
+    }
     out.i2cScan.result = result;
     outlen = sizeof(out.i2cScan);
-    return result;
+    return true;
+}
+
+bool Application::sendUserSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
+    //out.userSettings = mUserSettings.get();
+    outlen = sizeof(mUserSettings);
+    return true;
 }
 
 void Application::testSwitchProcedure() {

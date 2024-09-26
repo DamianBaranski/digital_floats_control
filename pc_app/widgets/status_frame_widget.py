@@ -17,5 +17,5 @@ class StatusFrameWidget(tk.Frame):
         
 
     def update(self):
-         version = self.app_protocol.getVersion()
-         self.ver_value.config(text = version)
+        version = self.app_protocol.getVersion()
+        self.ver_value.config(text = version)

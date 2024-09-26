@@ -49,7 +49,7 @@ class Protocol
 {
 private:
     /// Structure representing the incoming data format
-    struct InData
+    struct __attribute__((__packed__)) InData
     {
         char cmd;     ///< Command identifier
         uint8_t len;  ///< Length of the input data
@@ -58,7 +58,7 @@ private:
     };
 
     /// Structure representing the outgoing data format
-    struct OutData
+    struct __attribute__((__packed__)) OutData
     {
         char cmd;     ///< Command identifier
         uint8_t len;  ///< Length of the output data

@@ -42,9 +42,10 @@ class UserSettingField(tk.Frame):
             return self.color_display.cget("bg")
 
 class SettingsFrameWidget(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, protocol):
         tk.Frame.__init__(self, parent)
         self.user_settings = UserSettings()
+        self.protocol = protocol
         # Frame for Channel Settings
         channel_frame = tk.Frame(self)
         channel_frame.pack(side="top", fill="x", padx=10, pady=10)
@@ -83,7 +84,7 @@ class SettingsFrameWidget(tk.Frame):
         self.channel_settings_save = tk.Button(button_frame, text="Save")
         self.channel_settings_save.pack(side="right", padx=5)
 
-        self.channel_settings_autodetect = tk.Button(button_frame, text="Autodetect")
+        self.channel_settings_autodetect = tk.Button(button_frame, text="Autodetect", command=self.autoDetect)
         self.channel_settings_autodetect.pack(side="right", padx=5)
 
         # Frame for User Settings
@@ -162,3 +163,15 @@ class SettingsFrameWidget(tk.Frame):
         # Load default settings
         self.user_settings.setDefaults()
         self.updateUserSettings()   
+
+    def autoDetect(self):
+        ina_addr = []
+        for i in range(0x40, 0x50):
+            if self.protocol.scanI2c(i):
+                ina_addr.append(i)
+                
+        pcf_addr = []
+        for i in range(0x20, 0x28):
+            if self.protocol.scanI2c(i):
+                pcf_addr.append(i)
+        
