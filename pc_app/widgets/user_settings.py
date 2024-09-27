@@ -24,18 +24,18 @@ class UserSettings:
     def _color_to_int(self, color):
         """Convert hex color string to 32-bit integer."""
         color = color.lstrip('#')
-        if len(color) == 6:  # If it's in RGB format, add alpha as FF
-            color = f"{color}"
-        return int(color, 16)
+        color = int(color, 16)
+        return color
 
     def _int_to_color(self, value):
         """Convert 32-bit integer to hex color string."""
         hex_color = f"{value:08X}"  # Convert to 8-char hex with leading zeroes
-        return f"#{hex_color[:6]}"  # Return in #RRGGBB format
+        hex_color = f"#{hex_color[-6:]}"      
+        return hex_color  # Return in #RRGGBB format
 
     def toByteArray(self):
         """Pack settings into a byte array suitable for a C struct."""
-        brightness = self.values['brightness']
+        brightness = int(self.values['brightness'])
         ldg_up_color = self._color_to_int(self.values['ldg_up_color'])
         ldg_down_color = self._color_to_int(self.values['ldg_down_color'])
         rudder_up_color = self._color_to_int(self.values['rudder_up_color'])
@@ -46,29 +46,27 @@ class UserSettings:
 
         # Pack the data into a byte array using struct
         packed_data = struct.pack(
-            'BIIIIIII',  # B = unsigned char (brightness), I = unsigned int (colors)
-            brightness,
+            '<IIIIIIIB',  # B = unsigned char (brightness), I = unsigned int (colors)
             ldg_up_color,
             ldg_down_color,
             rudder_up_color,
             rudder_down_color,
             rudder_inactive_color,
             warning_color,
-            error_color
+            error_color,
+            brightness
         )
-
         return packed_data
 
     def fromByteArray(self, data):
         """Unpack the byte array into the settings."""
-        unpacked_data = struct.unpack('BIIIIIII', data)
-
-        self.values['brightness'] = unpacked_data[0]
-        self.values['ldg_up_color'] = self._int_to_color(unpacked_data[1])
-        self.values['ldg_down_color'] = self._int_to_color(unpacked_data[2])
-        self.values['rudder_up_color'] = self._int_to_color(unpacked_data[3])
-        self.values['rudder_down_color'] = self._int_to_color(unpacked_data[4])
-        self.values['rudder_inactive_color'] = self._int_to_color(unpacked_data[5])
-        self.values['warning_color'] = self._int_to_color(unpacked_data[6])
-        self.values['error_color'] = self._int_to_color(unpacked_data[7])
+        unpacked_data = struct.unpack('<IIIIIIIB', data[0:29])
+        self.values['ldg_up_color'] = self._int_to_color(unpacked_data[0])
+        self.values['ldg_down_color'] = self._int_to_color(unpacked_data[1])
+        self.values['rudder_up_color'] = self._int_to_color(unpacked_data[2])
+        self.values['rudder_down_color'] = self._int_to_color(unpacked_data[3])
+        self.values['rudder_inactive_color'] = self._int_to_color(unpacked_data[4])
+        self.values['warning_color'] = self._int_to_color(unpacked_data[5])
+        self.values['error_color'] = self._int_to_color(unpacked_data[6])
+        self.values['brightness'] = unpacked_data[7]
 

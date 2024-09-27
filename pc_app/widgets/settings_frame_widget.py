@@ -145,7 +145,7 @@ class SettingsFrameWidget(tk.Frame):
         self.error_color.set_value(self.user_settings.get('error_color'))
 
     def loadUserSettings(self):
-        # Simulate loading from a source and update fields
+        self.user_settings = self.protocol.getUserSettings()
         self.updateUserSettings()
 
     def saveUserSettings(self):
@@ -158,6 +158,7 @@ class SettingsFrameWidget(tk.Frame):
         self.user_settings.set('rudder_inactive_color', self.rudder_inactive_color.get_value())
         self.user_settings.set('warning_color', self.warning_color.get_value())
         self.user_settings.set('error_color', self.error_color.get_value())
+        self.protocol.updateUserSettings(self.user_settings)        
 
     def loadDefaultSettings(self):
         # Load default settings

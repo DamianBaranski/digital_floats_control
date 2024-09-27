@@ -225,14 +225,18 @@ bool Protocol<InType, OutType, N>::calculateCRC(const InData &inData, uint16_t &
 template <typename InType, typename OutType, size_t N>
 bool Protocol<InType, OutType, N>::findAndExecuteCommand(const InData &inData, OutData &outData, size_t &outDataLen)
 {
+    InType inType = inData.data;
+    OutType outType = outData.data;
+
     for (uint8_t i = 0; i < N; i++)
     {
         if (mFncPtr[i].cmd == inData.cmd && mFncPtr[i].fnc)
         {
-            bool result = mFncPtr[i].fnc(inData.data, outData.data, outDataLen);
+            bool result = mFncPtr[i].fnc(inType, outType, outDataLen);
 
             if (result)
             {
+                outData.data = outType;
                 outData.cmd = inData.cmd;
                 outData.len = static_cast<uint8_t>(outDataLen);
                 return true;

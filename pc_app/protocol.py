@@ -1,5 +1,6 @@
 import base64
 from typing import Generic, TypeVar, Union, Optional
+from widgets.user_settings import UserSettings
 
 # Generic types for input and output data
 DataInType = TypeVar('DataInType')
@@ -80,3 +81,21 @@ class AppProtocol:
         response = self.uart.read()
         decoded_response = self.protocol.decode_response(response)
         return decoded_response
+    
+    def getUserSettings(self):
+        settings = UserSettings()
+        cmd_str = self.protocol.InData(cmd='u')
+        encoded_cmd = self.protocol.encode_output(cmd_str)
+        self.uart.send(encoded_cmd)
+        response = self.uart.read()
+        data = self.protocol.decode_response(response)
+        settings.fromByteArray(data)
+        return settings
+        
+    def updateUserSettings(self, settings):
+        cmd_str = self.protocol.InData(cmd='U', data=settings.toByteArray())
+        encoded_cmd = self.protocol.encode_output(cmd_str)
+        self.uart.send(encoded_cmd)
+        response = self.uart.read()
+        return self.protocol.decode_response(response)
+        

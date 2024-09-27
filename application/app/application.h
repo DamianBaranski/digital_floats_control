@@ -16,7 +16,6 @@ class Application
 {
 private:
   struct UserSettings {
-    uint8_t brightness;
     uint32_t ldgUpColor;
     uint32_t ldgDownColor;
     uint32_t rudderUpColor;
@@ -24,6 +23,7 @@ private:
     uint32_t rudderInactiveColor;
     uint32_t warningColor;
     uint32_t errorColor;
+    uint8_t brightness;
   };
 
   /// @union InProtocolData
@@ -34,7 +34,9 @@ private:
     {
       uint8_t i2cAddress; ///< I2C device address used in I2C scan command.
     } i2cScan;
+    struct UserSettings userSettings;
     size_t fileSize; ///< File size used for file-related commands (not currently implemented).
+    uint8_t raw[32];
   };
 
   /// @union OutProtocolData
@@ -50,7 +52,9 @@ private:
       bool result; ///< Result of the I2C scan (true if device is ready).
     } i2cScan;
 
-    //struct UserSettings userSettings;
+    struct UserSettings userSettings;
+    uint8_t result;
+    uint8_t raw[32];
   };
 
 public:
@@ -85,6 +89,8 @@ private:
   bool scanI2cDevices(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
   bool sendUserSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
+
+  bool updateUserSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
   void testSwitchProcedure();
 

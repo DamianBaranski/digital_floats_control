@@ -15,6 +15,7 @@ Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
     mProtocol.registerCmd('r', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->resetDevice(in, out, outlen); });
     mProtocol.registerCmd('s', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->scanI2cDevices(in, out, outlen); });
     mProtocol.registerCmd('u', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendUserSettings(in, out, outlen); });
+    mProtocol.registerCmd('U', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->updateUserSettings(in, out, outlen); });
 
     loadSettings();
     setBrightness();
@@ -76,8 +77,16 @@ bool Application::scanI2cDevices(const InProtocolData &in, OutProtocolData &out,
 }
 
 bool Application::sendUserSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    //out.userSettings = mUserSettings.get();
-    outlen = sizeof(mUserSettings);
+    memcpy(&out.userSettings,&mUserSettings.get(), sizeof(UserSettings));
+    outlen = sizeof(UserSettings);
+    return true;
+}
+
+bool Application::updateUserSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
+    mUserSettings.get() = in.userSettings;
+    bool result = mUserSettings.save();
+    out.result = result;
+    outlen = sizeof(out.result);
     return true;
 }
 
@@ -153,13 +162,13 @@ uint32_t Application::getColorForDownState(bool isRudder, bool rudderSwitchState
     uint32_t color = 0;
     if (isRudder) {
         if (rudderSwitchState) {
-            color = ldgGearSwitchState ? Colors::ORANGE : Colors::BLUE;
+            color = ldgGearSwitchState ? mUserSettings.get().rudderInactiveColor : mUserSettings.get().rudderDownColor;
         } else {
             color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
         }
     } else {
         if (ldgGearSwitchState) {
-            color = Colors::GREEN;
+            color = mUserSettings.get().ldgDownColor;
         } else {
             color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
         }
@@ -173,13 +182,13 @@ uint32_t Application::getColorForUpState(bool isRudder, bool rudderSwitchState, 
         if (rudderSwitchState) {
             color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);            
         } else {
-            color = Colors::GREEN;
+            color = mUserSettings.get().rudderUpColor;
         }
     } else {
         if (ldgGearSwitchState) {
             color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
         } else {
-            color = Colors::BLUE;
+            color = mUserSettings.get().ldgUpColor;
         }
     }
     return color;
@@ -189,12 +198,12 @@ uint32_t Application::getColorForMovingState(bool isRudder, bool rudderSwitchSta
     uint32_t color = 0;
     if (isRudder) {
         if (rudderSwitchState) {
-            color = ldgGearSwitchState ? Colors::ORANGE : Colors::BLUE;
+            color = ldgGearSwitchState ? mUserSettings.get().rudderInactiveColor : mUserSettings.get().rudderDownColor;
         } else {
-            color = Colors::GREEN;
+            color = mUserSettings.get().rudderUpColor;
         }
     } else {
-        color = ldgGearSwitchState ? Colors::GREEN : Colors::BLUE;
+        color = ldgGearSwitchState ? mUserSettings.get().ldgDownColor : mUserSettings.get().ldgUpColor;
     }
     return Colors::blinking(500, time, color);
 }
