@@ -1,8 +1,6 @@
 #include "application.h"
 #include "colors.h"
 
-ControlChannelSettings settings;
-
 Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
                                      mChannels{ControlChannel(*mBsp.i2cBus),
                                                ControlChannel(*mBsp.i2cBus),
@@ -10,12 +8,14 @@ Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
                                                ControlChannel(*mBsp.i2cBus),
                                                ControlChannel(*mBsp.i2cBus),
                                                ControlChannel(*mBsp.i2cBus)},
-                                     mChannelsSettings(*mBsp.extFlash, 1024), mUserSettings(*mBsp.extFlash, 0) {
+                                     mChannelsSettings(*mBsp.extFlash, 4096), mUserSettings(*mBsp.extFlash, 0) {
     mProtocol.registerCmd('v', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendAppVersion(in, out, outlen); });
     mProtocol.registerCmd('r', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->resetDevice(in, out, outlen); });
     mProtocol.registerCmd('s', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->scanI2cDevices(in, out, outlen); });
     mProtocol.registerCmd('u', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendUserSettings(in, out, outlen); });
     mProtocol.registerCmd('U', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->updateUserSettings(in, out, outlen); });
+    mProtocol.registerCmd('c', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendChannelSettings(in, out, outlen); });
+    mProtocol.registerCmd('C', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->updateChannelSettings(in, out, outlen); });
 
     loadSettings();
     setBrightness();
@@ -90,6 +90,29 @@ bool Application::updateUserSettings(const InProtocolData &in, OutProtocolData &
     return true;
 }
 
+bool Application::sendChannelSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
+    uint8_t channel = in.controlChannelSettings.channel;
+    if(channel>=NO_CHANNELS) {
+        return false;
+    }
+    outlen = sizeof(out.controlChannelSettings.settings);
+    memcpy(&out.raw, &mChannelsSettings.get().channelSettings[channel], outlen);
+    out.controlChannelSettings.channel = channel;
+    return true;
+}
+
+bool Application::updateChannelSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
+    uint8_t channel = in.controlChannelSettings.channel;
+    if(channel>=NO_CHANNELS) {
+        return false;
+    }
+    mChannelsSettings.get().channelSettings[channel] = in.controlChannelSettings.settings;
+    bool result = mChannelsSettings.save();
+    out.result = result;
+    outlen = sizeof(out.result);
+    return true;
+}
+
 void Application::testSwitchProcedure() {
     const uint32_t colors[] = {Colors::RED, Colors::GREEN, Colors::BLUE};
 
@@ -110,8 +133,9 @@ void Application::loadSettings() {
     mChannelsSettings.get().channelSettings[3] = {true, false, false, false, false, false, false, 79, 50, 39, 1, 160, 100, 50, 5};
     mChannelsSettings.get().channelSettings[4] = {true, false, false, false, false, false, false, 76, 50, 37, 0, 160, 100, 50, 5};
     mChannelsSettings.get().channelSettings[5] = {true, false, false, false, false, false, false, 77, 50, 37, 1, 160, 100, 50, 5};
-    //mChannelsSettings.save();
+    mChannelsSettings.save();
 
+mChannelsSettings.load();
     for (size_t i = 0; i < NO_CHANNELS; ++i) {
         mChannels[i].setSettings(mChannelsSettings.get().channelSettings[i]);
     }

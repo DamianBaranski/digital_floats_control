@@ -35,6 +35,10 @@ private:
       uint8_t i2cAddress; ///< I2C device address used in I2C scan command.
     } i2cScan;
     struct UserSettings userSettings;
+    struct {
+      uint8_t channel;
+      ControlChannelSettings settings;
+    } controlChannelSettings;
     size_t fileSize; ///< File size used for file-related commands (not currently implemented).
     uint8_t raw[32];
   };
@@ -53,6 +57,10 @@ private:
     } i2cScan;
 
     struct UserSettings userSettings;
+    struct {
+      ControlChannelSettings settings;
+      uint8_t channel;
+    } controlChannelSettings;
     uint8_t result;
     uint8_t raw[32];
   };
@@ -91,6 +99,10 @@ private:
   bool sendUserSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
   bool updateUserSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
+
+  bool sendChannelSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
+
+  bool updateChannelSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
   void testSwitchProcedure();
 

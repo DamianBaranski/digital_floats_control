@@ -3,6 +3,7 @@ from tkinter import colorchooser
 from tkinter import ttk
 from .table_widget import TableWidget
 from .user_settings import UserSettings
+from .channel_settings import ChannelSettings
 
 class UserSettingField(tk.Frame):
     def __init__(self, parent, name, input_type="entry"):
@@ -45,6 +46,7 @@ class SettingsFrameWidget(tk.Frame):
     def __init__(self, parent, protocol):
         tk.Frame.__init__(self, parent)
         self.user_settings = UserSettings()
+        self.channel_settings = [ChannelSettings(), ChannelSettings(), ChannelSettings(), ChannelSettings(), ChannelSettings(), ChannelSettings()]
         self.protocol = protocol
         # Frame for Channel Settings
         channel_frame = tk.Frame(self)
@@ -78,7 +80,7 @@ class SettingsFrameWidget(tk.Frame):
         button_frame = tk.Frame(channel_frame)
         button_frame.pack(side="top", fill="x", pady=10)
 
-        self.channel_settings_load = tk.Button(button_frame, text="Load")
+        self.channel_settings_load = tk.Button(button_frame, text="Load", command=self.loadChannelSettings)
         self.channel_settings_load.pack(side="right", padx=5)
 
         self.channel_settings_save = tk.Button(button_frame, text="Save")
@@ -176,3 +178,7 @@ class SettingsFrameWidget(tk.Frame):
             if self.protocol.scanI2c(i):
                 pcf_addr.append(i)
         
+    def loadChannelSettings(self):
+        for i in range(6):
+            self.channel_settings[i] = self.protocol.getChannelSettings(i)
+            print(self.channel_settings[i])
