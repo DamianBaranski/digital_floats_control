@@ -4,6 +4,7 @@ from tkinter import ttk
 from .table_widget import TableWidget
 from .user_settings import UserSettings
 from .channel_settings import ChannelSettings
+from .channel_settings_table import ChannelSettingsTable
 
 class UserSettingField(tk.Frame):
     def __init__(self, parent, name, input_type="entry"):
@@ -46,7 +47,6 @@ class SettingsFrameWidget(tk.Frame):
     def __init__(self, parent, protocol):
         tk.Frame.__init__(self, parent)
         self.user_settings = UserSettings()
-        self.channel_settings = [ChannelSettings(), ChannelSettings(), ChannelSettings(), ChannelSettings(), ChannelSettings(), ChannelSettings()]
         self.protocol = protocol
         # Frame for Channel Settings
         channel_frame = tk.Frame(self)
@@ -54,27 +54,9 @@ class SettingsFrameWidget(tk.Frame):
 
         self.channels_settings_label = tk.Label(channel_frame, text="Channels Settings", font=("Helvetica", 12, "bold"))
         self.channels_settings_label.pack(side="top", fill="x")
-
-        # Assume TableWidget exists to handle channel settings
-        columns = [
-            {"name": "Bridge", "width": 10, "type": "bool"},
-            {"name": "Inverse Motor", "width": 10, "type": "bool"},
-            {"name": "Inverse Up Limit Switch", "width": 10, "type": "bool"},
-            {"name": "Inverse Down Limit Switch", "width": 10, "type": "bool"},
-            {"name": "Inverse Limit Switch", "width": 10, "type": "bool"},
-            {"name": "Rudder", "width": 10, "type": "bool"},
-            {"name": "INA Address", "width": 100, "type": "int"},
-            {"name": "INA Calibration", "width": 100, "type": "int"},
-            {"name": "PCF Address", "width": 100, "type": "int"},
-            {"name": "PCF Channel", "width": 100, "type": "int"},
-            {"name": "Max Voltage", "width": 100, "type": "int"},
-            {"name": "Min Voltage", "width": 100, "type": "int"},
-            {"name": "Max Current", "width": 100, "type": "int"},
-            {"name": "Min Current", "width": 100, "type": "int"},
-        ]
-
-        self.table = TableWidget(channel_frame, columns)
-        self.table.pack(side="top", fill="x")
+        
+        self.channel_settings_table = ChannelSettingsTable(channel_frame)
+        self.channel_settings_table.pack(side="top", fill="x")
 
         # Frame for Buttons (Load, Save, Autodetect)
         button_frame = tk.Frame(channel_frame)
@@ -88,6 +70,9 @@ class SettingsFrameWidget(tk.Frame):
 
         self.channel_settings_autodetect = tk.Button(button_frame, text="Autodetect", command=self.autoDetect)
         self.channel_settings_autodetect.pack(side="right", padx=5)
+        
+        self.channel_settings_help = tk.Button(button_frame, text="Help", command=self.channelHelp)
+        self.channel_settings_help.pack(side="right", padx=5)
 
         # Frame for User Settings
         user_frame = tk.Frame(self)
@@ -178,7 +163,12 @@ class SettingsFrameWidget(tk.Frame):
             if self.protocol.scanI2c(i):
                 pcf_addr.append(i)
         
+    def channelHelp(self):
+        self.channel_settings_table.display_instructions()
+        
     def loadChannelSettings(self):
         for i in range(6):
-            self.channel_settings[i] = self.protocol.getChannelSettings(i)
-            print(self.channel_settings[i])
+            channel_settings = self.protocol.getChannelSettings(i)
+            self.channel_settings_table.addData(i)
+            self.channel_settings_table.setData(i, channel_settings)
+            print(channel_settings)
