@@ -109,3 +109,11 @@ class AppProtocol:
         data = self.protocol.decode_response(response)
         settings.fromByteArray(data)
         return settings
+
+    def updateChannelSettings(self, channel, settings):
+        cmd_str = self.protocol.InData(cmd='C', data=settings.toByteArray()+channel.to_bytes(1))
+        encoded_cmd = self.protocol.encode_output(cmd_str)
+        self.uart.send(encoded_cmd)
+        response = self.uart.read()
+        data = self.protocol.decode_response(response)
+        

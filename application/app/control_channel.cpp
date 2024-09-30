@@ -57,6 +57,29 @@ bool ControlChannel::connectionTest()
     return result;
 }
 
+bool ControlChannel::addressTest(bool set) {
+    uint8_t mask = 0;
+
+    if(!mSettings.enable) {
+        return true;
+    }
+
+    if(mSettings.pcf_channel == 0) {
+        mask = cMotor1RightDirMask | cMotor1LeftDirMask;
+    } else if(mSettings.pcf_channel == 1) {
+        mask = cMotor2RightDirMask | cMotor2LeftDirMask;
+    }
+
+    if(!set) {
+        mask = 0;
+    }
+
+    if(!mExpanderIO.write(mask | cPcfCfg)) {
+        return false;
+    }
+    return true;
+}
+
 bool ControlChannel::relaysTest() {
     bool result = true;
     uint8_t mask = 0;
@@ -148,8 +171,10 @@ bool ControlChannel::setMotor(bool enable, uint8_t channel, bool dir)
     }
  }
 
-bool ControlChannel::getPowerSensorStatus()
+bool ControlChannel::getPowerSensorStatus(uint16_t &voltage, uint16_t &current)
 {
+    voltage = mCurrentSensor.readBusVoltage();
+    current = mCurrentSensor.readCurrnet();
     //LOG << "Voltage: " << mCurrentSensor.readBusVoltage() << "mv";
     //LOG << "Current: " << mCurrentSensor.readCurrnet() << "mA";
     return true;

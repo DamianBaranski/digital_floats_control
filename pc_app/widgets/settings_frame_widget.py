@@ -65,7 +65,7 @@ class SettingsFrameWidget(tk.Frame):
         self.channel_settings_load = tk.Button(button_frame, text="Load", command=self.loadChannelSettings)
         self.channel_settings_load.pack(side="right", padx=5)
 
-        self.channel_settings_save = tk.Button(button_frame, text="Save")
+        self.channel_settings_save = tk.Button(button_frame, text="Save", command=self.saveChannelSettings)
         self.channel_settings_save.pack(side="right", padx=5)
 
         self.channel_settings_autodetect = tk.Button(button_frame, text="Autodetect", command=self.autoDetect)
@@ -172,3 +172,9 @@ class SettingsFrameWidget(tk.Frame):
             self.channel_settings_table.addData(i)
             self.channel_settings_table.setData(i, channel_settings)
             print(channel_settings)
+            
+    def saveChannelSettings(self):
+        for i in range(6):
+            channel_settings = self.channel_settings_table.getData(i)
+            self.protocol.updateChannelSettings(i, channel_settings)
+            

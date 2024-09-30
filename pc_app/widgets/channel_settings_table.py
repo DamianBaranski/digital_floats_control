@@ -57,6 +57,7 @@ class ChannelSettingsTable(tk.Frame):
             self.tree.column(col, anchor="center", width=150)
 
         # Insert multiple rows
+        self.addData(6)
         self.populate_treeview()
 
         # Bind the double-click event to edit a row
@@ -151,7 +152,8 @@ class ChannelSettingsTable(tk.Frame):
             raise IndexError("Channel ID out of range.")
 
     def addData(self, idx):
-        self.channel_settings_list.append(ChannelSettings())
+        while len(self.channel_settings_list) < idx+1:
+            self.channel_settings_list.append(ChannelSettings())
         
     def setData(self, row, channelSettings):
         """Set the ChannelSettings object for a specific row."""
@@ -222,11 +224,3 @@ class EditDialog:
 
         self.callback(self.settings)  # Notify the manager to update the treeview
         self.top.destroy()
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("Channel Settings Manager")
-    app = ChannelSettingsTable(root)
-    app.pack(fill='both', expand=True)  # Ensure the frame takes up space
-    root.mainloop()

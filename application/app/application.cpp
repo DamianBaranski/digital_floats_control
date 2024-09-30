@@ -16,6 +16,8 @@ Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
     mProtocol.registerCmd('U', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->updateUserSettings(in, out, outlen); });
     mProtocol.registerCmd('c', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendChannelSettings(in, out, outlen); });
     mProtocol.registerCmd('C', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->updateChannelSettings(in, out, outlen); });
+    mProtocol.registerCmd('m', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendMonitoringData(in, out, outlen); });
+    mProtocol.registerCmd('t', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->setTestChannel(in, out, outlen); });
 
     loadSettings();
     setBrightness();
@@ -91,7 +93,7 @@ bool Application::updateUserSettings(const InProtocolData &in, OutProtocolData &
 }
 
 bool Application::sendChannelSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    uint8_t channel = in.controlChannelSettings.channel;
+    uint8_t channel = in.channel_id;
     if(channel>=NO_CHANNELS) {
         return false;
     }
@@ -110,7 +112,26 @@ bool Application::updateChannelSettings(const InProtocolData &in, OutProtocolDat
     bool result = mChannelsSettings.save();
     out.result = result;
     outlen = sizeof(out.result);
+    for (size_t i = 0; i < NO_CHANNELS; ++i) {
+        mChannels[i].setSettings(mChannelsSettings.get().channelSettings[i]);
+    }
     return true;
+}
+
+bool Application::sendMonitoringData(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
+    uint8_t channel_id = in.channel_id;
+    uint16_t current, voltage;
+    mChannels[channel_id].getPowerSensorStatus(voltage, current);
+    out.monitoringData.current = current;
+    out.monitoringData.voltage = voltage;
+    out.monitoringData.state = static_cast<uint8_t>(mChannels[channel_id].getChannelState());
+    return true;
+}
+
+bool Application::setTestChannel(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
+    uint8_t channel_id = in.channelTest.channel_id;
+    bool test_on = in.channelTest.test_on;
+    mChannels[channel_id].addressTest(test_on);
 }
 
 void Application::testSwitchProcedure() {

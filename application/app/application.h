@@ -36,9 +36,14 @@ private:
     } i2cScan;
     struct UserSettings userSettings;
     struct {
-      uint8_t channel;
       ControlChannelSettings settings;
+      uint8_t channel;
     } controlChannelSettings;
+    uint8_t channel_id;
+    struct {
+      uint8_t channel_id;
+      uint8_t test_on;
+    } channelTest;
     size_t fileSize; ///< File size used for file-related commands (not currently implemented).
     uint8_t raw[32];
   };
@@ -61,6 +66,12 @@ private:
       ControlChannelSettings settings;
       uint8_t channel;
     } controlChannelSettings;
+    struct {
+      uint16_t voltage;
+      uint16_t current;
+      uint8_t state;
+      uint8_t switches;
+    } monitoringData;
     uint8_t result;
     uint8_t raw[32];
   };
@@ -103,6 +114,10 @@ private:
   bool sendChannelSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
   bool updateChannelSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
+
+  bool sendMonitoringData(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
+
+  bool setTestChannel(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
   void testSwitchProcedure();
 

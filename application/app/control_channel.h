@@ -80,11 +80,13 @@ public:
     /// @return true if all connections are successful, false otherwise.
     bool connectionTest();
 
+    bool addressTest(bool set);
+
     bool relaysTest();
 
     bool setMotor(bool dir);
 
-    bool getPowerSensorStatus();
+    bool getPowerSensorStatus(uint16_t &voltage, uint16_t &current);
 
     /// @brief Checks if the current control channel is configured as a rudder.
     ///
