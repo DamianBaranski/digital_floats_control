@@ -1,7 +1,6 @@
 import tkinter as tk
 from tkinter import colorchooser
 from tkinter import ttk
-from .table_widget import TableWidget
 from .user_settings import UserSettings
 from .channel_settings import ChannelSettings
 from .channel_settings_table import ChannelSettingsTable
