@@ -2,6 +2,7 @@ import base64
 from typing import Generic, TypeVar, Union, Optional
 from widgets.user_settings import UserSettings
 from widgets.channel_settings import ChannelSettings
+from widgets.monitoring_data import MonitoringData
 
 # Generic types for input and output data
 DataInType = TypeVar('DataInType')
@@ -117,3 +118,15 @@ class AppProtocol:
         response = self.uart.read()
         data = self.protocol.decode_response(response)
         
+    def getMonitoringData(self, channel):
+        monitoringData = MonitoringData()
+        if not self.uart.isOpen():
+            return monitoringData
+        
+        cmd_str = self.protocol.InData(cmd='m', data=channel.to_bytes(1))
+        encoded_cmd = self.protocol.encode_output(cmd_str)
+        self.uart.send(encoded_cmd)
+        response = self.uart.read()
+        data = self.protocol.decode_response(response)
+        monitoringData.fromByteArray(data)
+        return monitoringData

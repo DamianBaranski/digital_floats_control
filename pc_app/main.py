@@ -61,10 +61,23 @@ class DigitalFloatsApp(tk.Frame):
         pass
 
     def update(self):
+        # Get the index of the currently selected tab
+        selected_tab_index = self.ui_tabs.index(self.ui_tabs.select())
+
+        # Update the selected tab only
+        if selected_tab_index == 0:
+            self.ui_status_tab.update()
+        elif selected_tab_index == 1:
+            self.ui_settings_tab.update()
+        elif selected_tab_index == 2:
+            self.ui_monitoring_tab.update()
+        elif selected_tab_index == 3:
+            self.ui_logs_tab.update()
+
+        # Also update the ComPortWidget since it's not part of the notebook
         self.ui_port.update()
-        self.ui_logs_tab.update()
         # call this function again in one second
-        self.after(1000, self.update)
+        self.after(500, self.update)
         
     def on_connected(self, status):
         if status:

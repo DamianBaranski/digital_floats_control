@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-
+from .monitoring_data import MonitoringData
 class MonitoringTable(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
@@ -28,6 +28,7 @@ class MonitoringTable(tk.Frame):
         column_names = [
             'Voltage',
             'Current',
+            'State',
             'Up switch',
             'Down switch'
         ]
@@ -58,13 +59,14 @@ class MonitoringTable(tk.Frame):
         self.populate_treeview()
 
     def addData(self, idx):
-        while len(self.monitoring_list) < idx+1:
-            self.monitoring_list.append(['0', '0', 'N/A', 'N/A'])
+        while len(self.monitoring_list) < idx:
+            self.monitoring_list.append(['N/A', 'N/A', 'N/A', 'N/A', 'N/A'])
         
     def setData(self, row, monitoringData):
         """Set the ChannelSettings object for a specific row."""
         if 0 <= row < len(self.monitoring_list):
-            self.monitoring_list[row] = monitoringData
+            row_values = [monitoringData.getVoltage(), monitoringData.getCurrent(), monitoringData.getState(), monitoringData.getUpSwitch(), monitoringData.getDownSwitch()]
+            self.monitoring_list[row] = row_values
             self.populate_treeview()
         else:
             raise IndexError("Row index out of range.")

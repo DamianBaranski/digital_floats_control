@@ -25,14 +25,16 @@ uint16_t Ina219::readBusVoltage()
     return (rawData >> 3) * 4;
 }
 
-int16_t Ina219::readCurrnet() {
+int16_t Ina219::readCurrent() {
     int16_t shuntVoltage = 0;
-    int16_t tmp;
+    int16_t tmp = 0;
+    float voltage = 0;
+    float current = 0;
     mI2c.readRegister(mAddr, cShuntVoltageRegister, reinterpret_cast<uint8_t *>(&shuntVoltage), sizeof(shuntVoltage));
     tmp = shuntVoltage;
     shuntVoltage = (tmp >> 8) & 0xFF;
     shuntVoltage |= (tmp & 0xFF) << 8;
-    float voltage = shuntVoltage * 10; // 1mV per LSB
-    float current = voltage / 50.0;       // 50mOhm shunt resistor
+    voltage = shuntVoltage * 10.0; // 1mV per LSB
+    current = voltage / 50.0;       // 50mOhm shunt resistor
     return current;
 }

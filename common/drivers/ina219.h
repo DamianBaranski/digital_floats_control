@@ -25,7 +25,7 @@ public:
 
     /// @brief Reads the current flowing through the shunt resistor.
     /// @return The current in milliamps.
-    int16_t readCurrnet();
+    int16_t readCurrent();
 
 private:
     static constexpr uint8_t cShuntVoltageRegister = 0x01; ///< Register address for the shunt voltage.

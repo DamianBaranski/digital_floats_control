@@ -99,7 +99,7 @@ bool ControlChannel::relaysTest() {
     }
 
     uint16_t voltage = mCurrentSensor.readBusVoltage();
-    uint16_t current = mCurrentSensor.readCurrnet();
+    uint16_t current = mCurrentSensor.readCurrent();
 
     if(mSettings.max_voltage_limit*100 < voltage) { //max_voltage_limit [0.1V], voltage [1mV]
         result = false;
@@ -173,20 +173,26 @@ bool ControlChannel::setMotor(bool enable, uint8_t channel, bool dir)
 
 bool ControlChannel::getPowerSensorStatus(uint16_t &voltage, uint16_t &current)
 {
+    if(!mCurrentSensor.connectionTest()) {
+        return false;
+    }
+
     voltage = mCurrentSensor.readBusVoltage();
-    current = mCurrentSensor.readCurrnet();
-    //LOG << "Voltage: " << mCurrentSensor.readBusVoltage() << "mv";
-    //LOG << "Current: " << mCurrentSensor.readCurrnet() << "mA";
+    current = mCurrentSensor.readCurrent();
     return true;
 }
 
 State ControlChannel::getChannelState()
 {
+    if(!mExpanderIO.connectionTest()) {
+        return State::ERROR;
+    }
+
     bool upSwitch = getLimitSwitchState(LimitSwitch::UP);
     bool downSwitch = getLimitSwitchState(LimitSwitch::DOWN);
     if(!upSwitch && !downSwitch) { //ToDo change to motor on check
-        int16_t current = mCurrentSensor.readCurrnet();
-        getPowerSensorStatus();
+        int16_t current = mCurrentSensor.readCurrent();
+        
         if(abs(current) > mSettings.max_current_limit) {
             mWarnings.set(Warnings::LOW_MOTOR_IMPEDANCE);
         }

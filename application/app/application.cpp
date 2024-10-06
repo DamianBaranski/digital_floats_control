@@ -120,11 +120,12 @@ bool Application::updateChannelSettings(const InProtocolData &in, OutProtocolDat
 
 bool Application::sendMonitoringData(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
     uint8_t channel_id = in.channel_id;
-    uint16_t current, voltage;
+    uint16_t current=0, voltage=0;
     mChannels[channel_id].getPowerSensorStatus(voltage, current);
     out.monitoringData.current = current;
     out.monitoringData.voltage = voltage;
     out.monitoringData.state = static_cast<uint8_t>(mChannels[channel_id].getChannelState());
+    outlen = sizeof(out.monitoringData);
     return true;
 }
 
@@ -132,6 +133,7 @@ bool Application::setTestChannel(const InProtocolData &in, OutProtocolData &out,
     uint8_t channel_id = in.channelTest.channel_id;
     bool test_on = in.channelTest.test_on;
     mChannels[channel_id].addressTest(test_on);
+    return true;
 }
 
 void Application::testSwitchProcedure() {
@@ -148,15 +150,7 @@ void Application::testSwitchProcedure() {
 
 void Application::loadSettings() {
     mUserSettings.load();
-    mChannelsSettings.get().channelSettings[0] = {true, true, false, false, false, false, true, 68, 50, 38, 0, 160, 100, 50, 5};
-    mChannelsSettings.get().channelSettings[1] = {true, false, false, false, false, false, true, 68, 50, 38, 0, 160, 100, 50, 5};
-    mChannelsSettings.get().channelSettings[2] = {true, false, false, false, false, false, false, 65, 50, 39, 0, 160, 100, 50, 5};
-    mChannelsSettings.get().channelSettings[3] = {true, false, false, false, false, false, false, 79, 50, 39, 1, 160, 100, 50, 5};
-    mChannelsSettings.get().channelSettings[4] = {true, false, false, false, false, false, false, 76, 50, 37, 0, 160, 100, 50, 5};
-    mChannelsSettings.get().channelSettings[5] = {true, false, false, false, false, false, false, 77, 50, 37, 1, 160, 100, 50, 5};
-    mChannelsSettings.save();
-
-mChannelsSettings.load();
+    mChannelsSettings.load();
     for (size_t i = 0; i < NO_CHANNELS; ++i) {
         mChannels[i].setSettings(mChannelsSettings.get().channelSettings[i]);
     }
