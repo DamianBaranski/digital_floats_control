@@ -23,20 +23,23 @@ class MonitoringData:
         return self.values.get(key, '')
 
     def fromByteArray(self, data):
-        # Unpack the byte array into individual fields
-        unpacked_data = struct.unpack('<hhBB', data)
-        voltage = unpacked_data[0] * 0.001  # Voltage scaled by 0.1
-        current = unpacked_data[1] * 0.001  # Current scaled by 0.1
-        state = unpacked_data[2]  # State from the byte
-        switches = unpacked_data[3]  # Switch status from the byte
+        try:
+            # Unpack the byte array into individual fields
+            unpacked_data = struct.unpack('<hhBB', data)
+            voltage = unpacked_data[0] * 0.001  # Voltage scaled by 0.1
+            current = unpacked_data[1] * 0.001  # Current scaled by 0.1
+            state = unpacked_data[2]  # State from the byte
+            switches = unpacked_data[3]  # Switch status from the byte
 
-        # Update values in the dictionary
-        self.values['voltage'] = f"{voltage:.2f}"
-        self.values['current'] = f"{current:.2f}"
-        self.values['state'] = self.getStateName(state)
-        self.values['up_switch'] = 'ON' if switches & 0x01 else 'OFF'
-        self.values['down_switch'] = 'ON' if switches & 0x02 else 'OFF'
-
+            # Update values in the dictionary
+            self.values['voltage'] = f"{voltage:.2f}"
+            self.values['current'] = f"{current:.2f}"
+            self.values['state'] = self.getStateName(state)
+            self.values['up_switch'] = 'ON' if switches & 0x01 else 'OFF'
+            self.values['down_switch'] = 'ON' if switches & 0x02 else 'OFF'
+        except:
+            pass
+        
     def getStateName(self, state):
         if state == State.UP:
             return 'UP'

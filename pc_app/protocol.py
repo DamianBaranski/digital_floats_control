@@ -63,12 +63,15 @@ class AppProtocol:
         if not self.uart.isOpen():
             return "N/A"
         
-        cmd_str = self.protocol.InData(cmd='v')
-        encoded_cmd = self.protocol.encode_output(cmd_str)
-        self.uart.send(encoded_cmd)
-        response = self.uart.read()
-        decoded_response = self.protocol.decode_response(response)
-        return decoded_response.decode('utf-8').rstrip('\x00')
+        try:
+            cmd_str = self.protocol.InData(cmd='v')
+            encoded_cmd = self.protocol.encode_output(cmd_str)
+            self.uart.send(encoded_cmd)
+            response = self.uart.read()
+            decoded_response = self.protocol.decode_response(response)
+            return decoded_response.decode('utf-8').rstrip('\x00')
+        except:
+            return 'N/A'
 
     def getLogs(self):
         return self.uart.getLogs()

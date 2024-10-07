@@ -25,9 +25,13 @@ class ComPort:
         return [port.device for port in comports()]
 
     def send(self, data):
-        print("write", data)
-        self.serial.write(data)
-        return True
+        try:
+            print("write", data)
+            self.getLogs()
+            self.serial.write(data)
+            return True
+        except:
+            return False
     
     def read(self):
         while True:
