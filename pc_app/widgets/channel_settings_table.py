@@ -159,7 +159,6 @@ class ChannelSettingsTable(tk.Frame):
         """Set the ChannelSettings object for a specific row."""
         if 0 <= row < len(self.channel_settings_list):
             self.channel_settings_list[row] = channelSettings
-            self.populate_treeview()
         else:
             raise IndexError("Row index out of range.")
 

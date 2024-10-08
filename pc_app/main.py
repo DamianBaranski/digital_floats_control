@@ -17,7 +17,8 @@ except ImportError:
 class DigitalFloatsApp(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent)
-        parent.title("Digital Floats App")
+        self.parent = parent
+        self.parent.title("Digital Floats App")
 
         # Initialize the ComPort
         self.comport = ComPort(self.on_connected)
@@ -53,9 +54,16 @@ class DigitalFloatsApp(tk.Frame):
         # Configure the grid for resizing behavior
         self.grid_rowconfigure(0, weight=1)  # Make row 0 expandable in DigitalFloatsApp
         self.grid_columnconfigure(1, weight=1)  # Make column 1 expandable in DigitalFloatsApp
+        
+        # Bind the window close event
+        parent.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.update()
 
+    def on_closing(self):
+        self.comport.stop()
+        self.parent.destroy()   # Destroy the window
+        
     def submit(self):
         self.ui_status_bar.config(text="my_text")
         pass
@@ -77,7 +85,7 @@ class DigitalFloatsApp(tk.Frame):
         # Also update the ComPortWidget since it's not part of the notebook
         self.ui_port.update()
         # call this function again in one second
-        self.after(500, self.update)
+        self.after(100, self.update)
         
     def on_connected(self, status):
         if status:

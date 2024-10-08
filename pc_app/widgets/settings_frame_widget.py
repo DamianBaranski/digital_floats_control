@@ -131,8 +131,12 @@ class SettingsFrameWidget(tk.Frame):
         self.error_color.set_value(self.user_settings.get('error_color'))
 
     def loadUserSettings(self):
-        self.user_settings = self.protocol.getUserSettings()
-        self.updateUserSettings()
+        def callback(data):
+            self.user_settings = data
+            self.updateUserSettings()
+    
+        self.protocol.getUserSettings(callback)
+        
 
     def saveUserSettings(self):
         # Save the current values from fields to UserSettings
@@ -166,11 +170,16 @@ class SettingsFrameWidget(tk.Frame):
         self.channel_settings_table.display_instructions()
         
     def loadChannelSettings(self):
+        status = [False] * 6
+        def callback(channel_settings, idx):
+            status[idx] = True
+            self.channel_settings_table.addData(idx)
+            self.channel_settings_table.setData(idx, channel_settings) 
+            if all(status):
+                self.channel_settings_table.populate_treeview()
+
         for i in range(6):
-            channel_settings = self.protocol.getChannelSettings(i)
-            self.channel_settings_table.addData(i)
-            self.channel_settings_table.setData(i, channel_settings)
-            print(channel_settings)
+            self.protocol.getChannelSettings(i, lambda data, idx=i: callback(data, idx))
             
     def saveChannelSettings(self):
         for i in range(6):

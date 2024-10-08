@@ -59,19 +59,21 @@ class AppProtocol:
         self.uart = comport
         self.logs = ""
 
-    def getVersion(self):
+    def getVersion(self, fnc):
         if not self.uart.isOpen():
             return "N/A"
-        
+
         try:
             cmd_str = self.protocol.InData(cmd='v')
             encoded_cmd = self.protocol.encode_output(cmd_str)
-            self.uart.send(encoded_cmd)
-            response = self.uart.read()
-            decoded_response = self.protocol.decode_response(response)
-            return decoded_response.decode('utf-8').rstrip('\x00')
+        
+            # Send and receive response, call fnc depending on whether response is None
+            self.uart.send_receive(encoded_cmd, 
+                                   lambda response: fnc('N/A') if len(response) == 0 
+                                   else fnc(self.protocol.decode_response(response).decode('utf-8').rstrip('\x00')))
+    
         except:
-            return 'N/A'
+            fnc('N/A')
 
     def getLogs(self):
         return self.uart.getLogs()
@@ -87,49 +89,89 @@ class AppProtocol:
         decoded_response = self.protocol.decode_response(response)
         return decoded_response
     
-    def getUserSettings(self):
+    def getUserSettings(self, fnc):
         settings = UserSettings()
-        cmd_str = self.protocol.InData(cmd='u')
-        encoded_cmd = self.protocol.encode_output(cmd_str)
-        self.uart.send(encoded_cmd)
-        response = self.uart.read()
-        data = self.protocol.decode_response(response)
-        settings.fromByteArray(data)
-        return settings
-        
-    def updateUserSettings(self, settings):
-        cmd_str = self.protocol.InData(cmd='U', data=settings.toByteArray())
-        encoded_cmd = self.protocol.encode_output(cmd_str)
-        self.uart.send(encoded_cmd)
-        response = self.uart.read()
-        return self.protocol.decode_response(response)
-        
-    def getChannelSettings(self, channel):
-        settings = ChannelSettings()
-        cmd_str = self.protocol.InData(cmd='c', data=channel.to_bytes(1))
-        encoded_cmd = self.protocol.encode_output(cmd_str)
-        self.uart.send(encoded_cmd)
-        response = self.uart.read()
-        data = self.protocol.decode_response(response)
-        settings.fromByteArray(data)
-        return settings
+        if not self.uart.isOpen():
+            fnc(settings)
 
-    def updateChannelSettings(self, channel, settings):
-        cmd_str = self.protocol.InData(cmd='C', data=settings.toByteArray()+channel.to_bytes(1))
-        encoded_cmd = self.protocol.encode_output(cmd_str)
-        self.uart.send(encoded_cmd)
-        response = self.uart.read()
-        data = self.protocol.decode_response(response)
+        try:
+            cmd_str = self.protocol.InData(cmd='u')
+            encoded_cmd = self.protocol.encode_output(cmd_str)
+
+            self.uart.send_receive(encoded_cmd, lambda response: (
+                settings.fromByteArray(self.protocol.decode_response(response)) if len(response) != 0 
+                else settings,
+                fnc(settings)
+            ))
+
+        except:
+            fnc(settings)
         
-    def getMonitoringData(self, channel):
+    def updateUserSettings(self, settings, fnc=None):
+        if fnc == None:
+            fnc = lambda x: x
+        if not self.uart.isOpen():
+            fnc(False)
+        try:
+            cmd_str = self.protocol.InData(cmd='U', data=settings.toByteArray())
+            encoded_cmd = self.protocol.encode_output(cmd_str)
+
+            self.uart.send_receive(encoded_cmd, lambda response: (
+                self.protocol.decode_response(response)
+            ))
+
+        except:
+            fnc(False)
+
+    def getChannelSettings(self, channel, fnc):
+        settings = ChannelSettings()
+        if not self.uart.isOpen():
+            fnc(settings)
+        
+        try:
+            cmd_str = self.protocol.InData(cmd='c', data=channel.to_bytes(1))
+            encoded_cmd = self.protocol.encode_output(cmd_str)
+            
+            self.uart.send_receive(encoded_cmd, lambda response: (
+                settings.fromByteArray(self.protocol.decode_response(response)) if len(response) != 0 
+                else settings,
+                fnc(settings)
+            ))
+
+        except:
+            fnc(settings)
+
+    def updateChannelSettings(self, channel, settings, fnc=None):
+        if fnc == None:
+            fnc = lambda x: x
+        if not self.uart.isOpen():
+            fnc(False)
+        try:
+            cmd_str = self.protocol.InData(cmd='C', data=settings.toByteArray()+channel.to_bytes(1))
+            encoded_cmd = self.protocol.encode_output(cmd_str)
+
+            self.uart.send_receive(encoded_cmd, lambda response: (
+                self.protocol.decode_response(response)
+            ))
+
+        except:
+            fnc(False)
+        
+    def getMonitoringData(self, channel, fnc):
         monitoringData = MonitoringData()
         if not self.uart.isOpen():
             return monitoringData
         
-        cmd_str = self.protocol.InData(cmd='m', data=channel.to_bytes(1))
-        encoded_cmd = self.protocol.encode_output(cmd_str)
-        self.uart.send(encoded_cmd)
-        response = self.uart.read()
-        data = self.protocol.decode_response(response)
-        monitoringData.fromByteArray(data)
-        return monitoringData
+        try:
+            cmd_str = self.protocol.InData(cmd='m', data=channel.to_bytes(1))
+            encoded_cmd = self.protocol.encode_output(cmd_str)
+        
+            # Send and receive response, call fnc depending on whether response is None
+            self.uart.send_receive(encoded_cmd, lambda response: (
+                monitoringData.fromByteArray(self.protocol.decode_response(response)) if len(response) != 0 
+                else monitoringData,
+                fnc(monitoringData)
+            ))
+
+        except:
+            fnc('N/A')
