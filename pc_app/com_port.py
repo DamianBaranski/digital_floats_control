@@ -52,7 +52,7 @@ class ComPort:
             return ""
 
     def _read_logs(self):
-        while self.serial.in_waiting>0:
+        while self.isOpen() and self.serial.in_waiting>0:
             result = self.serial.readline().decode().strip()
             if 'LOG:' in result:
                 self._addLogs(result)
