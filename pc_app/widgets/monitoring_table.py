@@ -67,7 +67,6 @@ class MonitoringTable(tk.Frame):
         if 0 <= row < len(self.monitoring_list):
             row_values = [monitoringData.getVoltage(), monitoringData.getCurrent(), monitoringData.getState(), monitoringData.getUpSwitch(), monitoringData.getDownSwitch()]
             self.monitoring_list[row] = row_values
-            self.populate_treeview()
         else:
             raise IndexError("Row index out of range.")
 
