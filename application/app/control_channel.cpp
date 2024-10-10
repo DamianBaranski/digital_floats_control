@@ -1,4 +1,5 @@
 #include "control_channel.h"
+#include "bsp.h"
 
 ControlChannel::ControlChannel(II2cMaster &i2c) : mSettings{}, mCurrentSensor(i2c), mExpanderIO(i2c)
 {
@@ -98,6 +99,7 @@ bool ControlChannel::relaysTest() {
         return false;
     }
 
+    sleep(500);
     uint16_t voltage = mCurrentSensor.readBusVoltage();
     uint16_t current = mCurrentSensor.readCurrent();
 

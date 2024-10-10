@@ -152,10 +152,11 @@ class ChannelSettingsTable(tk.Frame):
             raise IndexError("Channel ID out of range.")
 
     def addData(self, idx):
-        while len(self.channel_settings_list) < idx+1:
+        while len(self.channel_settings_list) < idx:
             self.channel_settings_list.append(ChannelSettings())
         
     def setData(self, row, channelSettings):
+        print("Set data:", row)
         """Set the ChannelSettings object for a specific row."""
         if 0 <= row < len(self.channel_settings_list):
             self.channel_settings_list[row] = channelSettings

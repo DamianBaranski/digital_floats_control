@@ -41,8 +41,9 @@ private:
     } controlChannelSettings;
     uint8_t channel_id;
     struct {
-      uint8_t channel_id;
-      uint8_t test_on;
+      uint8_t ina_addr;
+      uint8_t pcf_addr;
+      uint8_t pcf_channel;
     } channelTest;
     size_t fileSize; ///< File size used for file-related commands (not currently implemented).
     uint8_t raw[32];

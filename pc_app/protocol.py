@@ -61,7 +61,8 @@ class AppProtocol:
 
     def getVersion(self, fnc):
         if not self.uart.isOpen():
-            return "N/A"
+            fnc("N/A")
+            return
 
         try:
             cmd_str = self.protocol.InData(cmd='v')
@@ -78,21 +79,28 @@ class AppProtocol:
     def getLogs(self):
         return self.uart.getLogs()
     
-    def scanI2c(self, address):
+    def scanI2c(self, address, fnc):
         if not self.uart.isOpen():
-            return False
+            fnc(False)
+            return
+
+        try:
+            cmd_str = self.protocol.InData(cmd='s', data=address.to_bytes())
+            encoded_cmd = self.protocol.encode_output(cmd_str)
         
-        cmd_str = self.protocol.InData(cmd='s', data=address.to_bytes())
-        encoded_cmd = self.protocol.encode_output(cmd_str)
-        self.uart.send(encoded_cmd)
-        response = self.uart.read()
-        decoded_response = self.protocol.decode_response(response)
-        return decoded_response
+            # Send and receive response, call fnc depending on whether response is None
+            self.uart.send_receive(encoded_cmd, 
+                                   lambda response: fnc(False) if len(response) == 0 
+                                   else fnc(bool().from_bytes(self.protocol.decode_response(response))))
     
+        except:
+            fnc(False)
+        
     def getUserSettings(self, fnc):
         settings = UserSettings()
         if not self.uart.isOpen():
             fnc(settings)
+            return
 
         try:
             cmd_str = self.protocol.InData(cmd='u')
@@ -112,6 +120,7 @@ class AppProtocol:
             fnc = lambda x: x
         if not self.uart.isOpen():
             fnc(False)
+            return
         try:
             cmd_str = self.protocol.InData(cmd='U', data=settings.toByteArray())
             encoded_cmd = self.protocol.encode_output(cmd_str)
@@ -127,6 +136,7 @@ class AppProtocol:
         settings = ChannelSettings()
         if not self.uart.isOpen():
             fnc(settings)
+            return
         
         try:
             cmd_str = self.protocol.InData(cmd='c', data=channel.to_bytes(1))
@@ -146,12 +156,13 @@ class AppProtocol:
             fnc = lambda x: x
         if not self.uart.isOpen():
             fnc(False)
+            return
         try:
             cmd_str = self.protocol.InData(cmd='C', data=settings.toByteArray()+channel.to_bytes(1))
             encoded_cmd = self.protocol.encode_output(cmd_str)
 
             self.uart.send_receive(encoded_cmd, lambda response: (
-                self.protocol.decode_response(response)
+                fnc(self.protocol.decode_response(response))
             ))
 
         except:
@@ -160,7 +171,7 @@ class AppProtocol:
     def getMonitoringData(self, channel, fnc):
         monitoringData = MonitoringData()
         if not self.uart.isOpen():
-            return monitoringData
+            fnc(monitoringData)
         
         try:
             cmd_str = self.protocol.InData(cmd='m', data=channel.to_bytes(1))
@@ -174,4 +185,22 @@ class AppProtocol:
             ))
 
         except:
-            fnc('N/A')
+            fnc(monitoringData)
+            
+    def testRelays(self, pcf_addr, pcf_channel, ina_addr, fnc):
+        print("Protocol: test relays, pcf_addr:", pcf_addr, " pcf_channel:", pcf_channel, " ina_addr:", ina_addr)
+        if not self.uart.isOpen():
+            fnc(False)
+        
+        try:
+            cmd_str = self.protocol.InData(cmd='t', data=ina_addr.to_bytes(1)+pcf_addr.to_bytes(1)+pcf_channel.to_bytes(1))
+            encoded_cmd = self.protocol.encode_output(cmd_str)
+        
+            # Send and receive response, call fnc depending on whether response is None
+            self.uart.send_receive(encoded_cmd, lambda response: (
+                fnc(bool().from_bytes(self.protocol.decode_response(response)))
+            ))
+
+        except:
+            fnc(False)
+        

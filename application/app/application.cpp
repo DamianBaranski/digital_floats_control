@@ -130,9 +130,19 @@ bool Application::sendMonitoringData(const InProtocolData &in, OutProtocolData &
 }
 
 bool Application::setTestChannel(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    uint8_t channel_id = in.channelTest.channel_id;
-    bool test_on = in.channelTest.test_on;
-    mChannels[channel_id].addressTest(test_on);
+    ControlChannel testChannel(*mBsp.i2cBus.get());
+    ControlChannelSettings settings = {};
+    settings.enable = true;
+    settings.ina_addr = in.channelTest.ina_addr;
+    settings.ina_callibration = 500;
+    settings.pcf_addr = in.channelTest.pcf_addr;
+    settings.pcf_channel = in.channelTest.pcf_channel;
+    settings.max_voltage_limit = 280;
+    settings.min_voltage_limit = 80;
+    testChannel.setSettings(settings);
+    bool ret = testChannel.relaysTest();
+    out.result = ret;
+    outlen = sizeof(ret);
     return true;
 }
 
