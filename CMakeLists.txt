@@ -25,3 +25,17 @@ if (DOXYGEN_FOUND)
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM)
 endif()
+
+# Target for Linux Python installer
+add_custom_target(pc_app_linux
+    COMMAND ${CMAKE_COMMAND} -E echo "Running Python installer on Linux..."
+    COMMAND pyinstaller "${CMAKE_SOURCE_DIR}/pc_app/main.spec"
+    COMMENT "Installing Python application (Linux)"
+    VERBATIM)
+
+# Target for Windows Python installer via Wine
+add_custom_target(pc_app_windows
+    COMMAND ${CMAKE_COMMAND} -E echo "Running Python installer for Windows via Wine..."
+    COMMAND wine pyinstaller "${CMAKE_SOURCE_DIR}/pc_app/main.spec"
+    COMMENT "Installing Python application (Windows via Wine)"
+    VERBATIM)
