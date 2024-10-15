@@ -32,6 +32,5 @@ class MonitoringFrameWidget(tk.Frame):
                 self.protocol.getMonitoringData(i, lambda data, idx=i: self._update_callback(data, idx))
 
     def _update_callback(self, data, idx):
-        print("updated callback:", idx)
         self.table.setData(idx, data)
         self.data_ready[idx] = True

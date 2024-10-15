@@ -4,6 +4,7 @@ from tkinter import ttk
 from .user_settings import UserSettings
 from .channel_settings import ChannelSettings
 from .channel_settings_table import ChannelSettingsTable
+from .auto_detect import AutoDetect
 
 class UserSettingField(tk.Frame):
     def __init__(self, parent, name, input_type="entry"):
@@ -155,168 +156,9 @@ class SettingsFrameWidget(tk.Frame):
         self.user_settings.setDefaults()
         self.updateUserSettings()   
 
-            
     def autoDetect(self):
-        ina_addr = []
-        pcf_addr = []
-        old_settings = []
-        new_settings = []
-        
-        def detect_ina():
-            print("Detect ina addr")
-            ina_start_address = 0x40
-            max_no_ina_sensors = 16
-            def ina_callback(data, address):
-                ina_addr.append((address, data))
-                print("ina callback:", (address, data))
-                
-                if len(ina_addr) >= max_no_ina_sensors:
-                    print("call detect pcf:", len(ina_addr), max_no_ina_sensors)
-                    detect_pcf()
-                else:
-                    self.protocol.scanI2c(address+1, lambda data, addr=address+1: ina_callback(data, addr))
-            
-            self.protocol.scanI2c(ina_start_address, lambda data, addr=ina_start_address: ina_callback(data, addr))
-
-        def detect_pcf():
-            pcf_start_address = 0x20
-            max_no_pcf_expanders = 8
-        
-            def pcf_callback(data, address):
-                pcf_addr.append((address, data))
-                print("pcf callback:", (address, data))
-                if len(pcf_addr) == max_no_pcf_expanders:
-                    print("call get settings:", len(pcf_addr), max_no_pcf_expanders)
-                    getSettings()
-            
-            for i in range(pcf_start_address, pcf_start_address+max_no_pcf_expanders):
-                self.protocol.scanI2c(i, lambda data, addr=i: pcf_callback(data, addr))
-        
-        def getSettings():
-            print("Get settings")
-            status = [False] * 6
-            def callback(channel_settings, idx):
-                print("Get settings callback:", idx)
-                status[idx] = True
-                old_settings.append(channel_settings)
-                if all(status):
-                    clean_settings()
-
-            for i in range(6):
-                self.protocol.getChannelSettings(i, lambda data, idx=i: callback(data, idx))
-        
-        def clean_settings():
-            print("Disable channels")
-            status = [False] * 6
-            def callback(ret, idx):
-                print("Disable channels callback:", idx)
-                status[idx] = True
-                if all(status):
-                    print("Call test relays")
-                    test_relays()
-
-            for i in range(6):
-                self.protocol.updateChannelSettings(i, ChannelSettings(), lambda ret, idx=i: callback(ret, idx))
-        
-        def disable_channels():
-            status = [False]*len(pcf_addr)*2
-            def callback(ret, idx, channel):
-                status[idx*2+channel] = True
-                if all(status):
-                    test_relays()
-            
-            for (idx, addr) in pcf_addr:
-                self.protocol.testRelays(addr, 0, 1, callback)
-                self.protocol.testRelays(addr, 1, 1, callback)                
-
-        def test_relays():
-            print("Test relays")
-
-            # Filter only those elements where the second item is True
-            tmp_ina = [item[0] for item in ina_addr if item[1] == True]
-            tmp_pcf = [item[0] for item in pcf_addr if item[1] == True]
-
-            # Update ina_addr and pcf_addr with filtered values
-            ina_addr[:] = tmp_ina
-            pcf_addr[:] = tmp_pcf
-            ina_idx = 0
-            pcf_idx = 0
-            pcf_channel = 0
-            
-            def next_pcf():
-                print("Taking next pcf")
-                nonlocal pcf_addr, ina_addr, pcf_channel, pcf_idx, ina_idx
-                if pcf_channel == 0:
-                    pcf_channel = 1
-                else:
-                    pcf_idx+=1
-                    pcf_channel = 0
-                ina_idx = 0
-
-            def callback(ret):
-                nonlocal pcf_addr, ina_addr, pcf_channel, pcf_idx, ina_idx
-
-                print(f"test relay callback pcf_addr: {pcf_addr[pcf_idx]}  pcf_channel: {pcf_channel}  ina_addr: {ina_addr[ina_idx]}  ret: {ret}")
-
-                # If the relay test returned True, save the settings and remove the INA address
-                if ret:
-                    settings = ChannelSettings()
-                    settings.values['pcf_addr'] = pcf_addr[pcf_idx]
-                    settings.values['pcf_channel'] = pcf_channel
-                    settings.values['ina_addr'] = ina_addr[ina_idx]
-                    new_settings.append(settings)
-
-                    # Remove the current INA address after successful test
-                    ina_addr.pop(ina_idx)
-                    # Reset to test the next INA address from the start
-                    next_pcf()
-
-                else:
-                    # If the test returns false, increment the INA index
-                    ina_idx += 1
-
-                # Check if we have finished testing all INA addresses for the current PCF channel
-                if ina_idx >= len(ina_addr):
-                    # Move to the next PCF channel
-                    next_pcf()
-
-                # Stop when all PCF addresses and INA addresses have been tested
-                if pcf_idx >= len(pcf_addr):
-                    print("All PCF addresses tested.")
-                    for s in new_settings:
-                        print(s)
-                    generate_new_settings()
-                    return
-
-                # Continue testing with the next INA address or channel
-                if pcf_idx < len(pcf_addr) and ina_idx < len(ina_addr):
-                    print(f"Testing PCF address: {pcf_addr[pcf_idx]}, PCF channel: {pcf_channel}, INA address: {ina_addr[ina_idx]}")
-                    self.protocol.testRelays(pcf_addr[pcf_idx], pcf_channel, ina_addr[ina_idx], callback)
-                else:
-                    print("No more INA addresses to test.")
-
-            # Start the relay testing with the first INA address and first PCF address on channel 0
-            print("ina_addr:", ina_addr)
-            print("pcf_addr:", pcf_addr)
-
-            if len(pcf_addr) > 0 and len(ina_addr) > 0:
-                self.protocol.testRelays(pcf_addr[pcf_idx], pcf_channel, ina_addr[ina_idx], callback)
-            else:
-                print("No channels detected.")  
-
-        def generate_new_settings():
-            for (idx, s) in enumerate(new_settings):
-                s.values['max_voltage_limit'] = 260
-                s.values['min_voltage_limit'] = 80
-                s.values['max_current_limit'] = 50
-                s.values['min_current_limit'] = 0
-                s.values['ina_calibration'] = 50
-                s.values['enable'] = True
-                self.channel_settings_table.addData(idx)
-                self.channel_settings_table.setData(idx, s)
-            self.channel_settings_table.populate_treeview()
-
-        detect_ina()
+        auto_detect = AutoDetect(self.protocol, self.channel_settings_table)
+        auto_detect.start()
 
     def channelHelp(self):
         self.channel_settings_table.display_instructions()
