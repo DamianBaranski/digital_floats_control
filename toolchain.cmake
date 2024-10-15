@@ -3,6 +3,7 @@ set(CMAKE_SYSTEM_PROCESSOR arm)
 set(CMAKE_C_COMPILER_WORKS 1)
 
 # specify the cross compiler
+set(CXX arm-none-eabi-g++)
 set(CMAKE_C_COMPILER /usr/bin/arm-none-eabi-gcc)
 set(CMAKE_CXX_COMPILER /usr/bin/arm-none-eabi-g++)
 set(CMAKE_ASM_COMPILER /usr/bin/arm-none-eabi-gcc)
