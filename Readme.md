@@ -71,4 +71,5 @@ A PC application is provided to configure the device, upgrade device firmware, a
 - **Limit Switch Assignment:** Assign which limit switch corresponds to the "down" position and which to the "up" position.
 - **Limit Switch Type:** Select the type of limit switch used (Normally Open (NO) or Normally Closed (NC)).
 
+
 The application provides a user-friendly interface for making these configurations, ensuring that the Digital Floats Control System is properly set up for your specific needs.
