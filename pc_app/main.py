@@ -61,6 +61,7 @@ class DigitalFloatsApp(tk.Frame):
         self.update()
 
     def on_closing(self):
+        self.comport.close()
         self.comport.stop()
         self.parent.destroy()   # Destroy the window
         
