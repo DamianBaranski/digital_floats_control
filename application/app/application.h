@@ -8,7 +8,7 @@
 #include "settings.h"
 #include "ws2812.h"
 
-#define APP_VER "Application BS v1.0"
+#define APP_VER "AppBS v" VERSION
 
 /// @class Application
 /// @brief This class handles the main application logic, including protocol command processing and device communication.

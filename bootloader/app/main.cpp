@@ -1,6 +1,7 @@
 #include "bsp.h"
 #include "logger.h"
 #include "protocol.h"
+#include "version.h"
 
 #define ETX_APP_START_ADDRESS 0x08005000
 
@@ -36,7 +37,7 @@ int main()
 {
   Bsp bsp;
   UartStream logStream(*bsp.uartBus);
-  Logger() << "Bootloader BS v1.0";
+  Logger() << "Bootloader BS v" << VERSION;
   Protocol protocol;
   char buff[128] = {};
   for (size_t i = 0; i < 50; i++)

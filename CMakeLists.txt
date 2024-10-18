@@ -26,6 +26,12 @@ if (DOXYGEN_FOUND)
         VERBATIM)
 endif()
 
+add_custom_target(generate_version
+    COMMAND ${CMAKE_COMMAND} -E echo "Generating version files..."
+    COMMAND bash "${CMAKE_SOURCE_DIR}/version.sh"
+    COMMENT "Generating version files..."
+    VERBATIM)
+
 # Target for Linux Python installer
 add_custom_target(pc_app_linux
     COMMAND ${CMAKE_COMMAND} -E echo "Running Python installer on Linux..."

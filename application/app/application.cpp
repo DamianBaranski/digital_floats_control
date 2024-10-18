@@ -1,5 +1,6 @@
 #include "application.h"
 #include "colors.h"
+#include "version.h"
 
 Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
                                      mChannels{ControlChannel(*mBsp.i2cBus),
