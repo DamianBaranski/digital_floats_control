@@ -37,6 +37,10 @@ Bsp::Bsp()
   extFlash.reset(new W25xFlash(*mSpi, *mSpiCsPin));
 }
 	
+void Bsp::reset()
+{
+  NVIC_SystemReset();
+}
 
 void Bsp::initClock()
 {

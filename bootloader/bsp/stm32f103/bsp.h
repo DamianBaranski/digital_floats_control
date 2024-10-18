@@ -17,6 +17,8 @@ public:
     /// Initializes the Bsp instance.
     Bsp();
 
+    void reset();
+    
     /// @brief Unique pointer to a UART interface.
     ///
     /// This pointer is used to manage the UART bus.
@@ -41,5 +43,8 @@ private:
     /// This method sets up the necessary clock configuration for the board.
     void initClock();
 };
+
+void sleep(uint32_t time_ms);
+uint32_t getTime();
 
 #endif // BSP_H

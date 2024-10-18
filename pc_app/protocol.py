@@ -203,4 +203,36 @@ class AppProtocol:
 
         except:
             fnc(False)
+            
+    def reset(self, fnc):
+        if not self.uart.isOpen():
+            fnc(False)
+        
+        try:
+            cmd_str = self.protocol.InData(cmd='r')
+            encoded_cmd = self.protocol.encode_output(cmd_str)
+        
+            # Send and receive response, call fnc depending on whether response is None
+            self.uart.send_receive(encoded_cmd, lambda response: (
+                fnc(bool().from_bytes(self.protocol.decode_response(response)))
+            ))
+
+        except:
+            fnc(False)
+        
+    def uploadFirmware(self, fnc, data, ptr, len):
+        if not self.uart.isOpen():
+            fnc(False)
+        
+        try:
+            cmd_str = self.protocol.InData(cmd='u')
+            encoded_cmd = self.protocol.encode_output(cmd_str, data=ptr.to_bytes(2)+len.to_bytes(2)+data)
+        
+            # Send and receive response, call fnc depending on whether response is None
+            self.uart.send_receive(encoded_cmd, lambda response: (
+                fnc(bool().from_bytes(self.protocol.decode_response(response)))
+            ))
+
+        except:
+            fnc(False)
         

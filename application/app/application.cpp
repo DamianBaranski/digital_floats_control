@@ -66,6 +66,7 @@ bool Application::sendAppVersion(const InProtocolData &in, OutProtocolData &out,
 
 bool Application::resetDevice(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
     LOG << "Reset device";
+    mBsp.reset();
     return true;
 }
 

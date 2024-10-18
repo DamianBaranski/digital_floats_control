@@ -20,6 +20,8 @@ public:
     /// Initializes the Bsp instance.
     Bsp();
 
+    void reset();
+
     /// @brief Unique pointer to an I2C master interface.
     ///
     /// This pointer is used to manage the I2C bus.

@@ -17,7 +17,11 @@ Bsp::Bsp()
   ledPin.reset(new Gpio(GPIOC, GPIO_PIN_13, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0));
   ledPin->reset();
 }
-	
+
+void Bsp::reset()
+{
+  NVIC_SystemReset();
+}
 
 void Bsp::initClock()
 {
@@ -105,4 +109,12 @@ extern "C"
   void EXTI15_10_IRQHandler(void) __attribute__((weak, alias("defaultHandler")));
   void RTC_Alarm_IRQHandler(void) __attribute__((weak, alias("defaultHandler")));
   void USBWakeUp_IRQHandler(void) __attribute__((weak, alias("defaultHandler")));
+}
+
+void sleep(uint32_t time_ms) {
+    HAL_Delay(time_ms);
+}
+
+uint32_t getTime() {
+  return HAL_GetTick();
 }
