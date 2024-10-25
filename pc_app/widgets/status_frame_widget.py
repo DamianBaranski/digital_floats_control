@@ -1,5 +1,6 @@
 from .firmware_upload import FirmwareUpload
 from .release import Release
+import multiprocessing
 
 try:
     # python 3.x
@@ -18,15 +19,22 @@ class StatusFrameWidget(tk.Frame):
         self.firmware_upload_button = tk.Button(self, text="Update firmware", command=self.firmware_upload)
         self.ver_label.grid(padx=10, row=1, column=1)
         self.ver_value.grid(row=1, column=2)
-        self.firmware_upload_button.grid(row=2, column=1)
-        self.updating = False
+        #self.firmware_upload_button.grid(row=2, column=1)
+        self.updating = multiprocessing.Value('b', False)
         self.version = None
 
     def update(self):
-        if not self.updating:
-            self.app_protocol.getVersion(lambda version: self.updateVersion(version))
+        if not self.app_protocol.uart.isOpen():
+            self.updateVersion('N/A')
+            return
+        
+        if self.updating.value == False:
+            self.app_protocol.getVersion(self.updateVersion)
         
     def updateVersion(self, version):
+        if self.updating.value == True:
+            return
+        
         self.ver_value.config(text = version)
         if self.version != version:
             self.version = version
@@ -42,7 +50,11 @@ class StatusFrameWidget(tk.Frame):
                 pass
             
     def firmware_upload(self):
-        self.updating = True
+        with self.updating.get_lock():
+            self.updating.value = True
         uploader = FirmwareUpload(self.app_protocol, None)
-        uploader.start()
-        self.updating = False
+        uploader.start(callback=self.on_upgrade_finished)
+    
+    def on_upgrade_finished(self, result):
+        with self.updating.get_lock():
+            self.updating.value = False 

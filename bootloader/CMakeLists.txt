@@ -11,6 +11,7 @@ add_executable(${EXECUTABLE})
 add_subdirectory(${CMAKE_SOURCE_DIR}/common common)
 target_sources(${EXECUTABLE} PUBLIC
 app/main.cpp
+app/bootloader.cpp
 app/system_stm32f1xx.c
 bsp/stm32f103/bsp.cpp
 )
@@ -39,6 +40,7 @@ target_link_options(${EXECUTABLE} PRIVATE
         -Wl,-Map=${PROJECT_NAME}.map,--cref
         -Wl,--gc-sections
         -g
+        -O0
         #-O2
         #-F dwarf
         -Wl,--print-memory-usage

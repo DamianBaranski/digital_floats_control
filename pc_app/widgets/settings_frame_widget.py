@@ -133,7 +133,8 @@ class SettingsFrameWidget(tk.Frame):
 
     def loadUserSettings(self):
         def callback(data):
-            self.user_settings = data
+            if data != None:
+                self.user_settings = data
             self.updateUserSettings()
     
         self.protocol.getUserSettings(callback)
