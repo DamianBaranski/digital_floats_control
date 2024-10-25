@@ -1,7 +1,7 @@
 #ifndef BOOTLOADER_H
 #define BOOTLOADER_H
 
-#include "protocol2.h"
+#include "protocol.h"
 #include "flash.h"
 #include "logger.h"
 #include "bsp.h"

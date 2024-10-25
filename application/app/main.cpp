@@ -1,8 +1,6 @@
 #include "bsp.h"
 #include "logger.h"
-#include "protocol2.h"
 #include "application.h"
-#include "ws2812.h"
 
 UartStream *UartStream::mInstance = nullptr;
 

@@ -1,7 +1,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "protocol2.h"
+#include "protocol.h"
 #include "bsp.h"
 #include "control_channel.h"
 #include "logger.h"
