@@ -74,10 +74,6 @@ A PC application is provided to configure the device, upgrade device firmware, a
 
 The application provides a user-friendly interface for making these configurations, ensuring that the Digital Floats Control System is properly set up for your specific needs.
 
-# Project Structure Documentation
-
-## README.md Version
-
 # Project Structure
 
 This repository contains firmware for STM32F1-based embedded system and accompanying PC application. The project is organized into several main components:
@@ -141,95 +137,4 @@ Python-based GUI application for device control:
 
 ## Build System
 The project uses CMake build system. Each major component contains its own `CMakeLists.txt` file.
-
----
-
-## Confluence Version
-
-[TOC]
-
-h1. Project Structure Overview
-
-This document describes the structure of our STM32F1 embedded system project, which consists of firmware components and a PC control application.
-
-h2. Main Components
-
-The project is divided into several major components:
-
-h3. 1. Firmware Components
-
-h4. Application and Bootloader
-* Location: */application/* and */bootloader/*
-* Purpose: Main firmware and bootloader implementation
-* Structure:
-** app/ - Core application code
-** bsp/ - Board Support Package
-** Build and linker configuration files
-
-h4. Common Libraries
-* Location: */common/*
-* Contains:
-** Hardware abstraction layers
-** Device drivers
-** Interface definitions
-** Support utilities
-
-{panel:title=Architecture Support (arch/stm32f103/)}
-* Hardware abstraction implementations
-* CMSIS library integration
-* STM32 HAL drivers
-* MCU-specific code
-{panel}
-
-{panel:title=Device Drivers (drivers/)}
-* INA219 - Current/voltage monitoring
-* PCF8574 - I/O expansion
-* W25X - Flash memory
-* WS2812 - LED control
-{panel}
-
-{panel:title=Interfaces (itf/)}
-* Hardware interface definitions
-* Driver interfaces
-* HAL interfaces
-{panel}
-
-{panel:title=Support Utilities (sup/)}
-* Base64 encoding/decoding
-* Logging system
-* Protocol implementations
-* Settings management
-{panel}
-
-h3. 2. PC Application
-
-* Location: */pc_app/*
-* Technology: Python with GUI
-* Features:
-** Device communication
-** Firmware upload capability
-** Monitoring and control interface
-
-h3. 3. Development Tools
-
-* Location: */tools/*
-* Contents:
-** OpenOCD configuration
-** Toolchain settings
-** Version control tools
-
-h2. Build System
-
-The project uses CMake build system with the following characteristics:
-* Hierarchical build structure
-* Separate configurations for each component
-* Cross-compilation support for embedded targets
-
-h2. Development Guidelines
-
-h3. Adding New Components
-# Place hardware-specific code in appropriate arch/ subdirectory
-# Implement hardware abstractions using existing interfaces
-# Add new drivers to common/drivers/
-# Update CMake configuration as needed
 
