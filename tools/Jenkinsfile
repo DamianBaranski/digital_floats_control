@@ -72,8 +72,9 @@ pipeline {
             steps {
                 dir(BUILD_DIR) {
                     archiveArtifacts artifacts: '''
-                        bootloader_bs.elf
-                        floats_bs.elf
+                        bootloader/bootloader_bs.elf
+                        application/floats_bs.elf
+			dist/*
                     ''', fingerprint: true
                 }
             }
