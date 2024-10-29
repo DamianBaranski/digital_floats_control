@@ -33,7 +33,6 @@ pipeline {
         }
 
         stage('Build') {
-            parallel {
                 stage('Build Firmware') {
                     stages {
                         stage('Build Bootloader') {
@@ -78,7 +77,6 @@ pipeline {
                         }
                     }
                 }
-            }
         }
 
         stage('Archive Artifacts') {
