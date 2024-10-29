@@ -12,7 +12,7 @@ pipeline {
         timeout(time: 1, unit: 'HOURS')
         disableConcurrentBuilds()
     }
-
+    
     stages {
         stage('Environment Setup') {
             steps {
@@ -22,7 +22,7 @@ pipeline {
                 '''
             }
         }
-
+        
         stage('CMake Configure') {
             steps {
                 sh '''
@@ -31,54 +31,43 @@ pipeline {
                 '''
             }
         }
-
-        stage('Build') {
-                stage('Build Firmware') {
-                    stages {
-                        stage('Build Bootloader') {
-                            steps {
-                                sh '''
-                                    cd ${BUILD_DIR}
-                                    make bootloader_bs.elf
-                                '''
-                            }
-                        }
-                        stage('Build Floats') {
-                            steps {
-                                sh '''
-                                    cd ${BUILD_DIR}
-                                    make floats_bs.elf
-                                '''
-                            }
-                        }
-                    }
-                }
-                
-                stage('Build PC Applications') {
-                    stages {
-                        stage('Build Linux App') {
-                            steps {
-                                sh '''
-                                    cd ${BUILD_DIR}
-                                    make pc_app_linux
-                                '''
-                            }
-                        }
-                        stage('Build Windows App') {
-                            when {
-                                expression { isUnix() }
-                            }
-                            steps {
-                                sh '''
-                                    cd ${BUILD_DIR}
-                                    make pc_app_windows
-                                '''
-                            }
-                        }
-                    }
-                }
+        
+        stage('Build Bootloader') {
+            steps {
+                sh '''
+                    cd ${BUILD_DIR}
+                    make bootloader_bs.elf
+                '''
+            }
         }
-
+        
+        stage('Build Floats') {
+            steps {
+                sh '''
+                    cd ${BUILD_DIR}
+                    make floats_bs.elf
+                '''
+            }
+        }
+        
+        stage('Build Linux App') {
+            steps {
+                sh '''
+                    cd ${BUILD_DIR}
+                    make pc_app_linux
+                '''
+            }
+        }
+        
+        stage('Build Windows App') {
+            steps {
+                sh '''
+                    cd ${BUILD_DIR}
+                    make pc_app_windows
+                '''
+            }
+        }
+        
         stage('Archive Artifacts') {
             steps {
                 dir(BUILD_DIR) {
@@ -92,7 +81,7 @@ pipeline {
             }
         }
     }
-
+    
     post {
         always {
             cleanWs(cleanWhenNotBuilt: false,
