@@ -1,0 +1,119 @@
+pipeline {
+    agent any
+    
+    environment {
+        // Project paths
+        TOOLCHAIN_FILE = 'tools/toolchain.cmake'
+        BUILD_DIR = 'build'
+    }
+    
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 1, unit: 'HOURS')
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Environment Setup') {
+            steps {
+                sh '''
+                    # Create build directory
+                    mkdir -p ${BUILD_DIR}
+                '''
+            }
+        }
+
+        stage('CMake Configure') {
+            steps {
+                sh '''
+                    cd ${BUILD_DIR}
+                    cmake .. -DCMAKE_TOOLCHAIN_FILE=../${TOOLCHAIN_FILE}
+                '''
+            }
+        }
+
+        stage('Build') {
+            parallel {
+                stage('Build Firmware') {
+                    stages {
+                        stage('Build Bootloader') {
+                            steps {
+                                sh '''
+                                    cd ${BUILD_DIR}
+                                    make bootloader_bs.elf
+                                '''
+                            }
+                        }
+                        stage('Build Floats') {
+                            steps {
+                                sh '''
+                                    cd ${BUILD_DIR}
+                                    make floats_bs.elf
+                                '''
+                            }
+                        }
+                    }
+                }
+                
+                stage('Build PC Applications') {
+                    stages {
+                        stage('Build Linux App') {
+                            steps {
+                                sh '''
+                                    cd ${BUILD_DIR}
+                                    make pc_app_linux
+                                '''
+                            }
+                        }
+                        stage('Build Windows App') {
+                            when {
+                                expression { isUnix() }
+                            }
+                            steps {
+                                sh '''
+                                    cd ${BUILD_DIR}
+                                    make pc_app_windows
+                                '''
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Archive Artifacts') {
+            steps {
+                dir(BUILD_DIR) {
+                    archiveArtifacts artifacts: '''
+                        bootloader_bs.elf
+                        floats_bs.elf
+                        pc_app/linux/*
+                        pc_app/windows/*
+                    ''', fingerprint: true
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs(cleanWhenNotBuilt: false,
+                   deleteDirs: true,
+                   disableDeferredWipeout: true,
+                   notFailBuild: true,
+                   patterns: [[pattern: 'build/', type: 'INCLUDE']])
+        }
+        
+        success {
+            emailext subject: "Build Successful: ${currentBuild.fullDisplayName}",
+                     body: "Build completed successfully: ${env.BUILD_URL}",
+                     recipientProviders: [developers(), requestor()]
+        }
+        
+        failure {
+            emailext subject: "Build Failed: ${currentBuild.fullDisplayName}",
+                     body: "Build failed. Please check: ${env.BUILD_URL}",
+                     recipientProviders: [developers(), requestor()]
+        }
+    }
+}
