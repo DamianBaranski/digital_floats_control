@@ -59,14 +59,14 @@ pipeline {
             }
         }
         
-        stage('Build Windows App') {
-            steps {
-                sh '''
-                    cd ${BUILD_DIR}
-                    make pc_app_windows
-                '''
-            }
-        }
+       // stage('Build Windows App') {
+       //     steps {
+       //         sh '''
+       //             cd ${BUILD_DIR}
+       //             make pc_app_windows
+       //         '''
+       //     }
+       // }
         
         stage('Archive Artifacts') {
             steps {
@@ -74,8 +74,6 @@ pipeline {
                     archiveArtifacts artifacts: '''
                         bootloader_bs.elf
                         floats_bs.elf
-                        pc_app/linux/*
-                        pc_app/windows/*
                     ''', fingerprint: true
                 }
             }
