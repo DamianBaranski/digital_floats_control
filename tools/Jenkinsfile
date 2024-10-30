@@ -63,6 +63,8 @@ pipeline {
             steps {
                 sh '''
                     cd ${BUILD_DIR}
+                    export DISPLAY=:0
+                    export WINEDEBUG=-all
                     make pc_app_windows
                 '''
             }
