@@ -74,7 +74,7 @@ pipeline {
                     archiveArtifacts artifacts: '''
                         bootloader/bootloader_bs.elf
                         application/floats_bs.elf
-			dist/*
+			dist/DigitalFloatsControl
                     ''', fingerprint: true
                 }
             }
@@ -90,16 +90,5 @@ pipeline {
                    patterns: [[pattern: 'build/', type: 'INCLUDE']])
         }
         
-        success {
-            emailext subject: "Build Successful: ${currentBuild.fullDisplayName}",
-                     body: "Build completed successfully: ${env.BUILD_URL}",
-                     recipientProviders: [developers(), requestor()]
-        }
-        
-        failure {
-            emailext subject: "Build Failed: ${currentBuild.fullDisplayName}",
-                     body: "Build failed. Please check: ${env.BUILD_URL}",
-                     recipientProviders: [developers(), requestor()]
-        }
     }
 }
