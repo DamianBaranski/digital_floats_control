@@ -59,14 +59,14 @@ pipeline {
             }
         }
         
-       // stage('Build Windows App') {
-       //     steps {
-       //         sh '''
-       //             cd ${BUILD_DIR}
-       //             make pc_app_windows
-       //         '''
-       //     }
-       // }
+        stage('Build Windows App') {
+            steps {
+                sh '''
+                    cd ${BUILD_DIR}
+                    make pc_app_windows
+                '''
+            }
+        }
         
         stage('Archive Artifacts') {
             steps {
