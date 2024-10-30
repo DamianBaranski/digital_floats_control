@@ -72,9 +72,9 @@ pipeline {
             steps {
                 dir(BUILD_DIR) {
                     archiveArtifacts artifacts: '''
-                        bootloader/bootloader_bs.elf
-                        application/floats_bs.elf
-			dist/DigitalFloatsControl
+                        bootloader/bootloader_bs.elf,
+                        application/floats_bs.elf,
+			dist/DigitalFloatsControl,
                     ''', fingerprint: true
                 }
             }
