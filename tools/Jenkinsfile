@@ -1,3 +1,17 @@
+import hudson.model.*
+
+def publishStatus(String state) {
+    withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
+        sh '''
+            REPO_NAME=$(basename -s .git $(git config --get remote.origin.url))
+            REPO_HASH=$(git rev-parse HEAD)
+            curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                 -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/DamianBaranski/${REPO_NAME}/statuses/${REPO_HASH} \
+                 -d '{"state":"''' + state + '''","target_url":"''' + env.BUILD_URL + '''","description":"","context":"continuous-integration/jenkins"}'
+        '''
+    }
+}
+
 pipeline {
     agent any
     
@@ -16,6 +30,9 @@ pipeline {
     stages {
         stage('Environment Setup') {
             steps {
+                script {
+                    publishStatus("pending")
+                }
                 sh '''
                     # Create build directory
                     mkdir -p ${BUILD_DIR}
@@ -82,13 +99,23 @@ pipeline {
     }
     
     post {
+        success {
+            script {
+                publishStatus("success")
+            }
+        }
+        failure {
+            script {
+                publishStatus("failure")
+            }
+        }
         always {
             cleanWs(cleanWhenNotBuilt: true,
-                   deleteDirs: true,
-                   disableDeferredWipeout: true,
-                   notFailBuild: true,
-                   patterns: [[pattern: 'build/', type: 'INCLUDE']])
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true,
+                    patterns: [[pattern: 'build/', type: 'INCLUDE']])
         }
-        
     }
 }
+
