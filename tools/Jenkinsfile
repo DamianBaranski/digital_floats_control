@@ -59,16 +59,14 @@ pipeline {
             }
         }
         
-        stage('Build Windows App') {
-            steps {
-                sh '''
-                    cd ${BUILD_DIR}
-                    export DISPLAY=:0
-                    export WINEDEBUG=+all
-                    make pc_app_windows
-                '''
-            }
-        }
+        //stage('Build Windows App') {
+        //    steps {
+        //        sh '''
+        //            cd ${BUILD_DIR}
+        //            make pc_app_windows
+        //        '''
+        //    }
+        //}
         
         stage('Archive Artifacts') {
             steps {
@@ -85,7 +83,7 @@ pipeline {
     
     post {
         always {
-            cleanWs(cleanWhenNotBuilt: false,
+            cleanWs(cleanWhenNotBuilt: true,
                    deleteDirs: true,
                    disableDeferredWipeout: true,
                    notFailBuild: true,
