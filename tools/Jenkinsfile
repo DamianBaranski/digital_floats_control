@@ -110,9 +110,10 @@ pipeline {
         }
         
         stage('Publish release') {
-        script {
+            script {
         	publishRelease()        
-        }
+            }
+	}
     }
     
     post {
