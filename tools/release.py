@@ -136,9 +136,9 @@ def main():
     
     if release_id:
         # Step 3: Upload the file to the newly created release
-        upload_asset(release_id, "build/application/floats_bs.bin")
-        upload_asset(release_id, "build/bootloader/bootloader_bs.bin")
-        upload_asset(release_id, "build/dist/DigitalFloatsControl")
+        upload_asset(release_id, "../build/application/floats_bs.bin")
+        upload_asset(release_id, "../build/bootloader/bootloader_bs.bin")
+        upload_asset(release_id, "../build/dist/DigitalFloatsControl")
         #upload_asset(release_id, "build/dist/DigitalFloatsControl.exe")
 
 
