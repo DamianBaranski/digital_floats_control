@@ -108,12 +108,16 @@ pipeline {
                 }
             }
         }
+        
+        stage('Publish release') {
+        script {
+        	publishRelease()        
+        }
     }
     
     post {
         success {
             script {
-                publishRelease()
                 publishStatus("success")
                 
             }
