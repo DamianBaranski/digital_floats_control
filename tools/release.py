@@ -124,7 +124,6 @@ def remove_old_releases(keep_last=3):
 
 def main():
     # Define release details
-    TAG_NAME = sys.argv[1]
     RELEASE_NAME = 'Release ' + TAG_NAME
     RELEASE_BODY = ''
     
