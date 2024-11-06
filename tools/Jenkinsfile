@@ -16,6 +16,7 @@ def publishRelease() {
             python3 tools/release.py ${GITHUB_TOKEN} ${REPO_OWNER} ${REPO_NAME}_releases $(cat version.txt)
         '''
 }
+}
 
 pipeline {
     agent any
