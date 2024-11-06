@@ -54,7 +54,6 @@ pipeline {
         stage('CMake Configure') {
             steps {
                 sh '''
-                    env
                     cd ${BUILD_DIR}
                     cmake .. -DCMAKE_TOOLCHAIN_FILE=../${TOOLCHAIN_FILE}
                 '''

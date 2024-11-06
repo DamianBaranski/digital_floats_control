@@ -113,7 +113,7 @@ def remove_old_releases(keep_last=3):
     
     if len(releases) > keep_last:
         # Releases to delete are those beyond the most recent `keep_last`
-        releases_to_delete = releases[:-keep_last]
+        releases_to_delete = releases[keep_last:]
         
         for release in releases_to_delete:
             release_id = release['id']
