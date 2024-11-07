@@ -138,7 +138,7 @@ def main():
         upload_asset(release_id, "build/application/floats_bs.bin")
         upload_asset(release_id, "build/bootloader/bootloader_bs.bin")
         upload_asset(release_id, "build/dist/DigitalFloatsControl")
-        #upload_asset(release_id, "build/dist/DigitalFloatsControl.exe")
+        upload_asset(release_id, "build/dist/DigitalFloatsControl.exe")
 
 
 

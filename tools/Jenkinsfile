@@ -89,14 +89,14 @@ pipeline {
             }
         }
         
-        //stage('Build Windows App') {
-        //    steps {
-        //        sh '''
-        //            cd ${BUILD_DIR}
-        //            make pc_app_windows
-        //        '''
-        //    }
-        //}
+        stage('Build Windows App') {
+            steps {
+                sh '''
+                    cd ${BUILD_DIR}
+                    make pc_app_windows < /dev/null > /dev/null 2>&1
+                '''
+            }
+        }
         
         stage('Archive Artifacts') {
             steps {
@@ -104,7 +104,8 @@ pipeline {
                     archiveArtifacts artifacts: '''
                         bootloader/bootloader_bs.elf,
                         application/floats_bs.elf,
-			dist/DigitalFloatsControl,
+                        dist/DigitalFloatsControl,
+                        dist/DigitalFloatsControl.exe
                     ''', fingerprint: true
                 }
             }
