@@ -1,0 +1,145 @@
+import hudson.model.*
+
+def publishStatus(String state) {
+    withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
+        sh '''
+            curl -L -X POST -H "Accept: application/vnd.github+json" -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                 -H "X-GitHub-Api-Version: 2022-11-28" https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/statuses/${REPO_HASH} \
+                 -d '{"state":"''' + state + '''","target_url":"''' + env.BUILD_URL + '''","description":"","context":"continuous-integration/jenkins"}'
+        '''
+    }
+}
+
+def publishRelease() {
+    withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
+        sh '''
+	if [[ $(git branch --show-current) == 'master' ]]; then
+            python3 tools/release.py ${GITHUB_TOKEN} ${REPO_OWNER} ${REPO_NAME}_releases $(cat version.txt)
+	fi
+        '''
+}
+}
+
+pipeline {
+    agent any
+    
+    environment {
+        // Project paths
+        TOOLCHAIN_FILE = 'tools/toolchain.cmake'
+        BUILD_DIR = 'build'
+    }
+    
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        timeout(time: 1, unit: 'HOURS')
+        disableConcurrentBuilds()
+    }
+    
+    stages {
+        stage('Environment Setup') {
+            steps {
+                script {
+                    env.REMOTE_URL=sh(script: "git config --get remote.origin.url", returnStdout: true).trim()
+                    env.REPO_PATH=sh(script: 'REPO_PATH="${REMOTE_URL#*github.com[:/]}"; echo ${REPO_PATH%.git}', returnStdout: true).trim()
+                    env.REPO_OWNER=sh(script: 'echo "${REPO_PATH}" | cut -d"/" -f1', returnStdout: true).trim()
+                    env.REPO_NAME=sh(script: 'echo "${REPO_PATH}" | cut -d"/" -f2', returnStdout: true).trim()
+                    env.REPO_HASH=sh(script: "git rev-parse HEAD", returnStdout: true).trim()
+                    publishStatus("pending")
+                }
+                sh '''
+                    # Create build directory
+                    mkdir -p ${BUILD_DIR}
+                '''
+            }
+        }
+        
+        stage('CMake Configure') {
+            steps {
+                sh '''
+                    cd ${BUILD_DIR}
+                    cmake .. -DCMAKE_TOOLCHAIN_FILE=../${TOOLCHAIN_FILE}
+                '''
+            }
+        }
+        
+        stage('Build Bootloader') {
+            steps {
+                sh '''
+                    cd ${BUILD_DIR}
+                    make bootloader_bs.elf
+                '''
+            }
+        }
+        
+        stage('Build Floats') {
+            steps {
+                sh '''
+                    cd ${BUILD_DIR}
+                    make floats_bs.elf
+                '''
+            }
+        }
+        
+        stage('Build Linux App') {
+            steps {
+                sh '''
+                    cd ${BUILD_DIR}
+                    make pc_app_linux
+                '''
+            }
+        }
+        
+        stage('Build Windows App') {
+            steps {
+                sh '''
+                    cd ${BUILD_DIR}
+                    make pc_app_windows < /dev/null > /dev/null 2>&1
+                '''
+            }
+        }
+        
+        stage('Archive Artifacts') {
+            steps {
+                dir(BUILD_DIR) {
+                    archiveArtifacts artifacts: '''
+                        bootloader/bootloader_bs.elf,
+                        application/floats_bs.elf,
+                        dist/DigitalFloatsControl,
+                        dist/DigitalFloatsControl.exe
+                    ''', fingerprint: true
+                }
+            }
+        }
+        
+        stage('Publish release') {
+            steps {
+              script {
+        	publishRelease()        
+              }
+            }
+	}
+    }
+    
+    post {
+        success {
+            script {
+                publishStatus("success")
+                
+            }
+        }
+        failure {
+            script {
+                publishStatus("failure")
+            }
+        }
+        always {
+            cleanWs(cleanWhenNotBuilt: true,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true,
+                    patterns: [[pattern: 'build/', type: 'INCLUDE']])
+        }
+    }
+}
+
+

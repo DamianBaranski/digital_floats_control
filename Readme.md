@@ -73,3 +73,68 @@ A PC application is provided to configure the device, upgrade device firmware, a
 
 
 The application provides a user-friendly interface for making these configurations, ensuring that the Digital Floats Control System is properly set up for your specific needs.
+
+# Project Structure
+
+This repository contains firmware for STM32F1-based embedded system and accompanying PC application. The project is organized into several main components:
+
+## Directory Structure
+
+```
+.
+├── application/          # Main firmware application
+├── bootloader/          # Device bootloader
+├── common/              # Shared libraries and drivers
+├── pc_app/             # PC control application
+├── doc/                # Project documentation
+└── tools/              # Development tools and scripts
+```
+
+### Firmware Components
+
+#### Application and Bootloader
+Both `application/` and `bootloader/` directories share similar structure:
+- `app/` - Core application logic
+- `bsp/` - Board Support Package for STM32F103
+- `STM32F103XB_FLASH.ld` - Linker script
+- `CMakeLists.txt` - Build configuration
+
+#### Common Libraries (`common/`)
+Contains shared code used by both application and bootloader:
+
+- **Architecture Support** (`arch/stm32f103/`)
+  - Hardware abstraction layers
+  - CMSIS and HAL drivers
+  - MCU-specific implementations
+
+- **Device Drivers** (`drivers/`)
+  - INA219 current/voltage monitor
+  - PCF8574 I/O expander
+  - W25X Flash memory
+  - WS2812 LED controller
+
+- **Interfaces** (`itf/`)
+  - Common hardware interfaces
+  - Driver interfaces
+  - HAL interfaces
+
+- **Support Utilities** (`sup/`)
+  - Base64 encoding
+  - Logging functionality
+  - Communication protocols
+  - Settings management
+
+### PC Application (`pc_app/`)
+Python-based GUI application for device control:
+- Communication protocol implementation
+- Firmware upload functionality
+- GUI widgets for device control and monitoring
+
+### Development Tools (`tools/`)
+- OpenOCD debugging configuration
+- CMake toolchain configuration
+- Version control scripts
+
+## Build System
+The project uses CMake build system. Each major component contains its own `CMakeLists.txt` file.
+

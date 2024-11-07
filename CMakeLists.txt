@@ -28,7 +28,7 @@ endif()
 
 add_custom_target(generate_version
     COMMAND ${CMAKE_COMMAND} -E echo "Generating version files..."
-    COMMAND bash "${CMAKE_SOURCE_DIR}/version.sh"
+    COMMAND bash "${CMAKE_SOURCE_DIR}/tools/version.sh"
     COMMENT "Generating version files..."
     VERBATIM)
 
