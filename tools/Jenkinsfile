@@ -13,7 +13,7 @@ def publishStatus(String state) {
 def publishRelease() {
     withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
         sh '''
-	if [[ $(git branch --show-current) == 'master' ]]; then
+	if [ "${BRANCH_NAME}" = "master" ]; then
             python3 tools/release.py ${GITHUB_TOKEN} ${REPO_OWNER} ${REPO_NAME}_releases $(cat version.txt)
 	fi
         '''
