@@ -1,4 +1,4 @@
-target_sources(${EXECUTABLE} PUBLIC
+target_sources(common_lib PRIVATE
 gpio.cpp
 i2c_master.cpp
 uart.cpp
@@ -7,7 +7,7 @@ pwm_dma.cpp
 spi.cpp
 )
 
-target_include_directories(${EXECUTABLE} PUBLIC 
+target_include_directories(common_lib PUBLIC 
 ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

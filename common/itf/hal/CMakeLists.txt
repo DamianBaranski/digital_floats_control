@@ -1,3 +1,3 @@
-target_include_directories(${EXECUTABLE} PUBLIC 
+target_include_directories(common_lib PUBLIC 
 .
 )

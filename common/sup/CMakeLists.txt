@@ -1,7 +1,9 @@
-target_include_directories(${EXECUTABLE} PUBLIC 
+target_include_directories(common_lib PUBLIC 
 .
 )
 
-target_sources(${EXECUTABLE} PUBLIC
+target_sources(common_lib PRIVATE
 base64.cpp
 )
+
+add_subdirectory(utest)
