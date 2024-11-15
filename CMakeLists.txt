@@ -35,7 +35,7 @@ function(add_unit_test)
         list(APPEND MOCK_INCLUDES "-include${ABSOLUTE_MOCK_PATH}")
     endforeach()
 
-    set(UTEST_FLAGS -lpthread -lgtest -lgtest_main -lgmock -lgmock_main)
+    set(UTEST_FLAGS -lpthread -lgtest -lgtest_main -lgmock -lgmock_main -fprofile-arcs -ftest-coverage)
 
     # Add a custom target for building the test
     add_custom_target(${TEST_TARGET_NAME}_build
@@ -114,3 +114,15 @@ add_custom_target(pc_app_windows
     COMMAND wine pyinstaller "${CMAKE_SOURCE_DIR}/pc_app/main.spec"
     COMMENT "Installing Python application (Windows via Wine)"
     VERBATIM)
+
+# Target for coverage
+add_custom_target(coverage
+    COMMAND ${CMAKE_COMMAND} -E echo "Running coverage..."
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMAND /bin/bash -c "gcov *.gcno *.gcda"
+    COMMAND /bin/bash -c "lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch --exclude '*utest/*' --exclude '/usr/*' --exclude '*mocks/*' --ignore-errors unused"
+    COMMAND genhtml coverage.info --output-directory html
+    VERBATIM)
+
+# Add dependency on the 'utest' target
+add_dependencies(coverage utest)
