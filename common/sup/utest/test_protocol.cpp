@@ -63,7 +63,7 @@ TEST_F(ProtocolTest, RegisterMoreCommandsThanCapacityFails) {
     EXPECT_FALSE(protocol.registerCmd('C', testCommandHandler));
 }
 
-/*TEST_F(ProtocolTest, ProcessValidCommand) {
+TEST_F(ProtocolTest, ProcessValidCommand) {
     Protocol<TestInData, TestOutData, 5> protocol;
     protocol.registerCmd('A', testCommandHandler);
 
@@ -95,7 +95,7 @@ TEST_F(ProtocolTest, RegisterMoreCommandsThanCapacityFails) {
         .WillOnce(Return(true));
 
     EXPECT_TRUE(protocol.process(inputStr, outputStr, sizeof(outputStr)));
-}*/
+}
 
 TEST_F(ProtocolTest, ProcessFailsWithInvalidBase64Input) {
     Protocol<TestInData, TestOutData, 5> protocol;
