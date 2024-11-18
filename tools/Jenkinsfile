@@ -94,27 +94,31 @@ pipeline {
                         }
                         sh """
                             cd ${BUILD_DIR}
-                            export GTEST_OUTPUT="xml:test-results/"
-                            make utest
+                            make coverage
                         """
                         sh """
                             cd ${BUILD_DIR}
-                            make coverage
+                            export GTEST_OUTPUT="xml:test-results/"
+                            make utest
                         """
-                        publishHTML(target: [
-                            allowMissing: false,
-                            alwaysLinkToLastBuild: true,
-                            keepAll: true,
-                            reportDir: "${BUILD_DIR}/html",
-                            reportFiles: 'index.html',
-                            reportName: 'Coverage Report'
-                        ])
                     }
                     post {
+                        always {
+                            publishHTML(target: [
+                                allowMissing: false,
+                                alwaysLinkToLastBuild: true,
+                                keepAll: true,
+                                reportDir: "${BUILD_DIR}/html",
+                                reportFiles: 'index.html',
+                                reportName: 'Coverage Report'
+                            ])
+                            script {
+                                junit 'build/test-results/*.xml'
+                            }
+                        }
                         success {
                             script {
                                 publishStatus("success", "utest")
-                                junit 'build/test-results/*.xml'
                             }
                         }
                         failure {
