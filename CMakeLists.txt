@@ -47,7 +47,7 @@ function(add_unit_test)
 
     # Add a custom target for running the test
     add_custom_target(${TEST_TARGET_NAME}
-        COMMAND ${CMAKE_BINARY_DIR}/${TEST_TARGET_NAME}
+        COMMAND bash -c "${CMAKE_BINARY_DIR}/${TEST_TARGET_NAME}; echo $? >> result.log || true"
         DEPENDS ${TEST_TARGET_NAME}_build
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMENT "Running ${TEST_TARGET_NAME}"
@@ -67,7 +67,7 @@ add_subdirectory(common)
 
 # Create the 'utest' target after all subdirectories are processed
 add_custom_target(utest
-    COMMAND ${CMAKE_COMMAND} -E echo "Running all unit tests..."
+    COMMAND if grep -v 0 result.log > /dev/null\; then rm -rf result.log\; exit 1\; else rm -rf result.log\; exit 0\; fi
 )
 
 # Add dependencies for the utest target
