@@ -12,6 +12,16 @@ def publishStatus(String state, String context) {
     }
 }
 
+def publishRelease() {
+    withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
+        sh '''
+        	if [ "${BRANCH_NAME}" = "master" ]; then
+                python3 tools/release.py ${GITHUB_TOKEN} ${REPO_OWNER} ${REPO_NAME}_releases $(cat version.txt)
+	        fi
+        '''
+    }
+}
+
 pipeline {
     agent any
 
@@ -145,6 +155,7 @@ pipeline {
         stage('Publish Release') {
             steps {
                 script {
+                    publishRelease()
                     publishStatus("success", "continuous-integration/jenkins")
                     echo "Release published successfully."
                 }
