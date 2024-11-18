@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "../base64.h"
-/*
+
 // Test for encodedSize
 TEST(Base64Test, EncodedSize) {
     EXPECT_EQ(Base64::encodedSize(0), 1);  // 1 for null terminator
@@ -16,8 +16,8 @@ TEST(Base64Test, DecodedSize) {
     EXPECT_EQ(Base64::decodedSize("TQ=="), 1); // "M"
     EXPECT_EQ(Base64::decodedSize("TWE="), 2); // "Ma"
     EXPECT_EQ(Base64::decodedSize("TWFu"), 3); // "Man"
-    EXPECT_EQ(Base64::decodedSize("TWFuYWdl"), 5); // "Manag"
-}*/
+    EXPECT_EQ(Base64::decodedSize("TWFuYWdl"), 6); // "Manage"
+}
 
 // Test for encode
 TEST(Base64Test, Encode) {

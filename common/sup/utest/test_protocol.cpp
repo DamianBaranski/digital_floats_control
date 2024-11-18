@@ -77,12 +77,13 @@ TEST_F(ProtocolTest, ProcessValidCommand) {
 
     EXPECT_CALL(*base64Mock, decode(_, _, _))
         .WillOnce(DoAll(
-            [](const char*, uint8_t* output, size_t*) {
+            [](const char*, uint8_t* output, size_t* len) {
                 auto* decoded = reinterpret_cast<TestFrame*>(output);
                 decoded->cmd = 'A';
                 decoded->len = sizeof(TestInData);
                 decoded->data.value = 42;
                 decoded->crc = 0;
+                *len = sizeof(TestFrame);
                 return true;
             },
             Return(true)
@@ -132,7 +133,7 @@ TEST_F(ProtocolTest, ProcessFailsWithUnregisteredCommand) {
     EXPECT_FALSE(protocol.process(inputStr, outputStr, sizeof(outputStr)));
 }
 
-/*TEST_F(ProtocolTest, ProcessFailsWithInsufficientOutputBuffer) {
+TEST_F(ProtocolTest, ProcessFailsWithInsufficientOutputBuffer) {
     Protocol<TestInData, TestOutData, 5> protocol;
     protocol.registerCmd('A', testCommandHandler);
     const char inputStr[] = "TestInput";
@@ -143,12 +144,13 @@ TEST_F(ProtocolTest, ProcessFailsWithUnregisteredCommand) {
 
     EXPECT_CALL(*base64Mock, decode(_, _, _))
         .WillOnce(DoAll(
-            [](const char*, uint8_t* output, size_t*) {
+            [](const char*, uint8_t* output, size_t* len) {
                 auto* decoded = reinterpret_cast<TestFrame*>(output);
                 decoded->cmd = 'A';
                 decoded->len = sizeof(TestInData);
                 decoded->data.value = 42;
                 decoded->crc = 0;
+                *len = sizeof(TestFrame);
                 return true;
             },
             Return(true)
@@ -159,7 +161,7 @@ TEST_F(ProtocolTest, ProcessFailsWithUnregisteredCommand) {
 
     EXPECT_FALSE(protocol.process(inputStr, outputStr, sizeof(outputStr)));
 }
-*/
+
 // Add test for command handler failure
 TEST_F(ProtocolTest, ProcessFailsWhenCommandHandlerFails) {
     Protocol<TestInData, TestOutData, 5> protocol;
