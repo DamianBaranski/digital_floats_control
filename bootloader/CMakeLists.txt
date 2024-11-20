@@ -8,7 +8,6 @@ enable_language(CXX ASM)
 set(EXECUTABLE ${PROJECT_NAME}.elf)
 
 add_executable(${EXECUTABLE})
-add_subdirectory(${CMAKE_SOURCE_DIR}/common common)
 target_sources(${EXECUTABLE} PUBLIC
 app/main.cpp
 app/bootloader.cpp
@@ -20,6 +19,7 @@ target_include_directories(${EXECUTABLE} PUBLIC
 app
 bsp/stm32f103
 )
+target_link_libraries(${EXECUTABLE} PRIVATE common_lib)
 
 set_property(TARGET ${EXECUTABLE} PROPERTY CXX_STANDARD 11)
 
@@ -31,20 +31,7 @@ target_compile_definitions(${EXECUTABLE} PRIVATE
 
 target_link_options(${EXECUTABLE} PRIVATE
         -T${CMAKE_CURRENT_LIST_DIR}/STM32F103XB_FLASH.ld
-        -mcpu=cortex-m3
-        -mthumb
-        #-lc
-        #-lm
-        -lnosys
-        --specs=nano.specs
         -Wl,-Map=${PROJECT_NAME}.map,--cref
-        -Wl,--gc-sections
-        -g
-        -O0
-        #-O2
-        #-F dwarf
-        -Wl,--print-memory-usage
-        -flto
 )
 
 # Print executable size

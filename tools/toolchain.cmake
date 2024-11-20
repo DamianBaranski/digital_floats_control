@@ -17,7 +17,6 @@ set(CMAKE_STRIP /usr/bin/arm-none-eabi-strip)
 set(CMAKE_RANLIB /usr/bin/arm-none-eabi-ranlib)
 
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
-set(CMAKE_EXE_LINKER_FLAGS "--specs=nosys.specs" CACHE INTERNAL "")
-
+set(CMAKE_EXE_LINKER_FLAGS "-mcpu=cortex-m3 -mthumb -lnosys --specs=nano.specs -Wl,--gc-sections -g -F dwarf -Wl,--print-memory-usage -flto" CACHE INTERNAL "")
 set(CMAKE_C_FLAGS "-mcpu=cortex-m3 -mthumb -DUSE_HAL_DRIVER -Og -F dwarf -Wall -fdata-sections -ffunction-sections -Wl,--gc-sections -flto")
 set(CMAKE_CXX_FLAGS "-mcpu=cortex-m3 -mthumb -DUSE_HAL_DRIVER -Og -F dwarf -Wall -fdata-sections -ffunction-sections -Wl,--gc-sections -flto -fno-exceptions -fno-rtti")

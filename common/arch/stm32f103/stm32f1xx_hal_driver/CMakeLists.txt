@@ -1,4 +1,4 @@
-target_sources(${EXECUTABLE} PUBLIC
+target_sources(common_lib PRIVATE
 Src/stm32f1xx_hal_wwdg.c
 Src/stm32f1xx_ll_dma.c
 Src/stm32f1xx_hal_pccard.c
@@ -59,6 +59,6 @@ Src/stm32f1xx_hal_uart.c
 Src/stm32f1xx_hal_sd.c
 )
 
-target_include_directories(${EXECUTABLE} PUBLIC 
+target_include_directories(common_lib PUBLIC 
 Inc
 )
