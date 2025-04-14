@@ -1,0 +1,138 @@
+@startuml Digital Float Control System - Architectural Overview
+
+' Define primary actors and components
+actor User
+participant "Bootloader\nMain" as BootMain
+participant "Bootloader" as Boot
+participant "Flash\nMemory" as Flash
+participant "Application\nMain" as Main
+participant "BSP\n(Hardware Abstraction)" as BSP
+participant "Application" as App
+participant "Control Channels" as Channels
+participant "LEDs" as LEDs
+participant "Settings" as Settings
+participant "Command Protocol" as Protocol
+
+' Bootloader sequence
+== Boot Sequence ==
+BootMain -> BSP : Initialize hardware
+BootMain -> Boot : Create bootloader
+BootMain -> Protocol : Register bootloader commands
+activate Boot
+
+loop Wait for timeout or commands
+    BootMain -> Boot : isWaiting()
+    Boot --> BootMain : Timeout status
+    
+    alt Command Received
+        User ->> Protocol : Send bootloader command
+        Protocol -> Boot : Handle command
+        
+        alt 'v' Command (Version)
+            Boot -> Boot : sendBootloaderVersion()
+            Boot --> User : Bootloader version
+        else 'u' Command (Update Firmware)
+            Boot -> Boot : updateFirmware()
+            Boot -> Flash : Erase sector if needed
+            Boot -> Flash : Write application data
+            Boot --> User : Update result
+        end
+    end
+end
+
+BootMain -> Boot : gotoApplication()
+Boot -> Boot : Jump to application reset handler
+deactivate Boot
+
+' System initialization
+== Application Initialization ==
+Main -> BSP : Initialize hardware
+Main -> App : Create and initialize
+activate App
+
+App -> Settings : Load configuration
+Settings --> App : System settings
+App -> Channels : Configure channels
+App -> LEDs : Initialize
+App -> App : Perform hardware tests
+App --> Main : System ready
+
+' Main execution flow
+== Runtime Operation ==
+loop Main Loop
+    Main -> App : spin()
+    
+    ' Core operational logic
+    App -> BSP : Read user switches
+    BSP --> App : Switch states
+    
+    App -> Channels : Update channel states
+    Channels -> BSP : Control motors
+    
+    App -> LEDs : Update visual indicators
+    LEDs --> User : Status feedback
+    
+    ' Handle external communication
+    App -> App : Process UART communications
+    
+    alt Command Received
+        User ->> Protocol : Send command
+        Protocol -> App : Handle command
+        
+        alt Command Type
+            note over App: Version, Reset, Settings, etc.
+            App -> Settings : Update/retrieve settings
+            App -> Channels : Update configuration
+            App -> BSP : Hardware control
+        end
+        
+        App -->> User : Command response
+    end
+end
+
+' Main interaction patterns
+== Key Interaction Patterns ==
+
+group System Update Flow
+    User -> Protocol : Send 'u' update command to bootloader
+    Protocol -> Boot : updateFirmware()
+    Boot -> Flash : Erase application sector
+    Boot -> Flash : Write new firmware
+    Boot --> User : Update complete
+    
+    note right of Boot
+      After update, system reboots
+      or times out and boots to the
+      new application automatically
+    end note
+end
+
+group Switch Control Flow
+    User -> BSP : Activate switch
+    BSP --> App : State change detected
+    App -> Channels : Update motor control
+    Channels -> BSP : Activate appropriate relay
+    App -> LEDs : Update visual indicator
+    LEDs --> User : Visual feedback
+end
+
+group Configuration Flow
+    User -> Protocol : Send configuration command
+    Protocol -> App : Process configuration update
+    App -> Settings : Store updated settings
+    Settings -> App : Settings updated
+    App -> Channels : Apply new configuration
+    App -> LEDs : Update indicators
+    LEDs --> User : Confirmation feedback
+end
+
+group Test Mode
+    User -> BSP : Hold test button
+    BSP -> App : Detect test mode
+    App -> App : Enter test sequence
+    App -> LEDs : Display test patterns
+    App -> Channels : Perform diagnostics
+    App --> User : Report test results
+end
+
+@enduml
