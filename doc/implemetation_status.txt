@@ -1,0 +1,130 @@
+# Digital Float Control System Requirements
+
+## System Overview
+* The system shall control aircraft landing gear and rudder motors
+  * Status: [85%] - Core functionality implemented, but edge cases and failure modes need further testing
+* The system shall provide visual status indication via LEDs
+  * Status: [90%] - LED control implemented, but could benefit from improved user feedback during critical states
+* The system shall implement a secure bootloader for firmware updates
+  * Status: [60%] - Basic bootloader implemented, lacks signature verification and rollback protection
+
+## Bootloader Requirements
+* The bootloader shall support in-field firmware updates
+  * Status: [75%] - Basic update functionality implemented, but lacks robust error recovery and verification
+* The bootloader shall verify application integrity before execution
+  * Status: [40%] - Only checks for valid reset handler, no CRC/hash verification or signature validation
+* The bootloader shall provide version information on request
+  * Status: [90%] - Version reporting implemented, but format could be enhanced with more metadata
+* The bootloader shall have a configurable wait time before jumping to application
+  * Status: [80%] - Hard-coded constant implemented, but lacks runtime configuration options
+
+## Application Requirements
+* The application shall control up to 6 separate control channels
+  * Status: [90%] - Channels initialized, but concurrent operation edge cases need verification
+* The application shall support both landing gear and rudder control types
+  * Status: [85%] - Basic differentiation implemented, but state transitions could be more robust
+* The application shall monitor voltage and current for each channel
+  * Status: [70%] - Basic monitoring implemented, but calibration and accuracy verification needed
+* The application shall detect and report error conditions
+  * Status: [50%] - Limited error detection, lacks comprehensive error classification and reporting
+* The application shall provide configurable LED color indication based on system state
+  * Status: [85%] - Color states implemented, but user feedback during transitions could be improved
+* The application shall store and recall user settings from non-volatile memory
+  * Status: [75%] - Basic storage implemented, but lacks data validation and corruption recovery
+* The application shall store and recall channel configuration from non-volatile memory
+  * Status: [75%] - Basic storage implemented, but needs data integrity checks
+
+## Hardware Interface Requirements
+* The system shall interface with I2C power monitoring devices
+  * Status: [80%] - Basic I2C communication implemented, but bus error handling needs improvement
+* The system shall interface with I2C relay control devices
+  * Status: [80%] - Basic control implemented, but retry mechanisms and failure detection need enhancement
+* The system shall read switch inputs for landing gear and rudder position control
+  * Status: [85%] - Switch reading implemented, but debouncing and failure detection could be improved
+* The system shall support a test switch for diagnostics and configuration
+  * Status: [80%] - Basic test functionality implemented, but interface could be more intuitive
+* The system shall communicate via UART for commands and diagnostics
+  * Status: [75%] - Basic UART communication implemented, but lacks robust error handling and flow control
+
+## User Configuration Requirements
+* The system shall support adjustable LED brightness
+  * Status: [85%] - Brightness adjustment implemented, but limited range and granularity
+* The system shall support customizable LED colors for different states:
+  * Status: [80%] - Color customization implemented, but UI for configuration is limited
+  - Landing gear up position
+  - Landing gear down position
+  - Rudder up position
+  - Rudder down position
+  - Rudder inactive position
+  - Moving/transition states
+  - Error states
+
+## Safety and Diagnostics Requirements
+* The system shall provide hardware relay self-test capability
+  * Status: [70%] - Basic test implemented, but comprehensive failure detection and reporting needed
+* The system shall monitor power parameters for error detection
+  * Status: [60%] - Basic monitoring implemented, but lacks clear thresholds and response policies
+* The system shall provide I2C device scanning for diagnostics
+  * Status: [75%] - Basic scanning implemented, but results interpretation and remediation guidance lacking
+* The system shall implement watchdog/reset capability
+  * Status: [60%] - Reset command implemented, but watchdog integration not evident
+* The system shall have clear error indication for fault conditions
+  * Status: [55%] - Basic error indication, but lacks detailed error codes and recovery guidance
+
+## Protocol Requirements
+* The system shall implement a command-based communication protocol
+  * Status: [80%] - Protocol framework implemented, but lacks authentication and error recovery
+* The system shall support commands for:
+  * Status: [85%] - Basic commands implemented, but some need extended functionality
+  - Version reporting
+  - Device reset
+  - Hardware diagnostics
+  - Configuration updates
+  - Status monitoring
+  - Test mode activation
+
+## To be done: Proposed New Features
+
+### Security Enhancements
+* Implement cryptographic signature verification for firmware updates
+  * Priority: High - Prevents installation of unauthorized firmware
+* Add secure bootloader with rollback protection
+  * Priority: High - Prevents downgrade attacks and installation of vulnerable firmware
+* Implement authentication for protocol commands
+  * Priority: Medium - Prevents unauthorized access to configuration and control functions
+
+### Reliability Improvements
+* Implement CRC validation for all stored settings
+  * Priority: High - Prevents corruption-based failures
+* Add redundant storage for critical configuration data
+  * Priority: Medium - Improves resilience against flash memory failures
+* Implement comprehensive watchdog system
+  * Priority: High - Ensures system recovery from software hangs or crashes
+
+### Diagnostics and Monitoring
+* Create detailed error logging system with persistent storage
+  * Priority: Medium - Enables post-mortem analysis of failures
+* Implement comprehensive built-in self-test (BIST) functionality
+  * Priority: Medium - Allows detection of hardware issues during initialization
+* Add power consumption profiling and anomaly detection
+  * Priority: Low - Enables predictive maintenance and failure prediction
+
+### User Interface Enhancements
+* Develop more intuitive configuration interface for LED patterns
+  * Priority: Low - Improves user experience during configuration
+* Add support for piezo buzzer for audible feedback
+  * Priority: Medium - Provides alternative notification method for critical states
+* Implement customizable blinking patterns for error conditions
+  * Priority: Low - Allows better differentiation between error types
+
+### Functional Extensions
+* Implement position feedback sensing for more accurate state tracking
+  * Priority: Medium - Improves accuracy of position reporting
+* Add support for ambient light sensing to auto-adjust LED brightness
+  * Priority: Low - Improves visibility in varying lighting conditions
+* Implement motor current profiling for mechanical issue detection
+  * Priority: Medium - Enables early detection of mechanical problems
+
+### Performance Optimizations
+* Optimize power consumption during idle states
+  * Priority: Medium - Reduces system power requirements
