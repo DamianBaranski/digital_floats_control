@@ -1,0 +1,175 @@
+= Digital Float Control System
+:doctype: article
+:icons: font
+:experimental:
+:company: Skymatik Aero
+:product: Digital Float Control System
+:product-short: DFC
+:revdate: May 2025
+:imagesdir: images
+
+ifdef::backend-html5[]
+++++
+<style>
+.feature-box {
+  background-color: #f8f9fa;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+  border-left: 5px solid #0066cc;
+}
+.hero-section {
+  background-color: #e6f2ff;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  text-align: center;
+}
+.callout {
+  background-color: #0066cc;
+  color: white;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 5px;
+  text-align: center;
+  font-size: 120%;
+}
+.contact-box {
+  background-color: #f0f0f0;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+.disclaimer {
+  background-color: #fff3cd;
+  border-left: 5px solid #ffc107;
+  padding: 10px;
+  margin: 15px 0;
+  font-size: 90%;
+}
+</style>
+++++
+endif::[]
+
+[.text-center]
+*{company}*
+
+[.hero-section]
+--
+[.text-center]
+image::logo.svg[Skymatik Aero Logo,width=200]
+
+[.text-center.big]
+*{product}*
+
+[.text-center]
+_Advanced Motor Control for Experimental Aircraft_
+
+[.text-center.small]
+Product Bulletin {revdate}
+--
+
+[.disclaimer]
+IMPORTANT: For installation in Experimental, Amateur-Built, and Special Category aircraft only.
+
+== Innovative Controls for Experimental Aviation
+
+The {product-short} System provides precision control of landing gear and rudder motors with intuitive visual feedback. Purpose-built for experimental aircraft builders who demand reliability and performance.
+
+image::system_components_diagram.svg[{product} System Overview,align=center,width=80%]
+
+[.callout]
+Simplify your aircraft systems with cutting-edge digital control technology
+
+== Key Features
+
+[.feature-box]
+=== Multi-Channel Flexibility
+* *6 Independent Channels* - Configurable for landing gear or rudder operation
+* *Customizable Settings* - Adapt to your specific aircraft configuration
+* *Intuitive Controls* - Simple switch inputs for straightforward operation
+
+[.feature-box]
+=== Status at a Glance
+* *Multi-Color LED Indicators* - Instantly see system status
+* *Customizable Colors* - Match your panel's color scheme
+* *Error Detection* - Quick identification of any issues
+
+[.feature-box]
+=== Reliability & Safety
+* *Built-in Self-Test* - Verify system integrity with one-button testing
+* *Intelligent Monitoring* - Prevents damage from electrical issues
+* *Secure Updates* - Safe and reliable firmware updates
+
+== Perfect for Your Experimental Aircraft
+
+* *Kit Aircraft* - Ideal for Van's, Sonex, Zenith and other popular kits
+* *Amphibious Designs* - Simplify float or amphibious landing gear control
+* *Custom Builds* - Flexible configuration for your unique design
+
+[quote, John Miller, RV-10 Builder]
+____
+The DFC system simplified my landing gear installation and gives me confidence with its clear status indicators. A must-have for experimental aircraft builders.
+____
+
+== Technical Highlights
+
+[cols="1,1", options="header"]
+|===
+|Feature |Specification
+|Control Channels |6 independent channels
+|Power Requirements |24V DC (20-30V range), 2A max
+|Interface Options |UART, I2C, direct switch inputs
+|Dimensions |120mm x 80mm x 30mm
+|Temperature Range |-20°C to +70°C
+|Warranty |2 years standard
+|===
+
+== Easy Installation & Support
+
+* *Simple Mounting* - Standard four-point mounting system
+* *Comprehensive Documentation* - Clear installation manual
+* *Builder Support* - Technical assistance throughout your project
+* *Free Firmware Updates* - Ongoing improvements
+
+[.contact-box]
+====
+*Get Started Today*
+
+Sales: sales@skymatikaero.com +
+Support: support@skymatikaero.com +
+Phone: +1-555-123-4567 +
+Web: www.skymatikaero.com
+====
+
+[.disclaimer]
+NOTE: Not approved for standard type-certificated aircraft without appropriate field approval or STC.
+
+[.text-center]
+image::logo.svg[Skymatik Aero Logo,width=150]
+
+[.text-center.small]
+© {company} {revdate}. All Rights Reserved.
+
+ifdef::backend-pdf[]
+[%backmatter]
+++++
+<style>
+@page {  
+  @bottom-center {
+    content: "Page " counter(page) " of " counter(pages);
+    font-size: 9pt;
+  }
+  @bottom-left {
+    content: "© Skymatik Aero";
+    font-size: 9pt;
+  }
+  @bottom-right {
+    content: "Product Bulletin - Digital Float Control System";
+    font-size: 9pt;
+  }
+}
+</style>
+++++
+endif::] 
