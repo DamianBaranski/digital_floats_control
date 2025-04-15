@@ -1,0 +1,297 @@
+# Digital Float Control System
+# User Manual
+
+## Table of Contents
+1. Introduction
+2. System Overview
+3. Installation and Setup
+4. Basic Operation
+5. LED Indicators
+6. Test Switch Functions
+7. Configuration Options
+8. Command Protocol
+9. Troubleshooting
+10. Maintenance
+11. Technical Specifications
+12. Warranty and Support
+
+---
+
+## 1. Introduction
+
+Thank you for choosing the Digital Float Control System. This manual provides detailed information on the installation, operation, and maintenance of your system. The Digital Float Control System is designed to provide reliable control of aircraft landing gear and rudder motors, with visual status indication via LEDs.
+
+Document Version: 1.0
+
+---
+
+## 2. System Overview
+
+The Digital Float Control System consists of the following major components:
+
+- **Control Unit**: Central processing module with firmware that manages all system functions
+- **LED Indicators**: Multi-color status lights that display system state
+- **Control Channels**: Up to 6 independent channels for motor control
+- **Input Switches**: Landing gear and rudder position switches
+- **Test Switch**: For diagnostics and configuration functions
+- **Communication Port**: UART interface for configuration and diagnostics
+
+Each control channel can be configured for either landing gear or rudder operation, with different behavior profiles for each type.
+
+---
+
+## 3. Installation and Setup
+
+### 3.1 Physical Installation
+
+1. **Mounting the Control Unit**:
+   - Mount the unit in a dry, accessible location using the four mounting holes
+   - Ensure adequate ventilation and protection from vibration
+   - Operating temperature range: -20°C to +70°C
+
+2. **Connecting Motor Channels**:
+   - Connect control channels to the appropriate motors
+   - Observe proper polarity as indicated on the terminal labels
+   - Maximum load: 2A per channel at 28V DC
+
+3. **Switch Inputs**:
+   - Connect landing gear position switch to the LDG terminal
+   - Connect rudder position switch to the RUD terminal
+   - Switches should be dry contact type (no voltage)
+
+4. **Power Connection**:
+   - Connect power supply (12V/24V DC nominal)
+   - Observe proper polarity
+   - System requires [] A minimum supply capacity
+
+### 3.2 Initial Configuration
+
+After installation, the system requires initial configuration:
+
+1. Apply power to the unit
+2. Connect to the communication port using a terminal program
+   - Baud rate: 115200
+   - Data bits: 8
+   - Parity: None
+   - Stop bits: 1
+   - Flow control: None
+3. Use the command protocol (see Section 8) to configure channel settings
+
+---
+
+## 4. Basic Operation
+
+### 4.1 Normal Operation Mode
+
+During normal operation, the system:
+- Monitors the landing gear and rudder position switches
+- Controls the appropriate motors based on switch positions
+- Displays status via LED indicators
+- Monitors voltage and current for fault detection
+
+### 4.2 Operational States
+
+Each channel can be in one of the following states:
+
+- **UP**: Channel is in the up position
+- **DOWN**: Channel is in the down position
+- **MOVING**: Channel is transitioning between positions
+- **ERROR**: Channel has detected a fault condition
+
+### 4.3 Switching Procedure
+
+To operate the landing gear:
+1. Move the landing gear switch to the desired position
+2. System will automatically control motors to achieve the position
+3. LED indicators will show the current state
+4. Motors will stop automatically when position is reached
+
+To operate the rudder:
+1. Move the rudder switch to the desired position
+2. System will automatically control the rudder motor
+3. LED indicators will show the current state
+4. Motor will stop automatically when position is reached
+
+---
+
+## 5. LED Indicators
+
+The system uses multi-color LED indicators to show the status of each channel:
+
+### 5.1 Landing Gear Indicators
+
+- **Green** (default): Landing gear is down and locked
+- **Blue** (default): Landing gear is up and locked
+- **Blinking**: Landing gear is in motion
+- **Blinking Red**: Error condition detected
+
+### 5.2 Rudder Indicators
+
+- **Yellow** (default): Rudder is in central position
+- **Purple** (default): Rudder is in deflected position
+- **Blinking**: Rudder is in motion
+- **Blinking Red**: Error condition detected
+
+### 5.3 Custom Colors
+
+All indicator colors can be customized using the command protocol (see Section 8).
+
+---
+
+## 6. Test Switch Functions
+
+The system includes a test switch that provides access to diagnostic and configuration functions:
+
+### 6.1 Momentary Press
+
+A brief press of the test switch during normal operation will initiate a self-test sequence:
+- LED indicators will cycle through red, green, and blue
+- System will test all relays
+- Results will be displayed via LED indicators
+
+### 6.2 Extended Press
+
+Pressing and holding the test switch for more than 5 seconds enters LED brightness adjustment mode:
+1. LEDs will display white at different brightness levels
+2. Release the test switch when desired brightness is achieved
+3. Setting is automatically saved to memory
+
+---
+
+## 7. Configuration Options
+
+The system supports the following configuration options:
+
+### 7.1 User Settings
+
+- LED brightness
+- LED colors for different states
+- Wait time before operation
+
+### 7.2 Channel Settings
+
+For each channel:
+- Channel type (landing gear or rudder)
+- I2C addresses for monitoring and control devices
+- Voltage limits (minimum and maximum)
+- Calibration values for current sensing
+
+---
+
+## 8. Command Protocol
+
+The system supports a command-based protocol for configuration and diagnostics via the UART interface.
+
+### 8.1 Supported Commands
+
+- **v**: Get application version
+- **r**: Reset device
+- **s**: Scan I2C devices (parameter: I2C address)
+- **u**: Get user settings
+- **U**: Update user settings
+- **c**: Get channel settings (parameter: channel number)
+- **C**: Update channel settings
+- **m**: Get monitoring data (parameter: channel number)
+- **t**: Test specific channel
+
+### 8.2 Command Format
+
+Commands are sent as ASCII strings with the following format:
+```
+<command_char><optional_parameters>
+```
+
+Example:
+```
+v           # Get version
+c2          # Get settings for channel 2
+m0          # Get monitoring data for channel 0
+```
+
+Responses are formatted as JSON objects with command-specific data fields.
+
+---
+
+## 9. Troubleshooting
+
+### 9.1 Error Indicators
+
+Error conditions are indicated by red blinking LEDs. The specific pattern may indicate the error type:
+
+- **Rapid blinking**: Communication error with I2C device
+- **Slow blinking**: Power parameter out of range
+- **Double blink**: Motor control failure
+
+### 9.2 Common Issues
+
+| Problem | Possible Cause | Solution |
+|---------|---------------|----------|
+| System doesn't power up | Incorrect power connection | Check power polarity and voltage |
+| Channel doesn't respond | Channel disabled in settings | Enable channel in configuration |
+| Error indication on channel | Excessive current draw | Check for mechanical obstruction |
+| Error indication on channel | Device communication error | Check I2C connections |
+| Erratic operation | Electrical noise | Improve wiring shielding |
+
+### 9.3 Firmware Update
+
+If firmware update is required:
+1. Connect to UART interface
+2. Put system in bootloader mode by power cycling while holding test switch
+3. Use the firmware update tool to send new firmware
+4. Restart the system after update completes
+
+---
+
+## 10. Maintenance
+
+### 10.1 Routine Inspection
+
+Perform the following checks regularly:
+- Inspect all electrical connections for security
+- Check for signs of overheating or damage
+- Test system operation using the test switch
+- Verify correct LED indication for all states
+
+### 10.2 Calibration
+
+The system should be recalibrated annually or after any significant system modification:
+1. Access the calibration function via the command protocol
+2. Follow the prompted sequence to measure reference values
+3. Save the new calibration data
+
+---
+
+## 11. Technical Specifications
+
+### 11.1 Electrical
+
+- Input voltage: 24V DC nominal (20-30V DC range)
+- Power consumption: 2A maximum (all channels active)
+- Channel output: 2A maximum per channel
+- Communication: UART, 115200 baud
+
+### 11.2 Mechanical
+
+- Dimensions: 120mm x 80mm x 30mm
+- Weight: 200g
+- Operating temperature: -20°C to +70°C
+- Storage temperature: -40°C to +85°C
+- Humidity: 0-95% non-condensing
+
+### 11.3 Regulatory Compliance
+
+- DO-160G environmental qualification
+- DO-254 hardware design assurance
+- DO-178C software design assurance
+
+---
+
+## 12. Warranty and Support
+
+The Digital Float Control System is warranted against defects in materials and workmanship for a period of two years from the date of purchase.
+
+Please have your serial number ready when contacting support.
+
+---
+
+© 2023 Digital Floats Control Team. All rights reserved.

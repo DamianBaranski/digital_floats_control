@@ -1,0 +1,125 @@
+@startuml Deployment Diagram
+
+' Define the title of the diagram
+title Digital Floats Control - Embedded System Deployment
+
+' Define physical devices/nodes
+node "Digital Floats Control Hardware" as dfc_hw {
+  node "Microcontroller" as mcu {
+    component "Main Application" as app {
+      component "Application Logic" as app_logic
+      component "Communication Protocol" as protocol
+    }
+    
+    component "Board Support Package (BSP)" as bsp {
+      component "GPIO Interface" as gpio
+      component "I2C Bus" as i2c_bus
+      component "UART Bus" as uart_bus
+      component "Flash Storage" as flash
+      component "LED Controller" as leds
+    }
+  }
+  
+  node "Peripheral Hardware" as peripherals {
+    node "Control Channels" as channels {
+      component "Channel 1" as ch1
+      component "Channel 2" as ch2
+      component "Channel 3" as ch3
+      component "Channel 4" as ch4
+      component "Channel 5" as ch5
+      component "Channel 6" as ch6
+    }
+    
+    node "Input Switches" as switches {
+      component "Landing Gear Switch" as ldg_switch
+      component "Rudder Switch" as rud_switch
+      component "Test Switch" as test_switch
+    }
+    
+    node "Status Indicators" as indicators {
+      component "LED Array" as led_array
+    }
+    
+    node "I2C Devices" as i2c_devices {
+      component "PCF8574 I/O Expanders" as pcf
+      component "INA219 Power Monitors" as ina
+    }
+    
+    node "Storage" as storage {
+      database "External Flash" as ext_flash {
+        artifact "User Settings" as user_settings
+        artifact "Channel Settings" as channel_settings
+      }
+    }
+  }
+}
+
+node "External Systems" as external {
+  node "UART Interface" {
+    component "Configuration Tool" as config_tool
+    component "Monitoring Terminal" as terminal
+  }
+  
+  node "Aircraft Systems" as aircraft {
+    component "Landing Gear Motors" as ldg_motors
+    component "Rudder Motors" as rudder_motors
+  }
+}
+
+' Define relationships
+app_logic --> protocol : uses
+app --> bsp : uses
+
+bsp --> gpio : controls
+bsp --> i2c_bus : manages
+bsp --> uart_bus : manages
+bsp --> flash : accesses
+bsp --> leds : controls
+
+gpio --> switches : reads
+gpio --> channels : controls
+
+i2c_bus --> i2c_devices : communicates
+
+uart_bus --> terminal : sends logs
+uart_bus --> config_tool : configuration interface
+
+channels --> ldg_motors : controls
+channels --> rudder_motors : controls
+
+i2c_devices --> channels : monitors
+
+app_logic --> ext_flash : stores/loads settings
+flash --> user_settings : stores
+flash --> channel_settings : stores
+
+leds --> led_array : updates
+
+' Add notes for clarity
+note right of channels
+  6 control channels for managing
+  landing gear and rudder actuators
+end note
+
+note right of i2c_devices
+  PCF8574: Digital I/O expanders controlling relays
+  INA219: Current/voltage monitoring for each channel
+end note
+
+note bottom of app_logic
+  Main state machine with support for:
+  - Manual configuration via test switch
+  - LED status indication
+  - Channel state management
+  - Power monitoring
+end note
+
+note right of ext_flash
+  Non-volatile storage for:
+  - User color preferences
+  - Channel configuration
+  - I2C device addresses
+  - Calibration values
+end note
+
+@enduml
