@@ -1,0 +1,431 @@
+% Digital Floats Controller - User Manual
+% Based on ATA iSpec 2200
+% Created for Skymatik Aero
+
+% Document class
+\documentclass[12pt,a4paper,twoside,openright]{book}
+
+% Required packages
+\usepackage{geometry}
+\usepackage{fontspec}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tocloft}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{lipsum}  % For placeholder text
+\usepackage{tikz}    % For logo generation
+
+% Document geometry
+\geometry{a4paper, margin=1in, bottom=1.25in}
+
+% Font settings
+\setmainfont{Arial}
+
+% Line spacing
+\setstretch{1.4}
+
+% Color definitions
+\definecolor{skyblue}{RGB}{41, 128, 185}
+\definecolor{navyblue}{RGB}{24, 59, 86}
+\definecolor{titlewhite}{RGB}{255, 255, 255}
+
+% Chapter numbering
+\renewcommand{\thechapter}{\arabic{chapter}}
+
+% Chapter formatting - left-aligned titles
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{skyblue}\raggedright}
+  {\huge\bfseries Chapter \thechapter}
+  {20pt}
+  {\raggedright\Huge\bfseries}
+  [\vspace{1ex}{\color{skyblue}\titlerule[2pt]}]
+
+\titlespacing*{\chapter}{0pt}{80pt}{40pt}
+
+% Make chapters start on right-hand pages (odd pages)
+\makeatletter
+\renewcommand\chapter{\if@openright\cleardoublepage\else\clearpage\fi
+                    \thispagestyle{plain}%
+                    \global\@topnum\z@
+                    \@afterindentfalse
+                    \secdef\@chapter\@schapter}
+\makeatother
+
+% Blank page style for empty pages
+\makeatletter
+\def\cleardoublepage{\clearpage\if@twoside \ifodd\c@page\else
+    \vspace*{\fill}
+    \begin{center}
+    \textit{This page intentionally left blank}
+    \end{center}
+    \vspace{\fill}
+    \thispagestyle{empty}
+    \newpage
+    \if@twocolumn\hbox{}\newpage\fi\fi\fi}
+\makeatother
+
+% Section formatting
+\titleformat{\section}
+{\normalfont\Large\bfseries\color{navyblue}}
+{}{0em}{\thesection\ }
+\titlespacing*{\section}{0pt}{3.5ex plus 1ex minus .2ex}{2.3ex plus .2ex}
+
+% Subsection formatting
+\titleformat{\subsection}
+{\normalfont\large\bfseries\color{navyblue}}
+{}{0em}{\thesubsection\ }
+\titlespacing*{\subsection}{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+% Header and footer - increase spacing to prevent overlap
+\pagestyle{fancy}
+\fancyhf{}
+
+% Modified chapter marking commands
+\renewcommand{\chaptermark}[1]{\markboth{#1}{#1}}
+\renewcommand{\sectionmark}[1]{\markright{#1}}
+
+% Left and right headers with exactly two lines and proper alignment
+\fancyhead[RO]{\begin{tabular}[t]{r}\textit{Digital Floats Controller}\\\textit{User Manual}\end{tabular}}
+\fancyhead[LE]{\begin{tabular}[t]{l}\textit{Digital Floats Controller}\\\textit{User Manual}\end{tabular}}
+\fancyhead[LO]{\begin{tabular}[t]{l}\textit{Chapter \thechapter}\\\textit{\nouppercase{\leftmark}}\end{tabular}}
+\fancyhead[RE]{\begin{tabular}[t]{r}\textit{Chapter \thechapter}\\\textit{\nouppercase{\leftmark}}\end{tabular}}
+
+% Page numbers in footer with correct alignment
+\fancyfoot[RO]{\thepage}
+\fancyfoot[LE]{\thepage}
+
+% Header/footer rules
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Increase header height to accommodate two lines
+\setlength{\headheight}{30pt}
+
+% Hyperlink settings
+\hypersetup{
+    colorlinks=true,
+    linkcolor=skyblue,
+    filecolor=skyblue,
+    urlcolor=skyblue,
+    citecolor=skyblue,
+    pdftitle={Digital Floats Controller -- User Manual},
+    pdfauthor={Skymatik Aero},
+}
+
+% For front matter (roman numerals)
+\frontmatter
+
+% Set the graphicspath to include the images directory
+\graphicspath{{images/}}
+
+% Table of contents formatting
+\renewcommand{\cftaftertoctitle}{\vspace{2em}}
+\renewcommand{\cftbeforetoctitleskip}{0pt}
+\renewcommand{\cftaftertoctitleskip}{1em}
+\setlength{\cftbeforechapskip}{0.5em}
+\setlength{\cftbeforesecskip}{0.25em}
+
+% Style the TOC title to match the document style
+\renewcommand{\cfttoctitlefont}{\Huge\bfseries\color{skyblue}}
+\renewcommand{\contentsname}{Table of Contents}
+
+% Add dotted leaders for chapters
+\renewcommand{\cftchapdotsep}{\cftdotsep}
+
+% Indent section numbers properly
+\setlength{\cftsecindent}{2em}
+\setlength{\cftsubsecindent}{4em}
+
+% Footer settings - ensure footer has enough space
+\setlength{\footskip}{40pt}  % Increase space for footer
+
+% Define plain page style for chapter pages
+\fancypagestyle{plain}{%
+  \fancyhf{} % Clear all headers and footers
+  \renewcommand{\headrulewidth}{0pt} % No header rule
+  \renewcommand{\footrulewidth}{0pt} % No footer rule
+  \fancyfoot[RO,LE]{\thepage} % Page number in the footer
+}
+
+\begin{document}
+
+% Title page using PNG image as full cover
+\begin{titlepage}
+    \thispagestyle{empty}
+    % Save the current page dimensions
+    \newlength{\currentparindent}
+    \setlength{\currentparindent}{\parindent}
+    % Remove all page margins
+    \newgeometry{left=0mm, right=0mm, top=0mm, bottom=0mm}
+    % Remove paragraph indentation
+    \setlength{\parindent}{0mm}
+    % Place the image
+    \noindent\makebox[\linewidth]{\includegraphics[width=\paperwidth,height=\paperheight]{front_page_manual.png}}
+    % Restore the geometry for subsequent pages
+    \clearpage
+    \restoregeometry
+    \setlength{\parindent}{\currentparindent}
+\end{titlepage}
+
+% Table of contents
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{\contentsname}
+\tableofcontents
+\thispagestyle{fancy}  % Apply the fancy style to ensure header and footer appear
+\clearpage
+
+% Main matter (arabic numerals)
+\mainmatter
+
+\chapter{General Information}
+\newpage % Start content on a new page
+
+\section{Purpose of the Equipment}
+\lipsum[1] % Placeholder text
+
+\section{General Description and Operating Principles}
+\lipsum[2] % Placeholder text
+
+\section{Basic Technical Data and Parameters}
+\lipsum[3] % Placeholder text
+
+\section{Operational Limitations}
+\lipsum[4] % Placeholder text
+
+\section{Compliance with Regulations and Standards}
+\lipsum[5] % Placeholder text
+
+\section{Definitions, Abbreviations and Symbols}
+\lipsum[6] % Placeholder text
+
+\chapter{Construction and Technical Characteristics}
+\newpage % Start content on a new page
+
+\section{Equipment Design}
+\lipsum[7] % Placeholder text
+
+\section{Components and Functional Modules}
+\lipsum[8] % Placeholder text
+
+\section{Electrical and Electronic Schematics}
+\lipsum[9] % Placeholder text
+
+\section{Interfaces and Connectors}
+\lipsum[10] % Placeholder text
+
+\section{System Software}
+\lipsum[11] % Placeholder text
+
+\section{Dimensions and Weight}
+\lipsum[12] % Placeholder text
+
+\chapter{Equipment Installation}
+\newpage % Start content on a new page
+
+\section{Pre-installation Requirements}
+\lipsum[13] % Placeholder text
+
+\section{Mechanical Installation Procedure}
+\lipsum[14] % Placeholder text
+
+\section{Electrical Connections}
+\lipsum[15] % Placeholder text
+
+\section{Initial Configuration}
+\lipsum[16] % Placeholder text
+
+\section{Post-installation Tests}
+\lipsum[17] % Placeholder text
+
+\section{Common Installation Issues and Solutions}
+\lipsum[18] % Placeholder text
+
+\chapter{Operation}
+\newpage % Start content on a new page
+
+\section{Start-up and Shutdown Procedures}
+\lipsum[19] % Placeholder text
+
+\section{Control Panel and User Interface}
+\lipsum[20] % Placeholder text
+
+\section{Operating Modes}
+\lipsum[21] % Placeholder text
+
+\section{Status Indications and Error Messages}
+\lipsum[22] % Placeholder text
+
+\section{In-flight Operating Procedures}
+\lipsum[23] % Placeholder text
+
+\section{Emergency Procedures}
+\lipsum[24] % Placeholder text
+
+\chapter{Integration with Other Systems}
+\newpage % Start content on a new page
+
+\section{Compatibility with Aircraft Platforms}
+\lipsum[25] % Placeholder text
+
+\section{Interaction with Avionics Systems}
+\lipsum[26] % Placeholder text
+
+\section{Communication Protocols}
+\lipsum[27] % Placeholder text
+
+\section{Data Exchange}
+\lipsum[28] % Placeholder text
+
+\section{Redundancy and Safeguards}
+\lipsum[29] % Placeholder text
+
+\chapter{Technical Maintenance and Servicing}
+\newpage % Start content on a new page
+
+\section{Periodic Inspection Schedule}
+\lipsum[30] % Placeholder text
+
+\section{Line Maintenance Procedures}
+\lipsum[31] % Placeholder text
+
+\section{Hangar Maintenance Procedures}
+\lipsum[32] % Placeholder text
+
+\section{Calibration and Adjustment}
+\lipsum[33] % Placeholder text
+
+\section{Component Replacement}
+\lipsum[34] % Placeholder text
+
+\section{Cleaning and Conservation}
+\lipsum[35] % Placeholder text
+
+\chapter{Troubleshooting and Diagnostics}
+\newpage % Start content on a new page
+
+\section{Built-In Test Equipment (BITE)}
+\lipsum[36] % Placeholder text
+
+\section{Error Codes and Their Interpretation}
+\lipsum[37] % Placeholder text
+
+\section{Diagnostic Procedures}
+\lipsum[38] % Placeholder text
+
+\section{Analysis of Common Malfunctions}
+\lipsum[39] % Placeholder text
+
+\section{Diagnostic Tools}
+\lipsum[40] % Placeholder text
+
+\section{Fault Rectification Process}
+\lipsum[41] % Placeholder text
+
+\chapter{Certification and Compliance}
+\newpage % Start content on a new page
+
+\section{Type Certification (TC/STC)}
+\lipsum[42] % Placeholder text
+
+\section{Airworthiness Certificates}
+\lipsum[43] % Placeholder text
+
+\section{Electromagnetic Compatibility Requirements}
+\lipsum[44] % Placeholder text
+
+\section{Environmental Testing}
+\lipsum[45] % Placeholder text
+
+\section{Quality and Safety Standards}
+\lipsum[46] % Placeholder text
+
+\section{Compliance Documents}
+\lipsum[47] % Placeholder text
+
+\chapter{Spare Parts and Logistics}
+\newpage % Start content on a new page
+
+\section{Spare Parts Catalog}
+\lipsum[48] % Placeholder text
+
+\section{Part Numbers}
+\lipsum[49] % Placeholder text
+
+\section{Ordering Procedures}
+\lipsum[50] % Placeholder text
+
+\section{Storage Periods and Warehousing}
+\lipsum[51] % Placeholder text
+
+\section{Preservation During Storage}
+\lipsum[52] % Placeholder text
+
+\section{Parts and Components Identification}
+\lipsum[53] % Placeholder text
+
+\chapter{Modifications and Updates}
+\newpage % Start content on a new page
+
+\section{Modification History}
+\lipsum[54] % Placeholder text
+
+\section{Software Update Procedures}
+\lipsum[55] % Placeholder text
+
+\section{Service Bulletins}
+\lipsum[56] % Placeholder text
+
+\section{Airworthiness Directives}
+\lipsum[57] % Placeholder text
+
+\section{Change Implementation Process}
+\lipsum[58] % Placeholder text
+
+\section{Change Documentation}
+\lipsum[59] % Placeholder text
+
+\chapter{Training}
+\newpage % Start content on a new page
+
+\section{Training Requirements for Maintenance Personnel}
+\lipsum[60] % Placeholder text
+
+\section{Training Requirements for Flight Crew}
+\lipsum[61] % Placeholder text
+
+\section{Training Materials}
+\lipsum[62] % Placeholder text
+
+\section{Training Programs}
+\lipsum[63] % Placeholder text
+
+\section{Personnel Certification}
+\lipsum[64] % Placeholder text
+
+\chapter{Appendices}
+\newpage % Start content on a new page
+
+\section{Factory Test Protocols}
+\lipsum[65] % Placeholder text
+
+\section{Certificates and Warranties}
+\lipsum[66] % Placeholder text
+
+\section{Control Forms}
+\lipsum[67] % Placeholder text
+
+\section{Detailed Technical Drawings}
+\lipsum[68] % Placeholder text
+
+\section{Reference Data Tables}
+\lipsum[69] % Placeholder text
+
+\section{Index}
+\lipsum[70] % Placeholder text
+
+\end{document}
