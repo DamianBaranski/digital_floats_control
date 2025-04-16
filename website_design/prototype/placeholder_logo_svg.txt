@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="280" height="80" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Logo Icon (Simple Arrow) -->
+  <path d="M38 15L58 40L38 65" stroke="#2A87C8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M10 40H55" stroke="#2A87C8" stroke-width="8" stroke-linecap="round"/>
+  
+  <!-- Company Name -->
+  <text x="80" y="35" font-family="'Roboto Condensed', sans-serif" font-weight="700" font-size="24" fill="#0A3A5A">SKYMATIK</text>
+  <text x="80" y="60" font-family="'Roboto Condensed', sans-serif" font-weight="700" font-size="24" fill="#156091">AERO</text>
+</svg> 

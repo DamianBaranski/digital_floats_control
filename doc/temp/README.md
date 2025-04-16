@@ -1,115 +1,56 @@
-# Digital Floats Controller – User Manual
+# Digital Floats Controller Manual - Split Structure
 
-This repository contains the LaTeX source for the Digital Floats Controller user manual, formatted according to ATA iSpec 2200 conventions.
-
-## Requirements
-
-To compile this document, you need:
-
-1. A modern TeX distribution (TeXLive, MiKTeX, etc.)
-2. XeLaTeX or LuaLaTeX compiler
-3. Calibri font installed on your system (or modify the template to use another font)
-
-## Font Change
-
-The template now uses Arial font to match the modern look of the cover page. If you prefer to use IBM Plex Sans as originally specified, you can:
-
-1. Install IBM Plex Sans font
-2. Change the following line in manual.tex:
-   ```latex
-   \setmainfont{Arial}
-   ```
-   to
-   ```latex
-   \setmainfont{IBM Plex Sans}
-   ```
-
-## Font Installation
-
-### Windows
-
-1. Download IBM Plex Sans from [Google Fonts](https://fonts.google.com/specimen/IBM+Plex+Sans)
-2. Extract the ZIP file
-3. Select all font files, right-click, and choose "Install"
-
-### macOS
-
-1. Download IBM Plex Sans from [Google Fonts](https://fonts.google.com/specimen/IBM+Plex+Sans)
-2. Extract the ZIP file
-3. Double click each font file and click "Install Font"
-
-### Linux
-
-```bash
-# Ubuntu/Debian
-sudo apt install fonts-ibm-plex
-
-# Fedora
-sudo dnf install ibm-plex-sans-fonts
-```
-
-## Compilation
-
-To compile the manual, use XeLaTeX or LuaLaTeX:
-
-```bash
-# Using XeLaTeX
-xelatex manual.tex
-xelatex manual.tex  # Run twice for correct cross-references
-
-# OR using LuaLaTeX
-lualatex manual.tex
-lualatex manual.tex  # Run twice for correct cross-references
-```
+This directory contains the Digital Floats Controller manual split into multiple files for easier maintenance and management.
 
 ## Document Structure
 
-The document follows the ATA iSpec 2200 structure with the following chapters:
+The manual has been split into the following files:
 
-1. General Information
-2. Construction and Technical Characteristics
-3. Equipment Installation
-4. Operation
-5. Integration with Other Systems
-6. Technical Maintenance and Servicing
-7. Troubleshooting and Diagnostics
-8. Certification and Compliance
-9. Spare Parts and Logistics
-10. Modifications and Updates
-11. Training
-12. Appendices
+1. `main.tex` - The main file that includes all other files and defines the document structure
+2. `frontmatter.tex` - Contains thank you letter, document control, contact information, and other front matter
+3. `chapter01.tex` - General Information
+4. `chapter02.tex` - System Features
+5. `chapter03.tex` - Installation
+6. `chapter04.tex` - Operation
+7. `chapter05.tex` - Integration with Other Systems
+8. `chapter06.tex` - Maintenance
+9. `chapter07.tex` - Troubleshooting
+10. `chapter08.tex` - Configuration
+11. `chapter09.tex` - Compliance and Certification
+12. `chapter10.tex` - Parts and Ordering
+13. `chapter11.tex` - Warranty and Support
+14. `chapter12.tex` - Appendices
 
-## Notes About Numbering
+## How to Compile
 
-The document has been configured to:
-- Automatically number chapters and sections according to ATA conventions
-- Properly format headers and prevent overlapping with content
-- Remove duplicate numbering in section titles
+To compile the full manual:
 
-## Chapter Layout
+1. Ensure all chapter files are present in the same directory as `main.tex`
+2. Run the LaTeX compiler on `main.tex`:
+   ```
+   xelatex main.tex
+   ```
+3. Generate the table of contents:
+   ```
+   xelatex main.tex
+   ```
+4. Open the resulting `main.pdf` file to view the complete manual
 
-The document follows these layout guidelines:
-- Each chapter starts on a right-hand (odd-numbered) page
-- Chapter titles use the blue color scheme matching the cover page design
-- A horizontal rule underlines each chapter title
-- Chapter content begins on a new page after the title
-- Empty pages are marked with "This page intentionally left blank"
-- Each chapter's content starts with the first section
+## Notes for Editors
 
-## Header Format
+- The original `manual.tex` file has been preserved for reference
+- Each chapter file begins with `\chapter{Chapter Title}` and contains all sections and content for that chapter
+- The frontmatter contains all content that appears before the first numbered chapter
+- The main.tex file contains all the preamble code, package imports, and style definitions
+- To add a new chapter, create a new chapter file and add it to the list of `\include` statements in `main.tex`
+- Images should be placed in an `images/` folder at the same level as the TeX files
 
-The document headers are formatted as follows:
-- Left header shows "Chapter X" on the first line and the chapter title on the second line
-- Right header shows "Digital Floats Controller" on the first line and "User Manual" on the second
-- Headers are in italic font for a professional appearance
-- The header is separated from the content by a thin rule line
+## Missing Information
 
-## Customization
+Several sections throughout the manual are marked with `{\color{missingred}[Required: description]}` to indicate where additional information needs to be added. These should be completed before finalizing the document.
 
-- The document uses a custom cover page image (front_page_manual.png) placed in the images/ directory
-- To replace placeholder text, replace the `\lipsum[x]` commands with actual content
-- Update document metadata (version, ID, date) in the title page section
+## Compilation Requirements
 
-## License
-
-Copyright © Skymatik Aero. All rights reserved. 
+- XeLaTeX is required (not pdfLaTeX) for proper font rendering
+- The Arial font must be installed on the system
+- All packages used in the preamble must be installed 

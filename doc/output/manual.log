@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.4.16)  16 APR 2025 21:45
+This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.4.16)  16 APR 2025 21:22
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -759,7 +759,7 @@ xt;"
 tex-text;"
 
 Package hyperref Info: Option `colorlinks' set `true' on input line 121.
- (manual.aux)
+ (D:\dfc\digital_floats_control\doc\output\manual.aux)
 \openout1 = `manual.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 163.
@@ -882,7 +882,8 @@ LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 (Font)                  OT1/cmtt/m/n --> TU/lmtt/b/n on input line 163.
 Package hyperref Info: Link coloring ON on input line 163.
-(manual.out) (manual.out)
+(D:\dfc\digital_floats_control\doc\output\manual.out)
+(D:\dfc\digital_floats_control\doc\output\manual.out)
 \@outlinefile=\write4
 \openout4 = `manual.out'.
 
@@ -948,7 +949,7 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 [3] [4
 
 
-] (manual.toc
+] (D:\dfc\digital_floats_control\doc\output\manual.toc
 Underfull \vbox (badness 2790) has occurred while \output is active []
 
  [5]
@@ -3411,10 +3412,12 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [142]
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 4989.
+Underfull \hbox (badness 10000) in paragraph at lines 4988--4988
+[]|\TU/Arial(0)/m/n/12 [Missing information: Technician
+ []
 
-Overfull \hbox (2.54329pt too wide) in paragraph at lines 4989--4989
+
+Overfull \hbox (25.19998pt too wide) in paragraph at lines 4988--4988
  [][] 
  []
 
@@ -3430,7 +3433,7 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [143]
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Overfull \vbox (29.0716pt too high) has occurred while \output is active []
 
 
 
@@ -3465,7 +3468,22 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [147]
-Overfull \hbox (25.19998pt too wide) in paragraph at lines 5166--5166
+Underfull \hbox (badness 10000) in paragraph at lines 5165--5165
+[]|\TU/Arial(0)/m/n/12 [Missing information: Manufacture
+ []
+
+
+Underfull \hbox (badness 1014) in paragraph at lines 5165--5165
+[]|\TU/Arial(0)/m/n/12 [Missing information: Warranty start
+ []
+
+
+Underfull \hbox (badness 1888) in paragraph at lines 5165--5165
+[]|\TU/Arial(0)/m/n/12 [Missing information: Warranty end
+ []
+
+
+Overfull \hbox (25.19998pt too wide) in paragraph at lines 5165--5165
  [][] 
  []
 
@@ -3481,7 +3499,7 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [148]
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Overfull \vbox (57.90982pt too high) has occurred while \output is active []
 
 
 
@@ -3524,12 +3542,12 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [153]
-Overfull \hbox (25.19998pt too wide) in paragraph at lines 5421--5421
+Overfull \hbox (25.19998pt too wide) in paragraph at lines 5420--5420
  [][] 
  []
 
 
-Overfull \hbox (37.59996pt too wide) in paragraph at lines 5421--5421
+Overfull \hbox (37.59996pt too wide) in paragraph at lines 5420--5420
  [][] 
  []
 
@@ -3584,17 +3602,17 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [159]
-Underfull \hbox (badness 10000) in paragraph at lines 5526--5526
+Underfull \hbox (badness 10000) in paragraph at lines 5525--5525
 []|\TU/Arial(0)/m/n/12 Gear switch UP, Rudder
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 5528--5528
+Underfull \hbox (badness 10000) in paragraph at lines 5527--5527
 []|\TU/Arial(0)/m/n/12 Gear switch UP, Rudder
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 5528--5529
+Underfull \hbox (badness 10000) in paragraph at lines 5527--5528
 []|\TU/Arial(0)/m/n/12 Use for slow-speed water
  []
 
@@ -3678,17 +3696,17 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [169]
-Underfull \hbox (badness 10000) in paragraph at lines 5821--5821
+Underfull \hbox (badness 10000) in paragraph at lines 5820--5820
 []|\TU/Arial(0)/b/n/12 Maximum
  []
 
 
-Underfull \hbox (badness 1394) in paragraph at lines 5829--5830
+Underfull \hbox (badness 1394) in paragraph at lines 5828--5829
 []|\TU/Arial(0)/m/n/12 Avoid rapid acceleration
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 5831--5831
+Underfull \hbox (badness 10000) in paragraph at lines 5830--5830
 []|\TU/Arial(0)/m/n/12 Maximum Crosswind for Gear
  []
 
@@ -3703,47 +3721,47 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [170]
-Underfull \hbox (badness 10000) in paragraph at lines 5848--5848
+Underfull \hbox (badness 10000) in paragraph at lines 5847--5847
 []|\TU/Arial(0)/m/n/12 Operating Temperature
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 5848--5848
+Underfull \hbox (badness 10000) in paragraph at lines 5847--5847
 []|\TU/Arial(0)/m/n/12 [Missing infor-
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 5848--5848
+Underfull \hbox (badness 10000) in paragraph at lines 5847--5847
 \TU/Arial(0)/m/n/12 ature range in
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 5850--5850
+Underfull \hbox (badness 10000) in paragraph at lines 5849--5849
 []|\TU/Arial(0)/m/n/12 [Missing infor-
  []
 
 
-Underfull \hbox (badness 1430) in paragraph at lines 5850--5850
+Underfull \hbox (badness 1430) in paragraph at lines 5849--5849
 \TU/Arial(0)/m/n/12 mation: altitude
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 5850--5850
+Underfull \hbox (badness 10000) in paragraph at lines 5849--5849
 \TU/Arial(0)/m/n/12 value in feet
  []
 
 
-Underfull \hbox (badness 1783) in paragraph at lines 5850--5851
+Underfull \hbox (badness 1783) in paragraph at lines 5849--5850
 []|\TU/Arial(0)/m/n/12 Based on environmental testing
  []
 
 
-Underfull \hbox (badness 5022) in paragraph at lines 5852--5852
+Underfull \hbox (badness 5022) in paragraph at lines 5851--5851
 []|\TU/Arial(0)/m/n/12 Maximum Wave Height
  []
 
 
-Underfull \hbox (badness 1005) in paragraph at lines 5856--5856
+Underfull \hbox (badness 1005) in paragraph at lines 5855--5855
 []|\TU/Arial(0)/m/n/12 Maximum Crosswind for
  []
 
@@ -3751,7 +3769,7 @@ Underfull \hbox (badness 1005) in paragraph at lines 5856--5856
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 
-Overfull \hbox (1.2157pt too wide) in paragraph at lines 5868--5869
+Overfull \hbox (1.2157pt too wide) in paragraph at lines 5867--5868
 []\TU/Arial(0)/m/n/12 Minimum cool-down period between gear cycles: [][Missing 
 information: time value
  []
@@ -3772,7 +3790,7 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [172]
-Overfull \hbox (2.13812pt too wide) in paragraph at lines 5890--5891
+Overfull \hbox (2.13812pt too wide) in paragraph at lines 5889--5890
 []\TU/Arial(0)/m/n/12 Allow [][Missing information: cooling time][] minutes of 
 cooling after every [][Miss-
  []
@@ -3800,7 +3818,7 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
-[175] (manual.aux)
+[175] (D:\dfc\digital_floats_control\doc\output\manual.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
@@ -3809,12 +3827,13 @@ Package rerunfilecheck Info: File `manual.out' has not changed.
 (rerunfilecheck)             Checksum: A02D5BE6F7929B8E0A34001949272FC7;62109.
  ) 
 Here is how much of TeX's memory you used:
- 23300 strings out of 409617
- 474129 string characters out of 5773607
+ 23293 strings out of 409617
+ 474235 string characters out of 5773607
  1942191 words of memory out of 5000000
- 45047 multiletter control sequences out of 15000+600000
- 562289 words of font info for 75 fonts, out of 8000000 for 9000
+ 45041 multiletter control sequences out of 15000+600000
+ 561357 words of font info for 70 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  84i,18n,93p,419b,541s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on manual.pdf (191 pages).
+Output written on D:\dfc\digital_floats_control\doc\output\manual.pdf (191 page
+s).
