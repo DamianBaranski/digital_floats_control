@@ -114,56 +114,247 @@
 \contentsline {subsection}{\numberline {4.6.3}Abnormal LED Indications}{44}{subsection.4.6.3}%
 \contentsline {chapter}{\numberline {5}Integration with Other Systems}{47}{chapter.5}%
 \contentsline {section}{\numberline {5.1}Compatibility with Aircraft Platforms}{48}{section.5.1}%
-\contentsline {section}{\numberline {5.2}Interaction with Avionics Systems}{48}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Communication Protocols}{48}{section.5.3}%
-\contentsline {section}{\numberline {5.4}Data Exchange}{49}{section.5.4}%
-\contentsline {section}{\numberline {5.5}Redundancy and Safeguards}{49}{section.5.5}%
-\contentsline {chapter}{\numberline {6}Technical Maintenance and Servicing}{51}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Periodic Inspection Schedule}{52}{section.6.1}%
-\contentsline {section}{\numberline {6.2}Line Maintenance Procedures}{52}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Hangar Maintenance Procedures}{52}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Calibration and Adjustment}{53}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Component Replacement}{53}{section.6.5}%
-\contentsline {section}{\numberline {6.6}Cleaning and Conservation}{53}{section.6.6}%
-\contentsline {chapter}{\numberline {7}Troubleshooting and Diagnostics}{55}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Built-In Test Equipment (BITE)}{56}{section.7.1}%
-\contentsline {section}{\numberline {7.2}Error Codes and Their Interpretation}{56}{section.7.2}%
-\contentsline {section}{\numberline {7.3}Diagnostic Procedures}{56}{section.7.3}%
-\contentsline {section}{\numberline {7.4}Analysis of Common Malfunctions}{57}{section.7.4}%
-\contentsline {section}{\numberline {7.5}Diagnostic Tools}{57}{section.7.5}%
-\contentsline {section}{\numberline {7.6}Fault Rectification Process}{57}{section.7.6}%
-\contentsline {chapter}{\numberline {8}Certification and Compliance}{59}{chapter.8}%
-\contentsline {section}{\numberline {8.1}Type Certification (TC/STC)}{60}{section.8.1}%
-\contentsline {section}{\numberline {8.2}Airworthiness Certificates}{60}{section.8.2}%
-\contentsline {section}{\numberline {8.3}Electromagnetic Compatibility Requirements}{60}{section.8.3}%
-\contentsline {section}{\numberline {8.4}Environmental Testing}{61}{section.8.4}%
-\contentsline {section}{\numberline {8.5}Quality and Safety Standards}{61}{section.8.5}%
-\contentsline {section}{\numberline {8.6}Compliance Documents}{61}{section.8.6}%
-\contentsline {chapter}{\numberline {9}Spare Parts and Logistics}{63}{chapter.9}%
-\contentsline {section}{\numberline {9.1}Spare Parts Catalog}{64}{section.9.1}%
-\contentsline {section}{\numberline {9.2}Part Numbers}{64}{section.9.2}%
-\contentsline {section}{\numberline {9.3}Ordering Procedures}{64}{section.9.3}%
-\contentsline {section}{\numberline {9.4}Storage Periods and Warehousing}{64}{section.9.4}%
-\contentsline {section}{\numberline {9.5}Preservation During Storage}{65}{section.9.5}%
-\contentsline {section}{\numberline {9.6}Parts and Components Identification}{65}{section.9.6}%
-\contentsline {chapter}{\numberline {10}Modifications and Updates}{67}{chapter.10}%
-\contentsline {section}{\numberline {10.1}Modification History}{68}{section.10.1}%
-\contentsline {section}{\numberline {10.2}Software Update Procedures}{68}{section.10.2}%
-\contentsline {section}{\numberline {10.3}Service Bulletins}{68}{section.10.3}%
-\contentsline {section}{\numberline {10.4}Airworthiness Directives}{68}{section.10.4}%
-\contentsline {section}{\numberline {10.5}Change Implementation Process}{69}{section.10.5}%
-\contentsline {section}{\numberline {10.6}Change Documentation}{69}{section.10.6}%
-\contentsline {chapter}{\numberline {11}Training}{71}{chapter.11}%
-\contentsline {section}{\numberline {11.1}Training Requirements for Maintenance Personnel}{72}{section.11.1}%
-\contentsline {section}{\numberline {11.2}Training Requirements for Flight Crew}{72}{section.11.2}%
-\contentsline {section}{\numberline {11.3}Training Materials}{72}{section.11.3}%
-\contentsline {section}{\numberline {11.4}Training Programs}{73}{section.11.4}%
-\contentsline {section}{\numberline {11.5}Personnel Certification}{73}{section.11.5}%
-\contentsline {chapter}{\numberline {12}Appendices}{75}{chapter.12}%
-\contentsline {section}{\numberline {12.1}Factory Test Protocols}{76}{section.12.1}%
-\contentsline {section}{\numberline {12.2}Certificates and Warranties}{76}{section.12.2}%
-\contentsline {section}{\numberline {12.3}Control Forms}{76}{section.12.3}%
-\contentsline {section}{\numberline {12.4}Detailed Technical Drawings}{76}{section.12.4}%
-\contentsline {section}{\numberline {12.5}Reference Data Tables}{77}{section.12.5}%
-\contentsline {section}{\numberline {12.6}Index}{77}{section.12.6}%
+\contentsline {subsection}{\numberline {5.1.1}Supported Aircraft Types}{48}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Integration Requirements}{48}{subsection.5.1.2}%
+\contentsline {section}{\numberline {5.2}Interaction with Avionics Systems}{49}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Position Indication}{49}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Interlock Capabilities}{49}{subsection.5.2.2}%
+\contentsline {section}{\numberline {5.3}Communication Protocols}{50}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}UART Protocol}{50}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}I2C Protocol}{50}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}External Interface Protocol}{51}{subsection.5.3.3}%
+\contentsline {section}{\numberline {5.4}Data Exchange}{51}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Configuration Data}{51}{subsection.5.4.1}%
+\contentsline {subsection}{\numberline {5.4.2}Diagnostic Data}{52}{subsection.5.4.2}%
+\contentsline {section}{\numberline {5.5}Redundancy and Safeguards}{53}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Redundant Sensors}{53}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Failure Detection}{53}{subsection.5.5.2}%
+\contentsline {subsection}{\numberline {5.5.3}Failsafe Operation}{53}{subsection.5.5.3}%
+\contentsline {subsection}{\numberline {5.5.4}Recovery Mechanisms}{54}{subsection.5.5.4}%
+\contentsline {chapter}{\numberline {6}Technical Maintenance and Servicing}{55}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Routine Maintenance Schedule}{56}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Routine Inspection Procedures}{56}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Visual Inspection}{56}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}System Self-Test}{57}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}Hardware Diagnostics}{57}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}I2C Device Scanning}{57}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}Relay Testing}{58}{subsection.6.3.2}%
+\contentsline {subsection}{\numberline {6.3.3}Voltage and Current Monitoring}{58}{subsection.6.3.3}%
+\contentsline {section}{\numberline {6.4}Calibration Procedures}{58}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}Current Sensor Calibration}{59}{subsection.6.4.1}%
+\contentsline {subsection}{\numberline {6.4.2}Limit Switch Verification}{59}{subsection.6.4.2}%
+\contentsline {section}{\numberline {6.5}Troubleshooting}{59}{section.6.5}%
+\contentsline {subsection}{\numberline {6.5.1}LED Error Indications}{59}{subsection.6.5.1}%
+\contentsline {subsection}{\numberline {6.5.2}Common Issues and Solutions}{60}{subsection.6.5.2}%
+\contentsline {section}{\numberline {6.6}Firmware Update Procedure}{60}{section.6.6}%
+\contentsline {section}{\numberline {6.7}Component Replacement}{61}{section.6.7}%
+\contentsline {subsection}{\numberline {6.7.1}Control Unit Replacement}{61}{subsection.6.7.1}%
+\contentsline {subsection}{\numberline {6.7.2}Configuration Backup and Restore}{62}{subsection.6.7.2}%
+\contentsline {section}{\numberline {6.8}Preventive Maintenance}{62}{section.6.8}%
+\contentsline {subsection}{\numberline {6.8.1}Environmental Protection}{62}{subsection.6.8.1}%
+\contentsline {subsection}{\numberline {6.8.2}Operational Hours Tracking}{63}{subsection.6.8.2}%
+\contentsline {section}{\numberline {6.9}Service Tools and Equipment}{63}{section.6.9}%
+\contentsline {section}{\numberline {6.10}Returning to Service}{63}{section.6.10}%
+\contentsline {chapter}{\numberline {7}Troubleshooting and Diagnostics}{65}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Built-In Test Equipment (BITE)}{66}{section.7.1}%
+\contentsline {subsection}{\numberline {7.1.1}Self-Test Functionality}{66}{subsection.7.1.1}%
+\contentsline {subsection}{\numberline {7.1.2}Initiating Manual BITE Tests}{66}{subsection.7.1.2}%
+\contentsline {subsection}{\numberline {7.1.3}Interpreting BITE Results}{67}{subsection.7.1.3}%
+\contentsline {section}{\numberline {7.2}Error Codes and Their Interpretation}{67}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}Error Code Structure}{67}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}Subsystem Identifiers}{68}{subsection.7.2.2}%
+\contentsline {subsection}{\numberline {7.2.3}Common Error Codes}{68}{subsection.7.2.3}%
+\contentsline {subsection}{\numberline {7.2.4}LED Blink Patterns}{68}{subsection.7.2.4}%
+\contentsline {section}{\numberline {7.3}Diagnostic Procedures}{68}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}Initial Assessment}{68}{subsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.3.2}Connection to Diagnostic Interface}{69}{subsection.7.3.2}%
+\contentsline {subsection}{\numberline {7.3.3}Systematic Fault Isolation}{70}{subsection.7.3.3}%
+\contentsline {subsection}{\numberline {7.3.4}System Reset Procedure}{71}{subsection.7.3.4}%
+\contentsline {subsection}{\numberline {7.3.5}Configuration Verification}{71}{subsection.7.3.5}%
+\contentsline {section}{\numberline {7.4}Analysis of Common Malfunctions}{72}{section.7.4}%
+\contentsline {subsection}{\numberline {7.4.1}Gear Movement Issues}{72}{subsection.7.4.1}%
+\contentsline {subsection}{\numberline {7.4.2}Indicator Issues}{72}{subsection.7.4.2}%
+\contentsline {subsection}{\numberline {7.4.3}Communication Issues}{72}{subsection.7.4.3}%
+\contentsline {subsection}{\numberline {7.4.4}Configuration and Memory Issues}{72}{subsection.7.4.4}%
+\contentsline {section}{\numberline {7.5}Diagnostic Tools}{72}{section.7.5}%
+\contentsline {subsection}{\numberline {7.5.1}PC Application Diagnostic Tools}{72}{subsection.7.5.1}%
+\contentsline {subsection}{\numberline {7.5.2}Required Test Equipment}{73}{subsection.7.5.2}%
+\contentsline {subsection}{\numberline {7.5.3}Software Tools}{73}{subsection.7.5.3}%
+\contentsline {subsection}{\numberline {7.5.4}Hardware Diagnostic Port}{74}{subsection.7.5.4}%
+\contentsline {section}{\numberline {7.6}Fault Rectification Process}{74}{section.7.6}%
+\contentsline {subsection}{\numberline {7.6.1}Fault Identification Process}{74}{subsection.7.6.1}%
+\contentsline {subsection}{\numberline {7.6.2}Repair Authorization Levels}{75}{subsection.7.6.2}%
+\contentsline {subsection}{\numberline {7.6.3}Component Replacement Guidelines}{75}{subsection.7.6.3}%
+\contentsline {subsection}{\numberline {7.6.4}Software Recovery Procedures}{76}{subsection.7.6.4}%
+\contentsline {subsection}{\numberline {7.6.5}Post-Repair Verification}{77}{subsection.7.6.5}%
+\contentsline {subsection}{\numberline {7.6.6}Recurring Fault Analysis}{78}{subsection.7.6.6}%
+\contentsline {chapter}{\numberline {8}Certification and Compliance}{79}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Type Certification (TC/STC)}{80}{section.8.1}%
+\contentsline {subsection}{\numberline {8.1.1}Certification Basis}{80}{subsection.8.1.1}%
+\contentsline {subsection}{\numberline {8.1.2}STC Information}{80}{subsection.8.1.2}%
+\contentsline {subsection}{\numberline {8.1.3}Approved Aircraft Models}{80}{subsection.8.1.3}%
+\contentsline {subsection}{\numberline {8.1.4}Installation Eligibility}{80}{subsection.8.1.4}%
+\contentsline {section}{\numberline {8.2}Airworthiness Certificates}{82}{section.8.2}%
+\contentsline {subsection}{\numberline {8.2.1}System Airworthiness Compliance}{82}{subsection.8.2.1}%
+\contentsline {subsection}{\numberline {8.2.2}Required Documentation}{82}{subsection.8.2.2}%
+\contentsline {subsection}{\numberline {8.2.3}Continuing Airworthiness}{82}{subsection.8.2.3}%
+\contentsline {subsection}{\numberline {8.2.4}Operational Limitations}{83}{subsection.8.2.4}%
+\contentsline {section}{\numberline {8.3}Electromagnetic Compatibility Requirements}{83}{section.8.3}%
+\contentsline {subsection}{\numberline {8.3.1}EMC Standards Compliance}{83}{subsection.8.3.1}%
+\contentsline {subsection}{\numberline {8.3.2}EMC Test Categories}{84}{subsection.8.3.2}%
+\contentsline {subsection}{\numberline {8.3.3}Installation Requirements for EMC}{84}{subsection.8.3.3}%
+\contentsline {subsection}{\numberline {8.3.4}EMI/EMC Troubleshooting}{84}{subsection.8.3.4}%
+\contentsline {section}{\numberline {8.4}Environmental Testing}{85}{section.8.4}%
+\contentsline {subsection}{\numberline {8.4.1}DO-160G Environmental Qualification}{85}{subsection.8.4.1}%
+\contentsline {subsection}{\numberline {8.4.2}Operating Environment Limitations}{86}{subsection.8.4.2}%
+\contentsline {subsection}{\numberline {8.4.3}Fluid Susceptibility}{86}{subsection.8.4.3}%
+\contentsline {subsection}{\numberline {8.4.4}Environmental Maintenance Considerations}{87}{subsection.8.4.4}%
+\contentsline {section}{\numberline {8.5}Quality and Safety Standards}{87}{section.8.5}%
+\contentsline {subsection}{\numberline {8.5.1}Design Assurance Level}{87}{subsection.8.5.1}%
+\contentsline {subsection}{\numberline {8.5.2}Functional Hazard Assessment}{87}{subsection.8.5.2}%
+\contentsline {subsection}{\numberline {8.5.3}Quality Management System}{88}{subsection.8.5.3}%
+\contentsline {subsection}{\numberline {8.5.4}Configuration Management}{88}{subsection.8.5.4}%
+\contentsline {section}{\numberline {8.6}Compliance Documents}{89}{section.8.6}%
+\contentsline {subsection}{\numberline {8.6.1}Required Documentation}{89}{subsection.8.6.1}%
+\contentsline {subsection}{\numberline {8.6.2}Technical Standard Order Authorization}{89}{subsection.8.6.2}%
+\contentsline {subsection}{\numberline {8.6.3}Compliance Methods}{89}{subsection.8.6.3}%
+\contentsline {subsection}{\numberline {8.6.4}Required Markings}{90}{subsection.8.6.4}%
+\contentsline {subsection}{\numberline {8.6.5}Installer Responsibilities}{90}{subsection.8.6.5}%
+\contentsline {subsection}{\numberline {8.6.6}Regulatory Contacts}{91}{subsection.8.6.6}%
+\contentsline {chapter}{\numberline {9}Spare Parts and Logistics}{93}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Spare Parts Catalog}{94}{section.9.1}%
+\contentsline {subsection}{\numberline {9.1.1}Critical Components}{94}{subsection.9.1.1}%
+\contentsline {subsection}{\numberline {9.1.2}Non-Critical Components}{94}{subsection.9.1.2}%
+\contentsline {subsection}{\numberline {9.1.3}Consumables and Hardware}{94}{subsection.9.1.3}%
+\contentsline {subsection}{\numberline {9.1.4}Special Tools}{95}{subsection.9.1.4}%
+\contentsline {section}{\numberline {9.2}Part Numbers}{95}{section.9.2}%
+\contentsline {subsection}{\numberline {9.2.1}Part Numbering System}{95}{subsection.9.2.1}%
+\contentsline {subsection}{\numberline {9.2.2}Revision Control}{96}{subsection.9.2.2}%
+\contentsline {subsection}{\numberline {9.2.3}Cross-Reference Tables}{97}{subsection.9.2.3}%
+\contentsline {subsubsection}{OEM to Supplier Part Numbers}{97}{subsubsection*.2}%
+\contentsline {subsubsection}{Interchange Eligibility}{98}{subsubsection*.3}%
+\contentsline {section}{\numberline {9.3}Ordering Procedures}{98}{section.9.3}%
+\contentsline {subsection}{\numberline {9.3.1}Standard Ordering Process}{98}{subsection.9.3.1}%
+\contentsline {subsection}{\numberline {9.3.2}AOG (Aircraft On Ground) Expedited Orders}{99}{subsection.9.3.2}%
+\contentsline {subsection}{\numberline {9.3.3}Order Lead Times}{99}{subsection.9.3.3}%
+\contentsline {subsection}{\numberline {9.3.4}Minimum Order Quantities}{100}{subsection.9.3.4}%
+\contentsline {section}{\numberline {9.4}Storage Periods and Warehousing}{100}{section.9.4}%
+\contentsline {subsection}{\numberline {9.4.1}Shelf Life Limitations}{100}{subsection.9.4.1}%
+\contentsline {subsection}{\numberline {9.4.2}Storage Conditions}{100}{subsection.9.4.2}%
+\contentsline {subsection}{\numberline {9.4.3}Inventory Management}{102}{subsection.9.4.3}%
+\contentsline {section}{\numberline {9.5}Preservation During Storage}{103}{section.9.5}%
+\contentsline {subsection}{\numberline {9.5.1}Corrosion Prevention}{103}{subsection.9.5.1}%
+\contentsline {subsection}{\numberline {9.5.2}Periodic Inspection and Maintenance}{103}{subsection.9.5.2}%
+\contentsline {subsection}{\numberline {9.5.3}Long-Term Storage Procedures}{104}{subsection.9.5.3}%
+\contentsline {section}{\numberline {9.6}Parts and Components Identification}{105}{section.9.6}%
+\contentsline {subsection}{\numberline {9.6.1}Marking and Labeling}{105}{subsection.9.6.1}%
+\contentsline {subsection}{\numberline {9.6.2}Counterfeit Parts Prevention}{106}{subsection.9.6.2}%
+\contentsline {subsubsection}{Authentication Features}{106}{subsubsection*.4}%
+\contentsline {subsection}{\numberline {9.6.3}Documentation Requirements}{106}{subsection.9.6.3}%
+\contentsline {chapter}{\numberline {10}Modifications and Updates}{109}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Modification History}{110}{section.10.1}%
+\contentsline {subsection}{\numberline {10.1.1}System Revision History}{110}{subsection.10.1.1}%
+\contentsline {subsection}{\numberline {10.1.2}Hardware Modification Packages}{111}{subsection.10.1.2}%
+\contentsline {subsection}{\numberline {10.1.3}Interchangeability and Compatibility}{111}{subsection.10.1.3}%
+\contentsline {section}{\numberline {10.2}Software Update Procedures}{112}{section.10.2}%
+\contentsline {subsection}{\numberline {10.2.1}Software Versions}{112}{subsection.10.2.1}%
+\contentsline {subsection}{\numberline {10.2.2}Update Methods}{112}{subsection.10.2.2}%
+\contentsline {subsubsection}{Field Update Procedure}{112}{subsubsection*.5}%
+\contentsline {subsubsection}{Shop Update Procedure}{114}{subsubsection*.6}%
+\contentsline {subsection}{\numberline {10.2.3}Update Verification}{114}{subsection.10.2.3}%
+\contentsline {subsection}{\numberline {10.2.4}Reversion Procedure}{115}{subsection.10.2.4}%
+\contentsline {section}{\numberline {10.3}Service Bulletins}{116}{section.10.3}%
+\contentsline {subsection}{\numberline {10.3.1}Service Bulletin Classification}{116}{subsection.10.3.1}%
+\contentsline {subsection}{\numberline {10.3.2}Current Service Bulletins}{116}{subsection.10.3.2}%
+\contentsline {subsection}{\numberline {10.3.3}Service Bulletin Implementation}{116}{subsection.10.3.3}%
+\contentsline {section}{\numberline {10.4}Airworthiness Directives}{118}{section.10.4}%
+\contentsline {subsection}{\numberline {10.4.1}AD Compliance}{118}{subsection.10.4.1}%
+\contentsline {subsection}{\numberline {10.4.2}Current Airworthiness Directives}{118}{subsection.10.4.2}%
+\contentsline {subsection}{\numberline {10.4.3}AD Implementation Verification}{119}{subsection.10.4.3}%
+\contentsline {section}{\numberline {10.5}Change Implementation Process}{119}{section.10.5}%
+\contentsline {subsection}{\numberline {10.5.1}Change Planning}{119}{subsection.10.5.1}%
+\contentsline {subsection}{\numberline {10.5.2}Change Implementation}{120}{subsection.10.5.2}%
+\contentsline {subsection}{\numberline {10.5.3}Post-Change Activities}{121}{subsection.10.5.3}%
+\contentsline {section}{\numberline {10.6}Change Documentation}{122}{section.10.6}%
+\contentsline {subsection}{\numberline {10.6.1}Required Documentation}{122}{subsection.10.6.1}%
+\contentsline {subsection}{\numberline {10.6.2}Documentation Retention}{123}{subsection.10.6.2}%
+\contentsline {subsection}{\numberline {10.6.3}Electronic Documentation}{123}{subsection.10.6.3}%
+\contentsline {subsection}{\numberline {10.6.4}Configuration Management Database}{124}{subsection.10.6.4}%
+\contentsline {chapter}{\numberline {11}Training}{125}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Training Requirements for Maintenance Personnel}{126}{section.11.1}%
+\contentsline {subsection}{\numberline {11.1.1}Qualification Levels}{126}{subsection.11.1.1}%
+\contentsline {subsection}{\numberline {11.1.2}Prerequisites}{126}{subsection.11.1.2}%
+\contentsline {subsection}{\numberline {11.1.3}Required Training}{127}{subsection.11.1.3}%
+\contentsline {subsection}{\numberline {11.1.4}Recurrent Training}{127}{subsection.11.1.4}%
+\contentsline {section}{\numberline {11.2}Training Requirements for Flight Crew}{128}{section.11.2}%
+\contentsline {subsection}{\numberline {11.2.1}Initial Training}{128}{subsection.11.2.1}%
+\contentsline {subsection}{\numberline {11.2.2}Differences Training}{129}{subsection.11.2.2}%
+\contentsline {subsection}{\numberline {11.2.3}Recurrent Training}{129}{subsection.11.2.3}%
+\contentsline {section}{\numberline {11.3}Training Materials}{130}{section.11.3}%
+\contentsline {subsection}{\numberline {11.3.1}Instructor Materials}{130}{subsection.11.3.1}%
+\contentsline {subsection}{\numberline {11.3.2}Student Materials}{131}{subsection.11.3.2}%
+\contentsline {subsection}{\numberline {11.3.3}Training Aids}{132}{subsection.11.3.3}%
+\contentsline {section}{\numberline {11.4}Training Programs}{132}{section.11.4}%
+\contentsline {subsection}{\numberline {11.4.1}Factory Training}{132}{subsection.11.4.1}%
+\contentsline {subsection}{\numberline {11.4.2}On-Site Training}{133}{subsection.11.4.2}%
+\contentsline {subsection}{\numberline {11.4.3}Distance Learning}{134}{subsection.11.4.3}%
+\contentsline {subsection}{\numberline {11.4.4}Training Effectiveness}{134}{subsection.11.4.4}%
+\contentsline {section}{\numberline {11.5}Personnel Certification}{135}{section.11.5}%
+\contentsline {subsection}{\numberline {11.5.1}Certification Process}{135}{subsection.11.5.1}%
+\contentsline {subsection}{\numberline {11.5.2}Certification Levels}{136}{subsection.11.5.2}%
+\contentsline {subsection}{\numberline {11.5.3}Certification Renewal}{136}{subsection.11.5.3}%
+\contentsline {subsection}{\numberline {11.5.4}Certification Verification}{137}{subsection.11.5.4}%
+\contentsline {subsection}{\numberline {11.5.5}Records Maintenance}{137}{subsection.11.5.5}%
+\contentsline {chapter}{\numberline {12}Appendices}{139}{chapter.12}%
+\contentsline {section}{\numberline {12.1}Factory Test Protocols}{140}{section.12.1}%
+\contentsline {subsection}{\numberline {12.1.1}Acceptance Test Procedure}{140}{subsection.12.1.1}%
+\contentsline {subsection}{\numberline {12.1.2}Test Equipment}{141}{subsection.12.1.2}%
+\contentsline {subsection}{\numberline {12.1.3}Test Data Sheets}{141}{subsection.12.1.3}%
+\contentsline {subsection}{\numberline {12.1.4}Sample Factory Test Report}{143}{subsection.12.1.4}%
+\contentsline {section}{\numberline {12.2}Certificates and Warranties}{145}{section.12.2}%
+\contentsline {subsection}{\numberline {12.2.1}Supplied Certificates}{145}{subsection.12.2.1}%
+\contentsline {subsection}{\numberline {12.2.2}Warranty Coverage}{146}{subsection.12.2.2}%
+\contentsline {subsection}{\numberline {12.2.3}Warranty Claim Procedure}{147}{subsection.12.2.3}%
+\contentsline {subsection}{\numberline {12.2.4}Sample Warranty Certificate}{148}{subsection.12.2.4}%
+\contentsline {section}{\numberline {12.3}Control Forms}{150}{section.12.3}%
+\contentsline {subsection}{\numberline {12.3.1}Installation Forms}{150}{subsection.12.3.1}%
+\contentsline {subsection}{\numberline {12.3.2}Maintenance Forms}{151}{subsection.12.3.2}%
+\contentsline {subsection}{\numberline {12.3.3}Troubleshooting Forms}{152}{subsection.12.3.3}%
+\contentsline {subsection}{\numberline {12.3.4}Configuration and Update Forms}{153}{subsection.12.3.4}%
+\contentsline {subsection}{\numberline {12.3.5}Sample Control Form}{154}{subsection.12.3.5}%
+\contentsline {section}{\numberline {12.4}Detailed Technical Drawings}{156}{section.12.4}%
+\contentsline {section}{\numberline {12.5}Reference Data Tables}{156}{section.12.5}%
+\contentsline {section}{\numberline {12.6}Index}{156}{section.12.6}%
+\contentsline {chapter}{\numberline {13}Operational Procedures}{157}{chapter.13}%
+\contentsline {section}{\numberline {13.1}Normal Operation}{158}{section.13.1}%
+\contentsline {subsection}{\numberline {13.1.1}Pre-Flight Checks}{158}{subsection.13.1.1}%
+\contentsline {subsection}{\numberline {13.1.2}Takeoff Procedures}{159}{subsection.13.1.2}%
+\contentsline {subsubsection}{Land Takeoff}{159}{subsubsection*.7}%
+\contentsline {subsubsection}{Water Takeoff}{160}{subsubsection*.8}%
+\contentsline {subsection}{\numberline {13.1.3}Flight Operation}{160}{subsection.13.1.3}%
+\contentsline {subsubsection}{Mode Selection}{161}{subsubsection*.9}%
+\contentsline {subsubsection}{Temperature Considerations}{161}{subsubsection*.10}%
+\contentsline {subsection}{\numberline {13.1.4}Landing Procedures}{162}{subsection.13.1.4}%
+\contentsline {subsubsection}{Land Landing}{162}{subsubsection*.11}%
+\contentsline {subsubsection}{Water Landing}{163}{subsubsection*.12}%
+\contentsline {subsection}{\numberline {13.1.5}Post-Flight Procedures}{163}{subsection.13.1.5}%
+\contentsline {section}{\numberline {13.2}Emergency Procedures}{164}{section.13.2}%
+\contentsline {subsection}{\numberline {13.2.1}Gear Failure to Extend}{164}{subsection.13.2.1}%
+\contentsline {subsection}{\numberline {13.2.2}Gear Failure to Retract}{165}{subsection.13.2.2}%
+\contentsline {subsection}{\numberline {13.2.3}Water Detection System Failure}{166}{subsection.13.2.3}%
+\contentsline {subsection}{\numberline {13.2.4}Control System Failure}{166}{subsection.13.2.4}%
+\contentsline {section}{\numberline {13.3}Abnormal Procedures}{167}{section.13.3}%
+\contentsline {subsection}{\numberline {13.3.1}Partial Gear Extension/Retraction}{167}{subsection.13.3.1}%
+\contentsline {subsection}{\numberline {13.3.2}Water Operation in Freezing Conditions}{168}{subsection.13.3.2}%
+\contentsline {subsection}{\numberline {13.3.3}Overweight Landing}{169}{subsection.13.3.3}%
+\contentsline {subsection}{\numberline {13.3.4}Abnormal Vibration}{170}{subsection.13.3.4}%
+\contentsline {section}{\numberline {13.4}Operational Limitations}{170}{section.13.4}%
+\contentsline {subsection}{\numberline {13.4.1}Speed Limitations}{170}{subsection.13.4.1}%
+\contentsline {subsection}{\numberline {13.4.2}Environmental Limitations}{171}{subsection.13.4.2}%
+\contentsline {subsection}{\numberline {13.4.3}System Duty Cycle}{171}{subsection.13.4.3}%
+\contentsline {section}{\numberline {13.5}Special Operations}{172}{section.13.5}%
+\contentsline {subsection}{\numberline {13.5.1}Training Operations}{172}{subsection.13.5.1}%
+\contentsline {subsection}{\numberline {13.5.2}Winter Operations}{173}{subsection.13.5.2}%
+\contentsline {subsection}{\numberline {13.5.3}Salt Water Operations}{174}{subsection.13.5.3}%
+\contentsline {subsection}{\numberline {13.5.4}High Altitude Operations}{174}{subsection.13.5.4}%
 \contentsfinish 

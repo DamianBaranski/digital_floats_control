@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.4.16)  16 APR 2025 16:25
+This is XeTeX, Version 3.141592653-2.6-0.999995 (MiKTeX 24.1) (preloaded format=xelatex 2025.4.16)  16 APR 2025 17:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -960,7 +960,7 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [5]
-Underfull \vbox (badness 10000) has occurred while \output is active []
+Underfull \vbox (badness 1622) has occurred while \output is active []
 
 
 
@@ -971,6 +971,58 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [6]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[7]
+Underfull \vbox (badness 2903) has occurred while \output is active []
+
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[8]
+Underfull \vbox (badness 4543) has occurred while \output is active []
+
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[9]
+Underfull \vbox (badness 1418) has occurred while \output is active []
+
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[10]
+Underfull \vbox (badness 4543) has occurred while \output is active []
+
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[11]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
@@ -981,7 +1033,7 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
-[7])
+[12])
 \tf@toc=\write5
 \openout5 = `manual.toc'.
 
@@ -993,7 +1045,10 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
-[8]
+[13] [14
+
+
+]
 Chapter 0.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -1028,8 +1083,6 @@ Underfull \hbox (badness 10000) in paragraph at lines 301--301
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 [1
-
-
 
 ]
 
@@ -1447,6 +1500,15 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [48]
+Underfull \hbox (badness 10000) in paragraph at lines 1549--1549
+[]|\TU/Arial(0)/m/n/12 [Missing information: ad-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1549--1549
+\TU/Arial(0)/m/n/12 ditional aircraft-specific
+ []
+
 
 Package fancyhdr Warning: \headheight is too small (30.0pt): 
 (fancyhdr)                Make it at least 37.70004pt, for example:
@@ -1454,10 +1516,49 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
-[49] [50
+[49]
+Overfull \hbox (14.75562pt too wide) in paragraph at lines 1561--1562
+\TU/Arial(0)/m/n/12 The system’s primary external communication interface is UA
+RT (Universal Asynchronous
+ []
 
-]
-Chapter 6.
+
+Underfull \hbox (badness 10000) in paragraph at lines 1578--1578
+[]|\TU/Arial(0)/b/n/12 Command
+ []
+
+
+Overfull \hbox (3.4365pt too wide) in paragraph at lines 1582--1582
+[]|\TU/Arial(0)/m/n/12 Configuration| 
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[50]
+Underfull \hbox (badness 10000) in paragraph at lines 1636--1636
+[]|\TU/Arial(0)/b/n/12 Parameter
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1644--1644
+[]|\TU/Arial(0)/m/n/12 User Prefer-
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
 [51]
 
 Package fancyhdr Warning: \headheight is too small (30.0pt): 
@@ -1474,11 +1575,58 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
-[53] [54
+[53]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[54]
+Chapter 6.
+[55
 
 ]
-Chapter 7.
-[55]
+Underfull \hbox (badness 2744) in paragraph at lines 1754--1754
+[]|\TU/Arial(0)/m/n/12 Visual inspection of
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1760--1760
+[]|\TU/Arial(0)/m/n/12 Firmware update
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1762--1762
+[]|\TU/Arial(0)/m/n/12 Annually
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1762--1762
+\TU/Arial(0)/m/n/12 or after
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1762--1762
+\TU/Arial(0)/m/n/12 component
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1762--1762
+[]|\TU/Arial(0)/m/n/12 Digital multi-
+ []
+
+
+Underfull \hbox (badness 3758) in paragraph at lines 1762--1762
+\TU/Arial(0)/m/n/12 meter, PC with
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1762--1762
+\TU/Arial(0)/m/n/12 configuration
+ []
+
 
 Package fancyhdr Warning: \headheight is too small (30.0pt): 
 (fancyhdr)                Make it at least 37.70004pt, for example:
@@ -1503,10 +1651,60 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [58]
-Chapter 8.
-[59
+Underfull \hbox (badness 10000) in paragraph at lines 1898--1898
+[]|\TU/Arial(0)/m/n/12 I2C communication
+ []
 
-]
+
+Underfull \hbox (badness 2762) in paragraph at lines 1904--1905
+[]|\TU/Arial(0)/m/n/12 Check limit switch connections,
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[59]
+Underfull \hbox (badness 10000) in paragraph at lines 1919--1919
+[]|\TU/Arial(0)/m/n/12 System doesn’t
+ []
+
+
+Underfull \hbox (badness 1661) in paragraph at lines 1921--1921
+[]|\TU/Arial(0)/m/n/12 Channel doesn’t re-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1923--1923
+[]|\TU/Arial(0)/m/n/12 Electrical noise, loose
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1923--1924
+[]|\TU/Arial(0)/m/n/12 Improve wiring shielding,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1925--1926
+[]|\TU/Arial(0)/m/n/12 Verify switch configuration
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1927--1927
+[]|\TU/Arial(0)/m/n/12 Motor runs but
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 1927--1927
+\TU/Arial(0)/m/n/12 doesn’t complete
+ []
+
 
 Package fancyhdr Warning: \headheight is too small (30.0pt): 
 (fancyhdr)                Make it at least 37.70004pt, for example:
@@ -1531,10 +1729,20 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [62]
-Chapter 9.
-[63
+Underfull \hbox (badness 10000) in paragraph at lines 2022--2022
+[]|\TU/Arial(0)/m/n/12 USB-to-UART
+ []
 
-]
+
+Underfull \hbox (badness 10000) in paragraph at lines 2022--2022
+[]|\TU/Arial(0)/m/n/12 Configuration and
+ []
+
+
+Underfull \hbox (badness 1418) in paragraph at lines 2022--2023
+[]|\TU/Arial(0)/m/n/12 3.3V logic level, compatible
+ []
+
 
 Package fancyhdr Warning: \headheight is too small (30.0pt): 
 (fancyhdr)                Make it at least 37.70004pt, for example:
@@ -1542,7 +1750,11 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
-[64]
+[63] [64
+
+]
+Chapter 7.
+[65]
 
 Package fancyhdr Warning: \headheight is too small (30.0pt): 
 (fancyhdr)                Make it at least 37.70004pt, for example:
@@ -1550,11 +1762,44 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
-[65] [66
+[66]
 
-]
-Chapter 10.
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \hbox (badness 3108) in paragraph at lines 2181--2181
+[]|\TU/Arial(0)/m/n/12 Current sensor communica-
+ []
+
+
+Underfull \hbox (badness 7397) in paragraph at lines 2181--2182
+[]|\TU/Arial(0)/m/n/12 Disconnected INA219, address
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2183--2184
+[]|\TU/Arial(0)/m/n/12 Configuration data corruption,
+ []
+
+
+Underfull \hbox (badness 1281) in paragraph at lines 2187--2188
+[]|\TU/Arial(0)/m/n/12 Write protection active, memory
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
 [67]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
 
 Package fancyhdr Warning: \headheight is too small (30.0pt): 
 (fancyhdr)                Make it at least 37.70004pt, for example:
@@ -1570,11 +1815,214 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
-[69] [70
+[69]
 
-]
-Chapter 11.
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[70]
+Underfull \hbox (badness 4492) in paragraph at lines 2325--2325
+[]|\TU/Arial(0)/m/n/12 Gear doesn’t move
+ []
+
+
+Underfull \hbox (badness 2809) in paragraph at lines 2325--2325
+[]|\TU/Arial(0)/m/n/12 Power failure, relay failure,
+ []
+
+
+Underfull \hbox (badness 4036) in paragraph at lines 2325--2326
+[]|\TU/Arial(0)/m/n/12 Check voltage at relay
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2327--2328
+[]|\TU/Arial(0)/m/n/12 Check supply voltage,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2327--2328
+\TU/Arial(0)/m/n/12 verify current readings
+ []
+
+
+Underfull \hbox (badness 2617) in paragraph at lines 2327--2328
+\TU/Arial(0)/m/n/12 during operation, check
+ []
+
+
+Underfull \hbox (badness 1147) in paragraph at lines 2331--2331
+[]|\TU/Arial(0)/m/n/12 Loose connections, intermit-
+ []
+
+
+Underfull \hbox (badness 2181) in paragraph at lines 2331--2332
+[]|\TU/Arial(0)/m/n/12 Check connections, ob-
+ []
+
+
+Underfull \hbox (badness 2057) in paragraph at lines 2331--2332
+\TU/Arial(0)/m/n/12 serve operation through
+ []
+
+
+Underfull \hbox (badness 2644) in paragraph at lines 2331--2332
+\TU/Arial(0)/m/n/12 multiple cycles, monitor
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2346--2347
+[]|\TU/Arial(0)/m/n/12 Check power to LED
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2346--2347
+\TU/Arial(0)/m/n/12 communication, check
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2348--2348
+[]|\TU/Arial(0)/m/n/12 Configuration issue, color
+ []
+
+
+Underfull \hbox (badness 5622) in paragraph at lines 2348--2349
+[]|\TU/Arial(0)/m/n/12 Verify color settings in
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2350--2351
+[]|\TU/Arial(0)/m/n/12 Check power quality,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2350--2351
+\TU/Arial(0)/m/n/12 verify I2C communica-
+ []
+
+
+Underfull \hbox (badness 1917) in paragraph at lines 2350--2351
+\TU/Arial(0)/m/n/12 tion, update firmware if
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2352--2352
+[]|\TU/Arial(0)/m/n/12 Limit switch misalignment,
+ []
+
+
+Underfull \hbox (badness 4981) in paragraph at lines 2352--2352
+\TU/Arial(0)/m/n/12 switch failure, configuration
+ []
+
+
+Underfull \hbox (badness 1831) in paragraph at lines 2352--2353
+[]|\TU/Arial(0)/m/n/12 Verify limit switch oper-
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
 [71]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \hbox (badness 6047) in paragraph at lines 2369--2369
+[]|\TU/Arial(0)/m/n/12 Intermittent commu-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2369--2370
+[]|\TU/Arial(0)/m/n/12 Check for interference
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2369--2370
+\TU/Arial(0)/m/n/12 tions, update interface
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2371--2371
+[]|\TU/Arial(0)/m/n/12 Unresponsive to
+ []
+
+
+Underfull \hbox (badness 7168) in paragraph at lines 2371--2372
+\TU/Arial(0)/m/n/12 for error codes, verify
+ []
+
+
+Underfull \hbox (badness 1231) in paragraph at lines 2373--2374
+[]|\TU/Arial(0)/m/n/12 Verify COM port, check
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \hbox (badness 1783) in paragraph at lines 2388--2389
+\TU/Arial(0)/m/n/12 restore defaults, update
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2390--2390
+[]|\TU/Arial(0)/m/n/12 Configuration data
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2390--2390
+[]|\TU/Arial(0)/m/n/12 Power interruption during
+ []
+
+
+Underfull \hbox (badness 7151) in paragraph at lines 2390--2390
+\TU/Arial(0)/m/n/12 write, flash memory wear,
+ []
+
+
+Underfull \hbox (badness 7522) in paragraph at lines 2392--2392
+[]|\TU/Arial(0)/m/n/12 Checksum failure, memory
+ []
+
+
+Underfull \hbox (badness 6268) in paragraph at lines 2392--2393
+[]|\TU/Arial(0)/m/n/12 Check for memory er-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2394--2394
+[]|\TU/Arial(0)/m/n/12 Unable to update
+ []
+
+
+Underfull \hbox (badness 6592) in paragraph at lines 2394--2394
+[]|\TU/Arial(0)/m/n/12 Communication error, write
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2394--2395
+[]|\TU/Arial(0)/m/n/12 Check communication,
+ []
+
+
+Underfull \hbox (badness 1308) in paragraph at lines 2394--2395
+\TU/Arial(0)/m/n/12 verify write permissions,
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
 
 Package fancyhdr Warning: \headheight is too small (30.0pt): 
 (fancyhdr)                Make it at least 37.70004pt, for example:
@@ -1583,6 +2031,18 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [72]
+Underfull \hbox (badness 10000) in paragraph at lines 2428--2428
+[]|\TU/Arial(0)/m/n/12 USB-to-UART
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2462--2462
+[]|\TU/Arial(0)/b/n/12 Signal
+ []
+
 
 Package fancyhdr Warning: \headheight is too small (30.0pt): 
 (fancyhdr)                Make it at least 37.70004pt, for example:
@@ -1590,10 +2050,42 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
-[73] [74
+[73]
 
-]
-Chapter 12.
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[74]
+Underfull \hbox (badness 10000) in paragraph at lines 2511--2511
+[]|\TU/Arial(0)/m/n/12 Certified Mainte-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2511--2512
+[]|\TU/Arial(0)/m/n/12 Configuration changes, wiring repairs,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2513--2513
+[]|\TU/Arial(0)/m/n/12 Factory Authorized
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
 [75]
 
 Package fancyhdr Warning: \headheight is too small (30.0pt): 
@@ -1603,6 +2095,11 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
 [76]
+Overfull \hbox (6.15477pt too wide) in paragraph at lines 2572--2573
+[]\TU/Arial(0)/m/n/12 If required by regulations, arrange for appropriate inspe
+ctions and return-to-service
+ []
+
 
 Package fancyhdr Warning: \headheight is too small (30.0pt): 
 (fancyhdr)                Make it at least 37.70004pt, for example:
@@ -1610,7 +2107,1696 @@ Package fancyhdr Warning: \headheight is too small (30.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
 
-[77] (manual.aux)
+[77]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[78]
+Chapter 8.
+[79
+
+]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2659--2659
+[]|\TU/Arial(0)/m/n/12 [Missing information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2661--2661
+[]|\TU/Arial(0)/m/n/12 [Missing information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2663--2663
+[]|\TU/Arial(0)/m/n/12 [Missing information:
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[80]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[81]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[82]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[83]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[84]
+Underfull \hbox (badness 10000) in paragraph at lines 2864--2865
+[]|\TU/Arial(0)/m/n/12 95% RH (non-
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[85]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[86]
+Underfull \hbox (badness 5288) in paragraph at lines 2919--2919
+[]|\TU/Arial(0)/m/n/12 System Safety Assess-
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[87]
+Underfull \hbox (badness 5288) in paragraph at lines 2986--2986
+[]|\TU/Arial(0)/m/n/12 System Safety Assess-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2988--2988
+[]|\TU/Arial(0)/m/n/12 Software Accomplish-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2990--2990
+[]|\TU/Arial(0)/m/n/12 Hardware Accomplish-
+ []
+
+
+Underfull \hbox (badness 2970) in paragraph at lines 2992--2992
+[]|\TU/Arial(0)/m/n/12 Environmental Qualifica-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 2996--2996
+[]|\TU/Arial(0)/m/n/12 Aircraft Flight Manual
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[88]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[89]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[90]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[91] [92
+
+]
+Chapter 9.
+[93]
+Underfull \hbox (badness 10000) in paragraph at lines 3076--3076
+[]|\TU/Arial(0)/b/n/12 Replaceability
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3076--3077
+[]|\TU/Arial(0)/b/n/12 Recommended
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3078--3078
+[]|\TU/Arial(0)/m/n/12 Line Replaceable
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3080--3080
+[]|\TU/Arial(0)/m/n/12 Gear Actuator
+ []
+
+
+Underfull \hbox (badness 2698) in paragraph at lines 3084--3084
+[]|\TU/Arial(0)/m/n/12 Water Detection
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3086--3086
+[]|\TU/Arial(0)/m/n/12 Gear Position
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3086--3086
+[]|\TU/Arial(0)/m/n/12 Shop Replaceable
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3105--3105
+[]|\TU/Arial(0)/b/n/12 Replaceability
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3105--3106
+[]|\TU/Arial(0)/b/n/12 Recommended
+ []
+
+
+Underfull \hbox (badness 2012) in paragraph at lines 3111--3111
+[]|\TU/Arial(0)/m/n/12 Rudder Bushing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3113--3113
+[]|\TU/Arial(0)/m/n/12 Indicator LED
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3115--3115
+[]|\TU/Arial(0)/m/n/12 Control Panel
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3119--3119
+[]|\TU/Arial(0)/m/n/12 Sensor Cable
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \hbox (badness 1014) in paragraph at lines 3134--3135
+[]|\TU/Arial(0)/b/n/12 Quantity Per Main-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3136--3136
+[]|\TU/Arial(0)/m/n/12 Waterproof
+ []
+
+
+Underfull \hbox (badness 2134) in paragraph at lines 3136--3137
+[]|\TU/Arial(0)/m/n/12 1 tube per 10 ser-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3138--3138
+[]|\TU/Arial(0)/m/n/12 Corrosion In-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3138--3138
+[]|\TU/Arial(0)/m/n/12 Electrical Connec-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3140--3140
+[]|\TU/Arial(0)/m/n/12 Adhesive
+ []
+
+
+Underfull \hbox (badness 2134) in paragraph at lines 3140--3141
+[]|\TU/Arial(0)/m/n/12 1 tube per 15 ser-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3148--3148
+[]|\TU/Arial(0)/m/n/12 Cleaning Solu-
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \hbox (badness 1661) in paragraph at lines 3165--3165
+[]|\TU/Arial(0)/m/n/12 Limit Switch Adjustment
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3165--3166
+[]|\TU/Arial(0)/m/n/12 Calibration of gear position
+ []
+
+
+Underfull \hbox (badness 3128) in paragraph at lines 3177--3178
+[]|\TU/Arial(0)/m/n/12 Adjustment of gear mechanism
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[94]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[95]
+Underfull \hbox (badness 10000) in paragraph at lines 3230--3231
+[]|\TU/Arial(0)/m/n/12 Direct replace-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3234--3235
+[]|\TU/Arial(0)/m/n/12 Calibration re-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3236--3237
+[]|\TU/Arial(0)/m/n/12 Direct replace-
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[96]
+Underfull \hbox (badness 10000) in paragraph at lines 3255--3255
+[]|\TU/Arial(0)/m/n/12 DFC-FUS-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3261--3261
+\TU/Arial(0)/m/n/12 sensor substi-
+ []
+
+
+Underfull \hbox (badness 3148) in paragraph at lines 3263--3264
+[]|\TU/Arial(0)/m/n/12 Substitute uses improved material with
+ []
+
+
+Underfull \vbox (badness 3989) has occurred while \output is active []
+
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[97]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[98]
+Underfull \hbox (badness 10000) in paragraph at lines 3320--3321
+[]|\TU/Arial(0)/b/n/12 Expedited/AOG Deliv-
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \hbox (badness 6236) in paragraph at lines 3349--3349
+[]|\TU/Arial(0)/m/n/12 O-rings (DFC-ORG se-
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[99]
+Underfull \hbox (badness 10000) in paragraph at lines 3372--3373
+[]|\TU/Arial(0)/m/n/12 Manufacturing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3376--3376
+[]|\TU/Arial(0)/m/n/12 10-25°C, sealed con-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3378--3379
+[]|\TU/Arial(0)/m/n/12 Manufacturing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3380--3381
+[]|\TU/Arial(0)/m/n/12 Manufacturing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3384--3384
+[]|\TU/Arial(0)/m/n/12 Temperature/humidity
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3384--3385
+[]|\TU/Arial(0)/m/n/12 Manufacturing
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[100]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[101]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[102]
+Underfull \hbox (badness 10000) in paragraph at lines 3501--3501
+[]|\TU/Arial(0)/b/n/12 Component
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3501--3501
+[]|\TU/Arial(0)/b/n/12 Inspection In-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3503--3503
+[]|\TU/Arial(0)/m/n/12 Electronic Con-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3509--3509
+[]|\TU/Arial(0)/m/n/12 Gaskets and
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3511--3511
+[]|\TU/Arial(0)/m/n/12 Wiring Har-
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[103]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[104]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[105]
+Underfull \hbox (badness 1960) in paragraph at lines 3626--3626
+[]|\TU/Arial(0)/m/n/12 Tamper-Evident Packag-
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[106]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[107] [108
+
+]
+Chapter 10.
+[109]
+Underfull \hbox (badness 10000) in paragraph at lines 3680--3680
+[]|\TU/Arial(0)/b/n/12 Release
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3682--3682
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3682--3682
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3682--3682
+\TU/Arial(0)/m/n/12 initial re-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3684--3684
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3684--3684
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3684--3684
+\TU/Arial(0)/m/n/12 release
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3686--3686
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3686--3686
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3686--3686
+\TU/Arial(0)/m/n/12 release
+ []
+
+
+Underfull \hbox (badness 2512) in paragraph at lines 3686--3687
+\TU/Arial(0)/m/n/12 craft models; Upgraded control
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3688--3688
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3688--3688
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3688--3688
+\TU/Arial(0)/m/n/12 release
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3688--3689
+[]|\TU/Arial(0)/m/n/12 Major hardware redesign; In-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3690--3690
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3690--3690
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3690--3690
+\TU/Arial(0)/m/n/12 release
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[110]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[111]
+Underfull \hbox (badness 10000) in paragraph at lines 3761--3761
+[]|\TU/Arial(0)/b/n/12 Current
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3761--3761
+[]|\TU/Arial(0)/b/n/12 Release
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3763--3763
+[]|\TU/Arial(0)/m/n/12 Main Control
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3763--3763
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3763--3763
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3763--3763
+\TU/Arial(0)/m/n/12 release
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3765--3765
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3765--3765
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3765--3765
+\TU/Arial(0)/m/n/12 release
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3765--3766
+[]|\TU/Arial(0)/m/n/12 PC-based diagnostic in-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3765--3766
+\TU/Arial(0)/m/n/12 terface, troubleshooting,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3767--3767
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3767--3767
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3767--3767
+\TU/Arial(0)/m/n/12 release
+ []
+
+
+Underfull \hbox (badness 5817) in paragraph at lines 3767--3768
+[]|\TU/Arial(0)/m/n/12 Water detection algorithms,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3769--3769
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3769--3769
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3769--3769
+\TU/Arial(0)/m/n/12 release
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3769--3770
+[]|\TU/Arial(0)/m/n/12 System configuration, pa-
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[112]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[113]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[114]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[115]
+Overfull \hbox (10.08102pt too wide) in paragraph at lines 3892--3892
+[]|\TU/Arial(0)/b/n/12 Classification| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3892--3892
+[]|\TU/Arial(0)/b/n/12 Affected
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3894--3894
+[]|\TU/Arial(0)/m/n/12 SB-DFC-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3896--3896
+[]|\TU/Arial(0)/m/n/12 SB-DFC-
+ []
+
+
+Overfull \hbox (13.43259pt too wide) in paragraph at lines 3896--3896
+[]|\TU/Arial(0)/m/n/12 Recommended| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3898--3898
+[]|\TU/Arial(0)/m/n/12 SB-DFC-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3900--3900
+[]|\TU/Arial(0)/m/n/12 SB-DFC-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3902--3902
+[]|\TU/Arial(0)/m/n/12 SB-DFC-
+ []
+
+
+Overfull \hbox (13.43259pt too wide) in paragraph at lines 3902--3902
+[]|\TU/Arial(0)/m/n/12 Recommended| 
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3904--3904
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3904--3904
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3904--3904
+\TU/Arial(0)/m/n/12 Additional
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3904--3904
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3904--3904
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3904--3904
+\TU/Arial(0)/m/n/12 Classifica-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3904--3904
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3904--3904
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3904--3904
+\TU/Arial(0)/m/n/12 Affected
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[116]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[117]
+Underfull \hbox (badness 10000) in paragraph at lines 3967--3967
+[]|\TU/Arial(0)/b/n/12 Effective
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3967--3967
+[]|\TU/Arial(0)/b/n/12 Affected
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3969--3969
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3969--3969
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3969--3969
+\TU/Arial(0)/m/n/12 AD number
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3969--3969
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3969--3969
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3969--3969
+\TU/Arial(0)/m/n/12 Effective
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3969--3969
+[]|\TU/Arial(0)/m/n/12 [Missing
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3969--3969
+\TU/Arial(0)/m/n/12 information:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 3969--3969
+\TU/Arial(0)/m/n/12 Affected
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[118]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[119]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[120]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[121]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[122]
+Underfull \hbox (badness 10000) in paragraph at lines 4150--4150
+[]|\TU/Arial(0)/m/n/12 Aircraft Maintenance
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[123]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[124]
+Chapter 11.
+[125
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 4235--4235
+[]|\TU/Arial(0)/b/n/12 Qualification
+ []
+
+
+Underfull \hbox (badness 7851) in paragraph at lines 4237--4237
+[]|\TU/Arial(0)/m/n/12 Level 1: Line
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4237--4237
+[]|\TU/Arial(0)/m/n/12 Aircraft Maintenance
+ []
+
+
+Underfull \hbox (badness 1292) in paragraph at lines 4237--4237
+\TU/Arial(0)/m/n/12 Technician with avionics
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4237--4238
+[]|\TU/Arial(0)/m/n/12 Visual inspections, operational
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4237--4238
+\TU/Arial(0)/m/n/12 checks, basic troubleshooting,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4237--4238
+\TU/Arial(0)/m/n/12 Line Replaceable Unit (LRU)
+ []
+
+
+Underfull \hbox (badness 3333) in paragraph at lines 4239--4239
+[]|\TU/Arial(0)/m/n/12 Level 2: Inter-
+ []
+
+
+Underfull \hbox (badness 2035) in paragraph at lines 4239--4239
+\TU/Arial(0)/m/n/12 mediate Mainte-
+ []
+
+
+Underfull \hbox (badness 1412) in paragraph at lines 4241--4241
+[]|\TU/Arial(0)/m/n/12 Level 3: Depot
+ []
+
+
+Underfull \hbox (badness 3568) in paragraph at lines 4241--4241
+[]|\TU/Arial(0)/m/n/12 Level 2 plus advanced
+ []
+
+
+Underfull \hbox (badness 1622) in paragraph at lines 4241--4242
+[]|\TU/Arial(0)/m/n/12 All Level 2 tasks plus complex
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[126]
+Underfull \hbox (badness 10000) in paragraph at lines 4286--4287
+[]|\TU/Arial(0)/b/n/12 Required for
+ []
+
+
+Underfull \hbox (badness 2057) in paragraph at lines 4292--4292
+[]|\TU/Arial(0)/m/n/12 Operational Testing and
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4294--4294
+[]|\TU/Arial(0)/m/n/12 Advanced Diagnostics
+ []
+
+
+Underfull \hbox (badness 5245) in paragraph at lines 4296--4296
+[]|\TU/Arial(0)/m/n/12 System Integration and
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[127]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[128]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[129]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[130]
+Underfull \hbox (badness 1297) in paragraph at lines 4490--4491
+[]|\TU/Arial(0)/m/n/12 System Wiring Trainer - Functional wiring harness with
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[131]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[132]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[133]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[134]
+Underfull \hbox (badness 10000) in paragraph at lines 4657--4657
+[]|\TU/Arial(0)/b/n/12 Certification
+ []
+
+
+Underfull \hbox (badness 5245) in paragraph at lines 4659--4659
+[]|\TU/Arial(0)/m/n/12 Complete DFC-101 course,
+ []
+
+
+Underfull \hbox (badness 4366) in paragraph at lines 4661--4661
+\TU/Arial(0)/m/n/12 tenance Techni-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4663--4663
+[]|\TU/Arial(0)/m/n/12 DFC Intermedi-
+ []
+
+
+Underfull \hbox (badness 1281) in paragraph at lines 4663--4663
+[]|\TU/Arial(0)/m/n/12 Complete through DFC-501,
+ []
+
+
+Underfull \hbox (badness 4036) in paragraph at lines 4663--4663
+\TU/Arial(0)/m/n/12 minimum 6 months experi-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4665--4665
+[]|\TU/Arial(0)/m/n/12 DFC Senior
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4665--4665
+\TU/Arial(0)/m/n/12 Maintenance
+ []
+
+
+Underfull \hbox (badness 2173) in paragraph at lines 4665--4665
+\TU/Arial(0)/m/n/12 DFC-701, pass comprehen-
+ []
+
+
+Underfull \hbox (badness 1546) in paragraph at lines 4665--4665
+\TU/Arial(0)/m/n/12 months experience at Inter-
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[135]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[136]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[137]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[138]
+Chapter 12.
+[139
+
+]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[140]
+Underfull \hbox (badness 10000) in paragraph at lines 4811--4811
+[]|\TU/Arial(0)/m/n/12 Automated Test
+ []
+
+
+Underfull \hbox (badness 1783) in paragraph at lines 4811--4812
+[]|\TU/Arial(0)/m/n/12 Comprehensive electronic testing of
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4815--4815
+[]|\TU/Arial(0)/m/n/12 Tektronix
+ []
+
+
+Underfull \hbox (badness 8113) in paragraph at lines 4819--4819
+[]|\TU/Arial(0)/m/n/12 Sorensen XPH-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4823--4823
+[]|\TU/Arial(0)/m/n/12 Environmental
+ []
+
+
+Underfull \hbox (badness 6510) in paragraph at lines 4825--4825
+[]|\TU/Arial(0)/m/n/12 Vibration Test Sys-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 4827--4827
+[]|\TU/Arial(0)/m/n/12 Water Sensor Test
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[141]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[142]
+Underfull \hbox (badness 10000) in paragraph at lines 4951--4951
+[]|\TU/Arial(0)/m/n/12 [Missing information: Technician
+ []
+
+
+Overfull \hbox (25.19998pt too wide) in paragraph at lines 4951--4951
+ [][] 
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[143]
+Overfull \vbox (29.0716pt too high) has occurred while \output is active []
+
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[144]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[145]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[146]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[147]
+Underfull \hbox (badness 10000) in paragraph at lines 5128--5128
+[]|\TU/Arial(0)/m/n/12 [Missing information: Manufacture
+ []
+
+
+Underfull \hbox (badness 1014) in paragraph at lines 5128--5128
+[]|\TU/Arial(0)/m/n/12 [Missing information: Warranty start
+ []
+
+
+Underfull \hbox (badness 1888) in paragraph at lines 5128--5128
+[]|\TU/Arial(0)/m/n/12 [Missing information: Warranty end
+ []
+
+
+Overfull \hbox (25.19998pt too wide) in paragraph at lines 5128--5128
+ [][] 
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[148]
+Overfull \vbox (57.90982pt too high) has occurred while \output is active []
+
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[149]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[150]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[151]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[152]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[153]
+Overfull \hbox (25.19998pt too wide) in paragraph at lines 5383--5383
+ [][] 
+ []
+
+
+Overfull \hbox (37.59996pt too wide) in paragraph at lines 5383--5383
+ [][] 
+ []
+
+
+Underfull \vbox (badness 6691) has occurred while \output is active []
+
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[154]
+Overfull \vbox (450.1467pt too high) has occurred while \output is active []
+
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[155]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[156]
+Chapter 13.
+[157
+
+]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[158]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[159]
+Underfull \hbox (badness 10000) in paragraph at lines 5488--5488
+[]|\TU/Arial(0)/m/n/12 Gear switch UP, Rudder
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5490--5490
+[]|\TU/Arial(0)/m/n/12 Gear switch UP, Rudder
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5490--5491
+[]|\TU/Arial(0)/m/n/12 Use for slow-speed water
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[160]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[161]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[162]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[163]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[164]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[165]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[166]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[167]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[168]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[169]
+Underfull \hbox (badness 10000) in paragraph at lines 5783--5783
+[]|\TU/Arial(0)/b/n/12 Maximum
+ []
+
+
+Underfull \hbox (badness 1394) in paragraph at lines 5791--5792
+[]|\TU/Arial(0)/m/n/12 Avoid rapid acceleration
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5793--5793
+[]|\TU/Arial(0)/m/n/12 Maximum Crosswind for Gear
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[170]
+Underfull \hbox (badness 10000) in paragraph at lines 5810--5810
+[]|\TU/Arial(0)/m/n/12 Operating Temperature
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5810--5810
+[]|\TU/Arial(0)/m/n/12 [Missing infor-
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5810--5810
+\TU/Arial(0)/m/n/12 ature range in
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5812--5812
+[]|\TU/Arial(0)/m/n/12 [Missing infor-
+ []
+
+
+Underfull \hbox (badness 1430) in paragraph at lines 5812--5812
+\TU/Arial(0)/m/n/12 mation: altitude
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 5812--5812
+\TU/Arial(0)/m/n/12 value in feet
+ []
+
+
+Underfull \hbox (badness 1783) in paragraph at lines 5812--5813
+[]|\TU/Arial(0)/m/n/12 Based on environmental testing
+ []
+
+
+Underfull \hbox (badness 5022) in paragraph at lines 5814--5814
+[]|\TU/Arial(0)/m/n/12 Maximum Wave Height
+ []
+
+
+Underfull \hbox (badness 1005) in paragraph at lines 5818--5818
+[]|\TU/Arial(0)/m/n/12 Maximum Crosswind for
+ []
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Overfull \hbox (1.2157pt too wide) in paragraph at lines 5830--5831
+[]\TU/Arial(0)/m/n/12 Minimum cool-down period between gear cycles: [][Missing 
+information: time value
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[171]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[172]
+Overfull \hbox (2.13812pt too wide) in paragraph at lines 5852--5853
+[]\TU/Arial(0)/m/n/12 Allow [][Missing information: cooling time][] minutes of 
+cooling after every [][Miss-
+ []
+
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[173]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[174]
+
+Package fancyhdr Warning: \headheight is too small (30.0pt): 
+(fancyhdr)                Make it at least 37.70004pt, for example:
+(fancyhdr)                \setlength{\headheight}{37.70004pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-7.70004pt}.
+
+[175] (manual.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-04>
@@ -1622,16 +3808,16 @@ Package rerunfilecheck Warning: File `manual.out' has changed.
 (rerunfilecheck)                or use package `bookmark'.
 
 Package rerunfilecheck Info: Checksums for `manual.out':
-(rerunfilecheck)             Before: A6245C25E30BDAC48489E995D02C1A5C;29642
-(rerunfilecheck)             After:  735089254041C421AE64F2BE3ADFB544;29830.
+(rerunfilecheck)             Before: FF20B2E52B667B7E56F74DD83822501E;59823
+(rerunfilecheck)             After:  A02D5BE6F7929B8E0A34001949272FC7;62109.
  ) 
 Here is how much of TeX's memory you used:
- 23238 strings out of 409617
- 473121 string characters out of 5773607
- 1936191 words of memory out of 5000000
- 44987 multiletter control sequences out of 15000+600000
+ 23287 strings out of 409617
+ 473801 string characters out of 5773607
+ 1942191 words of memory out of 5000000
+ 45036 multiletter control sequences out of 15000+600000
  561357 words of font info for 70 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  84i,18n,93p,419b,541s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on manual.pdf (85 pages).
+Output written on manual.pdf (189 pages).
