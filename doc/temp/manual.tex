@@ -18,6 +18,9 @@
 \usepackage{setspace}
 \usepackage{lipsum}  % For placeholder text
 \usepackage{tikz}    % For logo generation
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{array}
 
 % Document geometry
 \geometry{a4paper, margin=1in, bottom=1.25in}
@@ -32,6 +35,7 @@
 \definecolor{skyblue}{RGB}{41, 128, 185}
 \definecolor{navyblue}{RGB}{24, 59, 86}
 \definecolor{titlewhite}{RGB}{255, 255, 255}
+\definecolor{missingred}{RGB}{220, 50, 50}
 
 % Chapter numbering
 \renewcommand{\thechapter}{\arabic{chapter}}
@@ -151,6 +155,11 @@
   \fancyfoot[RO,LE]{\thepage} % Page number in the footer
 }
 
+% Table spacing and style commands
+\newcommand{\tabletextfont}{\normalfont\rmfamily}
+\newcommand{\tableheadfont}{\normalfont\bfseries}
+\renewcommand{\arraystretch}{1.3} % Increase vertical spacing in tables
+
 \begin{document}
 
 % Title page using PNG image as full cover
@@ -182,89 +191,1282 @@
 % Main matter (arabic numerals)
 \mainmatter
 
+% Adding custom chapter for Preface that starts at 0
+\setcounter{chapter}{-1}
+\chapter{Preface}
+\setcounter{page}{1}
+
+\section{Document Control}
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{5pt} % Reduce column spacing
+\begin{tabular}{|p{0.4\textwidth}|p{0.5\textwidth}|}
+\hline
+\tableheadfont\textbf{Parameter} & \tableheadfont\textbf{Value} \\
+\hline
+\tabletextfont Document Identifier & DFC-UM-001 \\
+\hline
+\tabletextfont Issue/Revision Number & 1.0 \\
+\hline
+\tabletextfont Publication Date & {\color{missingred}[Required: Publication date in DD-MMM-YYYY format]} \\
+\hline
+\end{tabular}
+\caption{Document Identification}
+\end{table}
+
+\subsection{Revision History}
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{4pt} % Reduce column spacing
+\begin{tabular}{|p{0.15\textwidth}|p{0.1\textwidth}|p{0.4\textwidth}|p{0.25\textwidth}|}
+\hline
+\tableheadfont\textbf{Date} & \tableheadfont\textbf{Version} & \tableheadfont\textbf{Changes} & \tableheadfont\textbf{Approved By} \\
+\hline
+\tabletextfont {\color{missingred}[Date]} & 0.1 & Initial draft & {\color{missingred}[Name]} \\
+\hline
+\tabletextfont {\color{missingred}[Date]} & 0.5 & Technical content review & {\color{missingred}[Name]} \\
+\hline
+\tabletextfont {\color{missingred}[Date]} & 0.9 & Pre-release candidate & {\color{missingred}[Name]} \\
+\hline
+\tabletextfont {\color{missingred}[Date]} & 1.0 & First production release & {\color{missingred}[Name]} \\
+\hline
+\end{tabular}
+\caption{Revision History}
+\end{table}
+
+\subsection{Distribution List}
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{5pt} % Reduce column spacing
+\begin{tabular}{|p{0.3\textwidth}|p{0.2\textwidth}|p{0.4\textwidth}|}
+\hline
+\tableheadfont\textbf{Organization} & \tableheadfont\textbf{Copy Type} & \tableheadfont\textbf{Number of Copies} \\
+\hline
+\tabletextfont Skymatik Aero Engineering & Controlled & Master copy \\
+\hline
+\tabletextfont Skymatik Aero QA Department & Controlled & 1 \\
+\hline
+\tabletextfont Production Department & Controlled & 1 \\
+\hline
+\tabletextfont Customer Support & Controlled & 1 \\
+\hline
+\tabletextfont Installation/Maintenance Facilities & Controlled & As required \\
+\hline
+\tabletextfont Aircraft Operators & Controlled & Provided with each system \\
+\hline
+\end{tabular}
+\caption{Distribution List}
+\end{table}
+
+\section{Authorship and Approval}
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{5pt} % Reduce column spacing
+\begin{tabular}{|p{0.3\textwidth}|p{0.6\textwidth}|}
+\hline
+\tableheadfont\textbf{Role} & \tableheadfont\textbf{Name and Position} \\
+\hline
+\tabletextfont Principal Author & {\color{missingred}[Name, Position]} \\
+\hline
+\tabletextfont Contributing Authors & {\color{missingred}[Names, Positions]} \\
+\hline
+\tabletextfont Technical Reviewers & {\color{missingred}[Names, Positions]} \\
+\hline
+\tabletextfont Quality Assurance & {\color{missingred}[Name, Position]} \\
+\hline
+\tabletextfont Final Approval Authority & {\color{missingred}[Name, Position]} \\
+\hline
+\end{tabular}
+\caption{Document Authorship}
+\end{table}
+
+\vspace{1cm}
+\subsection{Signatures of Approval}
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{5pt} % Reduce column spacing
+\begin{tabular}{|p{0.3\textwidth}|p{0.3\textwidth}|p{0.25\textwidth}|}
+\hline
+\tableheadfont\textbf{Role} & \tableheadfont\textbf{Signature} & \tableheadfont\textbf{Date} \\
+\hline
+\tabletextfont Engineering Manager & & \\
+\hline
+\tabletextfont Quality Assurance Manager & & \\
+\hline
+\tabletextfont Technical Publications Manager & & \\
+\hline
+\tabletextfont Chief Engineer & & \\
+\hline
+\end{tabular}
+\caption{Approval Signatures}
+\end{table}
+
+\section{Copyright and Proprietary Information}
+
+\subsection{Copyright Statement}
+
+\begin{quote}
+© {\color{missingred}[Year]} Skymatik Aero. All rights reserved. No part of this publication may be reproduced, stored in a retrieval system, or transmitted in any form or by any means, electronic, mechanical, photocopying, recording, or otherwise, without the prior written permission of Skymatik Aero.
+\end{quote}
+
+\subsection{Proprietary Notices}
+
+\begin{quote}
+This document contains proprietary and confidential information of Skymatik Aero. The information contained herein may not be disclosed or distributed to any third party without the express written consent of Skymatik Aero.
+\end{quote}
+
+\subsection{Export Control Classification}
+
+\begin{quote}
+This document contains technical data whose export may be restricted by the Export Administration Regulations (EAR) or the International Traffic in Arms Regulations (ITAR). Violations of these export laws are subject to severe criminal penalties.
+
+Export Control Classification Number (ECCN): {\color{missingred}[Classification number]}
+
+ITAR Category: {\color{missingred}[ITAR category, if applicable]}
+\end{quote}
+
+\subsection{Confidentiality Level}
+
+\begin{quote}
+Confidentiality classification: For official use only. Authorized distribution to certified aircraft operators, maintenance personnel, and regulatory authorities only.
+\end{quote}
+
+\section{How to Use This Document}
+
+\subsection{Document Organization}
+
+This user manual is organized into chapters that follow the logical sequence of understanding, installing, operating, and maintaining the Digital Floats Control System:
+
+\begin{itemize}
+    \item \textbf{Chapter 1: General Information} - Provides an overview of the system, its purpose, and basic technical specifications.
+    \item \textbf{Chapter 2: Construction and Technical Characteristics} - Details the technical design, components, and specifications of the system.
+    \item \textbf{Chapter 3: Equipment Installation} - Contains procedures and requirements for installing the system in an aircraft.
+    \item \textbf{Chapter 4: Operation} - Explains how to operate the system during normal and emergency conditions.
+    \item \textbf{Chapter 5: Integration with Other Systems} - Describes how the system interfaces with other aircraft systems.
+    \item \textbf{Chapter 6: Technical Maintenance and Servicing} - Outlines maintenance schedules and procedures.
+    \item \textbf{Chapter 7: Troubleshooting and Diagnostics} - Provides guidance for identifying and resolving common issues.
+    \item \textbf{Chapter 8: Certification and Compliance} - Documents regulatory compliance information.
+    \item \textbf{Chapter 9: Spare Parts and Logistics} - Lists spare parts and ordering information.
+    \item \textbf{Chapter 10: Modifications and Updates} - Explains the process for system updates and modifications.
+    \item \textbf{Chapter 11: Training} - Outlines training requirements for operators and maintenance personnel.
+    \item \textbf{Chapter 12: Appendices} - Contains supplementary information and reference materials.
+\end{itemize}
+
+\subsection{Navigation Aids}
+
+This manual includes several navigation aids to help you quickly find specific information:
+
+\begin{itemize}
+    \item \textbf{Table of Contents} - Lists all chapters, sections, and subsections with page numbers.
+    \item \textbf{Headers and Footers} - Each page header shows the chapter title and manual title for easy orientation.
+    \item \textbf{Cross-References} - References to related information are provided as hyperlinks in the electronic version.
+    \item \textbf{Tables and Figures} - All tables and figures are numbered sequentially within each chapter.
+    \item \textbf{Index} - A comprehensive index is provided at the end of the manual.
+\end{itemize}
+
+\subsection{Conventions Used}
+
+The following conventions are used throughout this manual:
+
+\begin{itemize}
+    \item \textbf{Bold Text} - Used for emphasis, UI elements, and physical controls.
+    \item \textit{Italic Text} - Used for document titles, references, and parameter values.
+    \item \texttt{Monospace Text} - Used for configuration parameters and values.
+    \item \colorbox{yellow}{\textbf{WARNING}} - Indicates a potentially hazardous situation which, if not avoided, could result in death or serious injury.
+    \item \colorbox{orange}{\textbf{CAUTION}} - Indicates a potentially hazardous situation which, if not avoided, may result in minor or moderate injury, or damage to equipment.
+    \item \colorbox{lightgray}{\textbf{NOTE}} - Provides additional information, tips, or reminders.
+    \item {\color{missingred}[Required Information]} - Indicates information that must be filled in based on the specific installation.
+\end{itemize}
+
+\subsection{Related Documentation}
+
+The following documents provide additional information related to the Digital Floats Control System:
+
+\begin{itemize}
+    \item DFC-ICA-001: Instructions for Continued Airworthiness
+    \item DFC-IM-001: Installation Manual
+    \item DFC-CD-001: Component Design Document
+    \item DFC-QTP-001: Qualification Test Procedures
+    \item DFC-SW-001: Software Description Document
+    \item {\color{missingred}[Additional related documents specific to aircraft type or installation]}
+\end{itemize}
+
+\section{Revision Policy}
+
+\subsection{Process for Requesting Changes}
+
+To request changes to this document:
+
+\begin{enumerate}
+    \item Submit change requests in writing to the address provided in the Contact Information section.
+    \item Include the document identifier, revision number, specific section/page requiring change, proposed change text, and justification.
+    \item For operators and maintenance facilities, submit changes through your technical representative or the online support portal.
+    \item Internal staff should use the document control system to submit change requests.
+\end{enumerate}
+
+All proposed changes will be reviewed by the technical team and implemented according to the established configuration management procedures.
+
+\subsection{Update Frequency}
+
+This document is updated according to the following schedule:
+
+\begin{itemize}
+    \item Major revisions: Annually or with significant system changes
+    \item Minor revisions: Quarterly or as needed
+    \item Immediate updates: For safety-critical information
+\end{itemize}
+
+\subsection{Distribution of Updates}
+
+Updates to this document are distributed through the following channels:
+
+\begin{itemize}
+    \item Electronic notifications to all registered users
+    \item Publication on the secure Skymatik Aero technical portal
+    \item Physical distribution of updated pages or complete manuals for controlled copies
+    \item Service Bulletins for critical updates
+\end{itemize}
+
+\subsection{Configuration Management}
+
+This document is controlled according to the Skymatik Aero Configuration Management Plan (CMP-001). Key procedures include:
+
+\begin{itemize}
+    \item All changes are tracked in the document control system
+    \item Each revision undergoes technical and editorial review
+    \item Final approval required before release
+    \item Obsolete versions are archived according to regulatory requirements
+    \item Change history is maintained for the life of the product
+\end{itemize}
+
+\section{Contact Information}
+
+\subsection{Technical Support}
+
+For technical support related to the Digital Floats Control System:
+
+\begin{itemize}
+    \item Phone: {\color{missingred}[Support phone number]}
+    \item Email: {\color{missingred}[Support email address]}
+    \item Online: {\color{missingred}[Support website URL]}
+    \item Hours of Operation: {\color{missingred}[Hours and time zone]}
+\end{itemize}
+
+\subsection{Feedback Submission}
+
+To submit feedback on this document or the Digital Floats Control System:
+
+\begin{itemize}
+    \item Email: {\color{missingred}[Feedback email address]}
+    \item Online Form: {\color{missingred}[Feedback form URL]}
+    \item Postal Mail:
+    
+    {\color{missingred}[Company name]}
+    
+    {\color{missingred}[Street address]}
+    
+    {\color{missingred}[City, State/Province, Postal Code]}
+    
+    {\color{missingred}[Country]}
+\end{itemize}
+
+\subsection{Emergency Contacts}
+
+For urgent issues requiring immediate assistance:
+
+\begin{itemize}
+    \item 24/7 Emergency Support: {\color{missingred}[Emergency phone number]}
+    \item AOG (Aircraft on Ground) Support: {\color{missingred}[AOG support contact]}
+\end{itemize}
+
+\section{List of Effective Pages}
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{4pt} % Reduce column spacing
+\begin{tabular}{|p{0.15\textwidth}|p{0.15\textwidth}|p{0.15\textwidth}|p{0.15\textwidth}|p{0.15\textwidth}|}
+\hline
+\tableheadfont\textbf{Section} & \tableheadfont\textbf{Page} & \tableheadfont\textbf{Revision} & \tableheadfont\textbf{Date} & \tableheadfont\textbf{Status} \\
+\hline
+\tabletextfont Front Matter & i-viii & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 0 & 0-1 to 0-10 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 1 & 1-1 to 1-10 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 2 & 2-1 to 2-12 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 3 & 3-1 to 3-15 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 4 & 4-1 to 4-18 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 5 & 5-1 to 5-8 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 6 & 6-1 to 6-10 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 7 & 7-1 to 7-12 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 8 & 8-1 to 8-6 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 9 & 9-1 to 9-8 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 10 & 10-1 to 10-6 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 11 & 11-1 to 11-4 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\tabletextfont Chapter 12 & 12-1 to 12-10 & 1.0 & {\color{missingred}[Date]} & Current \\
+\hline
+\end{tabular}
+\caption{List of Effective Pages}
+\end{table}
+
+\section{Document Scope}
+
+\subsection{Coverage}
+
+This manual covers:
+
+\begin{itemize}
+    \item Complete technical description of the Digital Floats Control System
+    \item Detailed installation procedures
+    \item Operational instructions for normal and emergency situations
+    \item Maintenance procedures and schedules
+    \item Troubleshooting guidelines
+    \item Configuration, calibration, and adjustment procedures
+    \item Regulatory compliance information
+    \item Parts information and ordering procedures
+\end{itemize}
+
+\subsection{Exclusions}
+
+This manual does not cover:
+
+\begin{itemize}
+    \item Advanced repair procedures requiring factory support
+    \item Details of aircraft-specific modifications beyond standard installations
+    \item Development and verification test procedures
+    \item Internal software architecture and code-level details
+    \item Manufacturing processes and quality control procedures
+    \item Detailed circuit diagrams and component-level repair
+\end{itemize}
+
+\subsection{Target Audience}
+
+This document is intended for:
+
+\begin{itemize}
+    \item Aircraft installation technicians and mechanics
+    \item Aircraft operators and pilots
+    \item Maintenance personnel
+    \item Aviation regulatory authorities
+    \item Aircraft modification centers
+    \item Technical support personnel
+\end{itemize}
+
+The manual assumes the reader has:
+
+\begin{itemize}
+    \item Basic understanding of aircraft systems
+    \item Familiarity with avionics equipment
+    \item Proper certification or authorization for installation and maintenance
+    \item Access to standard aviation tools and test equipment
+    \item Knowledge of aviation regulations and standards
+\end{itemize}
+
+% Reset chapter counter to properly start at Chapter 1
+\setcounter{chapter}{0}
 \chapter{General Information}
 \newpage % Start content on a new page
 
 \section{Purpose of the Equipment}
-\lipsum[1] % Placeholder text
+The Digital Floats Control System is designed to manage and control the gear mechanisms in aircraft equipped with floats, enabling safe transitions between land and water operations. The system provides pilots with reliable control over landing gear and rudder positions, crucial for amphibious aircraft that need to operate on both land and water surfaces.
+
+This control system manages up to four landing gear actuators and one rudder actuator, continuously monitoring their positions through limit switches and providing real-time status via LED indicators. The system implements comprehensive error detection and safety features to prevent improper gear configuration during critical flight phases.
 
 \section{General Description and Operating Principles}
-\lipsum[2] % Placeholder text
+
+\subsection{System Overview}
+The Digital Floats Control System features a user interface with two physical switches and five RGB LED indicators. The left switch controls the landing gear, while the right switch controls the rudder. Four LEDs display the status of the four landing gear positions, and the fifth LED shows the status of the rudder.
+
+\subsection{Operating Modes}
+The system operates in three distinct modes, each with specific gear and rudder configurations:
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{4pt} % Reduce column spacing
+\begin{tabular}{|p{0.18\textwidth}|p{0.22\textwidth}|p{0.22\textwidth}|p{0.26\textwidth}|}
+\hline
+\tableheadfont\textbf{Mode} & \tableheadfont\textbf{Gear Position} & \tableheadfont\textbf{Rudder Position} & \tableheadfont\textbf{Switch Positions} \\
+\hline
+\tabletextfont Land Mode & Extended & Retracted & Gear switch down, rudder switch up/down \\
+\hline
+\tabletextfont Water Mode & Retracted & Retracted & Gear switch up, rudder switch up \\
+\hline
+\tabletextfont Maneuver Mode & Retracted & Extended & Gear switch up, rudder switch down \\
+\hline
+\end{tabular}
+\caption{Operating Modes of the Digital Floats Control System}
+\end{table}
+
+\subsection{Basic Operation}
+When pilots toggle the gear or rudder switches, the system activates the appropriate actuators to move the gear or rudder to the requested position. The system monitors the movement through limit switches and automatically stops the actuators when the end positions are reached. RGB LED indicators provide continuous visual feedback about current positions and any detected issues.
+
+\subsection{Self-Test Procedure}
+Upon powering up, the system automatically performs a comprehensive self-test sequence to verify:
+\begin{itemize}
+    \item I2C device connectivity (sensors and I/O expanders)
+    \item RTC (Real-Time Clock) functionality
+    \item External memory integrity
+    \item Actuator circuit continuity
+    \item Limit switch functionality
+\end{itemize}
+
+Results of the self-test are displayed via the RGB LEDs, providing immediate feedback about system health.
 
 \section{Basic Technical Data and Parameters}
-\lipsum[3] % Placeholder text
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{5pt} % Reduce column spacing
+\begin{tabular}{|p{0.35\textwidth}|p{0.55\textwidth}|}
+\hline
+\tableheadfont\textbf{Parameter} & \tableheadfont\textbf{Specification} \\
+\hline
+\tabletextfont Microcontroller & STM32F103 (ARM Cortex-M3) \\
+\hline
+\tabletextfont Operating Voltage & 8V to 28V DC \\
+\hline
+\tabletextfont Maximum Current per Channel & 5A \\
+\hline
+\tabletextfont Number of Control Channels & 5 (4 landing gear + 1 rudder) \\
+\hline
+\tabletextfont Communication Interface & UART \\
+\hline
+\tabletextfont Status Indicators & 5 RGB LEDs (WS2812) \\
+\hline
+\tabletextfont User Controls & 2 Toggle Switches \\
+\hline
+\tabletextfont Limit Switch Support & Normally Open (NO) or Normally Closed (NC) \\
+\hline
+\tabletextfont Current Sensing Range & 0.1A to 5.0A \\
+\hline
+\tabletextfont Voltage Sensing Range & 8.0V to 28.0V \\
+\hline
+\tabletextfont Temperature Range & {\color{missingred}[Required: Operating temperature range in °C, including storage and operational limits per DO-160 standards]} \\
+\hline
+\tabletextfont Dimensions & {\color{missingred}[Required: Physical dimensions of control unit in mm (L × W × H)]} \\
+\hline
+\tabletextfont Weight & {\color{missingred}[Required: Weight of control unit in grams]} \\
+\hline
+\end{tabular}
+\caption{Technical Specifications of the Digital Floats Control System}
+\end{table}
 
 \section{Operational Limitations}
-\lipsum[4] % Placeholder text
+
+The Digital Floats Control System has the following operational limitations:
+
+\begin{itemize}
+    \item \textbf{Voltage Limitations:} The system requires a power supply between 8.0V and 28.0V DC. Operation outside this range may cause erratic behavior or damage to the system.
+    
+    \item \textbf{Current Limitations:} Each actuator channel is limited to a maximum of 5.0A. Actuators drawing more current will trigger an overcurrent protection.
+    
+    \item \textbf{Temperature Range:} {\color{missingred}[Required: Operational temperature range specification per DO-160G Section 4 compliance, including both normal and short-term extremes]}
+    
+    \item \textbf{Actuator Compatibility:} The system is designed to work with electric actuators equipped with limit switches. Hydraulic or pneumatic systems require additional interface hardware.
+    
+    \item \textbf{Simultaneous Channel Operation:} The system can operate multiple channels simultaneously, but users should be aware of potential current draw limitations when all channels are active.
+\end{itemize}
 
 \section{Compliance with Regulations and Standards}
-\lipsum[5] % Placeholder text
+
+The Digital Floats Control System is designed to comply with the following aviation regulations and standards:
+
+\begin{itemize}
+    \item \textbf{DO-160:} Environmental Conditions and Test Procedures for Airborne Equipment
+    \item \textbf{DO-254:} Design Assurance Guidance for Airborne Electronic Hardware
+    \item \textbf{DO-178C:} Software Considerations in Airborne Systems and Equipment Certification
+    \item \textbf{FAR Part 23:} Airworthiness Standards for Normal Category Aircraft
+    \item \textbf{ASTM F3153:} Standard Specification for Verification of Avionics Systems
+\end{itemize}
+
+{\color{missingred}[Required: Specific certification details including TSO reference numbers, design assurance level (DAL) classification, applicable compliance verification document identifiers, and current certification status]}
 
 \section{Definitions, Abbreviations and Symbols}
-\lipsum[6] % Placeholder text
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{5pt} % Reduce column spacing
+\begin{tabular}{|p{0.25\textwidth}|p{0.65\textwidth}|}
+\hline
+\tableheadfont\textbf{Term} & \tableheadfont\textbf{Definition} \\
+\hline
+\tabletextfont BSP & Board Support Package \\
+\hline
+\tabletextfont DFC & Digital Floats Controller \\
+\hline
+\tabletextfont I2C & Inter-Integrated Circuit (communication protocol) \\
+\hline
+\tabletextfont INA219 & Current/Voltage monitoring sensor \\
+\hline
+\tabletextfont PCF8574 & I/O Expander integrated circuit \\
+\hline
+\tabletextfont LED & Light Emitting Diode \\
+\hline
+\tabletextfont NO & Normally Open (limit switch configuration) \\
+\hline
+\tabletextfont NC & Normally Closed (limit switch configuration) \\
+\hline
+\tabletextfont RTC & Real-Time Clock \\
+\hline
+\tabletextfont UART & Universal Asynchronous Receiver-Transmitter \\
+\hline
+\tabletextfont RGB & Red-Green-Blue (color model for LEDs) \\
+\hline
+\tabletextfont WS2812 & Addressable RGB LED type \\
+\hline
+\tabletextfont W25X & Flash memory chip \\
+\hline
+\end{tabular}
+\caption{Abbreviations and Definitions}
+\end{table}
 
 \chapter{Construction and Technical Characteristics}
 \newpage % Start content on a new page
 
 \section{Equipment Design}
-\lipsum[7] % Placeholder text
+
+The Digital Floats Control System features a modular design based on the STM32F103 microcontroller platform. The system is housed in a compact, ruggedized enclosure suitable for aircraft installation.
+
+\subsection{Physical Construction}
+The control unit is constructed with the following key components:
+\begin{itemize}
+    \item Main control board with STM32F103 microcontroller
+    \item Power distribution circuits with protection features
+    \item I/O expansion circuitry for switch connections
+    \item Current/voltage monitoring for each actuator channel
+    \item User interface panel with switches and LED indicators
+    \item UART communication port for configuration and diagnostics
+\end{itemize}
+
+{\color{missingred}[Required: Technical illustration showing the overall system physical layout with labeled components, control unit enclosure, and connection points for actuators and switches. Should include wiring harness visualization and cockpit control panel positioning.]}
 
 \section{Components and Functional Modules}
-\lipsum[8] % Placeholder text
+
+\subsection{Main Controller Module}
+The system is built around the STM32F103 microcontroller (ARM Cortex-M3 architecture), which provides:
+\begin{itemize}
+    \item 72 MHz processing capability
+    \item 128KB flash memory for program storage
+    \item 20KB SRAM for runtime operations
+    \item I2C, SPI, and UART communication interfaces
+    \item Multiple GPIO pins for system control
+\end{itemize}
+
+\subsection{Power Monitoring Module}
+Each control channel incorporates an INA219 precision current/voltage monitoring sensor that:
+\begin{itemize}
+    \item Measures actuator current consumption with 1mA resolution
+    \item Monitors supply voltage with 10mV resolution
+    \item Provides real-time power consumption data
+    \item Enables detection of actuator faults through current analysis
+\end{itemize}
+
+\subsection{I/O Expansion Module}
+PCF8574 I2C I/O expanders provide additional digital inputs and outputs for:
+\begin{itemize}
+    \item Limit switch monitoring
+    \item Relay control for actuator activation
+    \item Direction control for actuator movement
+\end{itemize}
+
+\subsection{Status Indication Module}
+Five WS2812 addressable RGB LEDs provide status indication with:
+\begin{itemize}
+    \item Full-color capability for state differentiation
+    \item Programmable brightness levels
+    \item Blinking patterns for warning and error states
+    \item Clear visual feedback of system operation
+\end{itemize}
+
+\subsection{Non-volatile Storage Module}
+W25X flash memory provides persistent storage for:
+\begin{itemize}
+    \item System configuration settings
+    \item Calibration parameters for each actuator
+    \item Operational logs for diagnostic purposes
+\end{itemize}
 
 \section{Electrical and Electronic Schematics}
-\lipsum[9] % Placeholder text
+
+{\color{missingred}[Required: System block diagram showing internal electronic architecture with microcontroller, I2C bus, power supply, sensors, LED controllers, communication interfaces, and their interconnections. Should include signal flow indicators and pin assignments.]}
+
+\subsection{Control Channel Circuitry}
+Each control channel consists of:
+\begin{itemize}
+    \item H-bridge relay circuit for bidirectional actuator control
+    \item INA219 current/voltage sensor connected via I2C bus
+    \item PCF8574 I/O expander for limit switch monitoring and relay control
+    \item Protection circuits for overvoltage and overcurrent conditions
+\end{itemize}
+
+{\color{missingred}[Required: Circuit schematic showing H-bridge relay design, current/voltage monitoring integration, and limit switch inputs for a single control channel. Should include component values, voltage ratings, and protection circuits.]}
 
 \section{Interfaces and Connectors}
-\lipsum[10] % Placeholder text
+
+\subsection{Power Input}
+The system requires a DC power input with the following specifications:
+\begin{itemize}
+    \item Voltage range: 8V to 28V DC
+    \item Current capacity: Minimum 10A (depending on actuator requirements)
+    \item Connector type: {\color{missingred}[Required: Specific power connector type, part number, pin assignment, and environmental rating]}
+\end{itemize}
+
+\subsection{Actuator Connections}
+Each actuator connection provides:
+\begin{itemize}
+    \item Two-wire power connection for actuator motor
+    \item Two-wire connection for limit switch (up position)
+    \item Two-wire connection for limit switch (down position)
+    \item Connector type: {\color{missingred}[Required: Actuator connector specifications including manufacturer part numbers, pin configurations, environmental rating, and maximum current capacity]}
+\end{itemize}
+
+\subsection{Communication Interface}
+The system includes a UART communication port for:
+\begin{itemize}
+    \item Configuration via PC application
+    \item Firmware updates
+    \item Diagnostic operations
+    \item Log retrieval
+    \item Connection specifications: 115200 baud, 8 data bits, no parity, 1 stop bit
+\end{itemize}
 
 \section{System Software}
-\lipsum[11] % Placeholder text
+
+The Digital Floats Control System implements a layered software architecture:
+
+\subsection{Bootloader}
+A dedicated bootloader supports:
+\begin{itemize}
+    \item Firmware update via UART
+    \item Integrity verification of application code
+    \item Fallback mechanism for recovery from failed updates
+\end{itemize}
+
+\subsection{Hardware Abstraction Layer}
+The HAL provides hardware-independent interfaces for:
+\begin{itemize}
+    \item GPIO control
+    \item I2C communication
+    \item UART communication
+    \item Timer management
+    \item Interrupt handling
+\end{itemize}
+
+\subsection{Device Drivers}
+Specialized drivers implement communication with external components:
+\begin{itemize}
+    \item INA219 current/voltage sensor driver
+    \item PCF8574 I/O expander driver
+    \item W25X flash memory driver
+    \item WS2812 LED controller driver
+\end{itemize}
+
+\subsection{Application Logic}
+The application layer implements:
+\begin{itemize}
+    \item Switch input processing
+    \item Actuator control algorithms
+    \item Status monitoring and error detection
+    \item LED status indication
+    \item Communication protocol handling
+    \item Configuration management
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{5pt} % Reduce column spacing
+\begin{tabular}{|p{0.25\textwidth}|p{0.35\textwidth}|p{0.3\textwidth}|}
+\hline
+\tableheadfont\textbf{Software Module} & \tableheadfont\textbf{Function} & \tableheadfont\textbf{Location} \\
+\hline
+\tabletextfont Application & Main control logic & application/app/ \\
+\hline
+\tabletextfont BSP & Hardware abstraction & application/bsp/ \\
+\hline
+\tabletextfont Drivers & Component interfaces & common/drivers/ \\
+\hline
+\tabletextfont Protocol & Communication handling & common/sup/ \\
+\hline
+\tabletextfont Settings & Configuration management & common/sup/ \\
+\hline
+\tabletextfont Logger & Diagnostic logging & common/sup/ \\
+\hline
+\end{tabular}
+\caption{Software Module Organization}
+\end{table}
 
 \section{Dimensions and Weight}
-\lipsum[12] % Placeholder text
+
+\subsection{Control Unit Dimensions}
+{\color{missingred}[Required: Precise control unit dimensions in millimeters, including mounting flange dimensions and clearance requirements. Should specify the outer case dimensions and any protrusions.]}
+
+\subsection{Weight}
+{\color{missingred}[Required: Precise weight of the control unit in grams, including the weight of standard wiring harness and mounting hardware.]}
+
+\subsection{Mounting Requirements}
+{\color{missingred}[Required: Detailed mounting specifications including hole pattern dimensions, recommended fastener types, torque specifications, and minimum clearance requirements for ventilation and cable access.]}
+
+{\color{missingred}[Required: Technical drawing showing control unit with dimensional annotations, mounting hole positions, minimum clearance zones, and cable routing access points. Should include front, side, and mounting surface views with precise measurements.]}
 
 \chapter{Equipment Installation}
 \newpage % Start content on a new page
 
 \section{Pre-installation Requirements}
-\lipsum[13] % Placeholder text
+
+Before installing the Digital Floats Control System, ensure the following prerequisites are met:
+
+\subsection{Environmental Requirements}
+\begin{itemize}
+    \item Installation location must be protected from direct water exposure
+    \item Ambient temperature during installation should be between 5°C and 35°C
+    \item Ensure adequate ventilation around the control unit for cooling
+    \item Keep the unit away from sources of electromagnetic interference
+\end{itemize}
+
+\subsection{Required Tools and Equipment}
+\begin{itemize}
+    \item Standard aviation toolset (screwdrivers, wrenches, wire crimpers)
+    \item Digital multimeter with continuity and voltage testing capabilities
+    \item Wire strippers and crimping tools for aviation-grade connectors
+    \item PC with USB port for configuration (Windows operating system)
+    \item Digital Floats Controller PC Application software
+\end{itemize}
+
+\subsection{Aircraft Preparation}
+\begin{itemize}
+    \item Ensure aircraft power is disconnected
+    \item Identify suitable mounting location with access to all actuators
+    \item Verify power supply capacity (aircraft must provide 8-28V DC with sufficient current capacity)
+    \item Prepare cable routing paths for all connections
+    \item {\color{missingred}[Required: Aircraft-specific preparation steps including circuit breaker panel modifications, power bus connections, structural reinforcement requirements, and specific documentation reference numbers for different airframe types]}
+\end{itemize}
 
 \section{Mechanical Installation Procedure}
-\lipsum[14] % Placeholder text
+
+\subsection{Mounting Location Selection}
+
+The Digital Floats Control System should be installed in a location that meets the following criteria:
+\begin{itemize}
+    \item Accessible for maintenance
+    \item Within reach of all landing gear and rudder actuator cables
+    \item Protected from excessive vibration, heat, and moisture
+    \item Allows clear view of LED indicators for the pilot and ground crew
+    \item Permits easy access to the control switches
+    \item {\color{missingred}[Required: Maximum cable run specifications between control unit and actuators, including signal degradation limits, voltage drop calculations, and EMI considerations]}
+\end{itemize}
+
+\subsection{Control Unit Mounting}
+
+\begin{enumerate}
+    \item Using the mounting template {\color{missingred}[Required: Technical drawing of mounting template with precise hole pattern dimensions, reference marks, and orientation indicators]}, mark the mounting hole positions
+    \item Drill mounting holes according to the template specifications
+    \item Install appropriate vibration-damping hardware if required
+    \item Mount the control unit using {\color{missingred}[Required: Specific fastener type, size, material, and aviation standard reference]} size hardware
+    \item Torque all mounting hardware to {\color{missingred}[Required: Exact torque specifications in Nm or in-lb, with aviation standard reference]} specifications
+    \item Verify that the unit is securely mounted and all fasteners are properly tightened
+\end{enumerate}
+
+\subsection{Actuator Installation}
+
+\begin{enumerate}
+    \item Install the landing gear actuators according to the float manufacturer's specifications
+    \item Ensure each actuator includes both up and down limit switches
+    \item Verify proper mechanical alignment of all actuators
+    \item Ensure full range of motion without binding or interference
+    \item Record the type and specifications of each actuator for configuration purposes
+\end{enumerate}
+
+{\color{missingred}[Required: Technical illustration showing proper actuator mounting orientation, limit switch positioning, mechanical linkage alignment, and wiring routing. Should include safety-wire requirements and adjustment reference points.]}
 
 \section{Electrical Connections}
-\lipsum[15] % Placeholder text
+
+\subsection{Power Supply Connection}
+
+\begin{enumerate}
+    \item Identify appropriate power source on the aircraft (8-28V DC)
+    \item Install a dedicated circuit breaker (rated for {\color{missingred}[Required: Circuit breaker amperage rating based on maximum system current draw plus safety margin, with specific part number recommendations for various aircraft types]} amps)
+    \item Use appropriate gauge wire based on the following table:
+\end{enumerate}
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{5pt} % Reduce column spacing
+\begin{tabular}{|p{0.25\textwidth}|p{0.25\textwidth}|p{0.35\textwidth}|}
+\hline
+\tableheadfont\textbf{Wire Length} & \tableheadfont\textbf{Current Rating} & \tableheadfont\textbf{Minimum Wire Gauge} \\
+\hline
+\tabletextfont < 5 feet & < 10A & 18 AWG \\
+\hline
+\tabletextfont 5-10 feet & < 10A & 16 AWG \\
+\hline
+\tabletextfont 10-15 feet & < 10A & 14 AWG \\
+\hline
+\tabletextfont > 15 feet & < 10A & 12 AWG \\
+\hline
+\tabletextfont Any length & > 10A & 10 AWG \\
+\hline
+\end{tabular}
+\caption{Wire Gauge Selection Guide}
+\end{table}
+
+\begin{enumerate}\setcounter{enumi}{3}
+    \item Connect power leads to the control unit input terminals, observing correct polarity
+    \item Verify voltage at the terminals with a multimeter before proceeding
+\end{enumerate}
+
+\subsection{Actuator Wiring}
+
+For each landing gear and rudder actuator:
+
+\begin{enumerate}
+    \item Connect the actuator motor leads to the appropriate output terminals
+    \item Connect the UP limit switch wires to the designated terminals
+    \item Connect the DOWN limit switch wires to the designated terminals
+    \item Label all wires according to standard aviation practices
+    \item Secure all wiring with appropriate strain relief
+\end{enumerate}
+
+{\color{missingred}[Required: Detailed wiring diagram showing all electrical connections between control unit terminals, actuator motors, limit switches, power supply, and cockpit controls. Should include wire color codes, terminal identifiers, and connector part numbers with pin assignments.]}
+
+\subsection{Switch Installation}
+
+\begin{enumerate}
+    \item Mount the gear selector switch in an accessible location in the cockpit
+    \item Mount the rudder selector switch adjacent to the gear switch
+    \item Route switch wires to the control unit using twisted pair shielded cables
+    \item Connect the switches to the designated input terminals on the control unit
+    \item Verify proper operation of the switches with a continuity test
+\end{enumerate}
+
+\subsection{Communication Interface}
+
+\begin{enumerate}
+    \item Route the UART communication cable from the control unit to an accessible location
+    \item Install the communication port where it can be easily accessed for configuration and troubleshooting
+    \item Connect the communication port according to the pinout specification (TX, RX, GND)
+    \item Verify communication interface with diagnostic equipment
+\end{enumerate}
 
 \section{Initial Configuration}
-\lipsum[16] % Placeholder text
+
+The Digital Floats Control System must be configured before operation to match the specific actuators and aircraft requirements. This is done using the PC application provided.
+
+\subsection{PC Application Installation}
+
+\begin{enumerate}
+    \item Install the Digital Floats Controller PC Application on a compatible Windows computer
+    \item Connect the computer to the control unit using the provided UART-to-USB adapter
+    \item Launch the configuration application
+    \item Verify communication with the control unit
+\end{enumerate}
+
+\subsection{Control Channel Configuration}
+
+For each actuator channel, configure the following parameters:
+
+\begin{enumerate}
+    \item Enable/disable the channel
+    \item Specify whether the channel controls landing gear or rudder
+    \item Set the INA219 address and calibration value
+    \item Set the PCF8574 address and channel number
+    \item Configure the limit switch types (Normally Open or Normally Closed)
+    \item Set minimum and maximum voltage limits
+    \item Set minimum and maximum current limits
+    \item Configure motor direction (normal or inverted)
+\end{enumerate}
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{5pt} % Reduce column spacing
+\begin{tabular}{|p{0.25\textwidth}|p{0.25\textwidth}|p{0.4\textwidth}|}
+\hline
+\tableheadfont\textbf{Parameter} & \tableheadfont\textbf{Typical Value} & \tableheadfont\textbf{Description} \\
+\hline
+\tabletextfont INA219 Address & 0x40-0x4F & I2C address of current/voltage sensor \\
+\hline
+\tabletextfont INA219 Calibration & 50-200 & Based on 0.01 Ohm shunt resistance \\
+\hline
+\tabletextfont PCF8574 Address & 0x20-0x27 & I2C address of I/O expander \\
+\hline
+\tabletextfont Voltage Limits & 80-280 (8.0-28.0V) & Safe operating voltage range \\
+\hline
+\tabletextfont Current Limits & 10-50 (1.0-5.0A) & Safe operating current range \\
+\hline
+\end{tabular}
+\caption{Configuration Parameter Ranges}
+\end{table}
+
+\subsection{LED Indicator Configuration}
+
+Configure the following LED parameters:
+\begin{itemize}
+    \item Set color preferences for each status indication
+    \item Configure brightness level for day/night operations
+    \item Test LED indications to ensure visibility in cockpit
+\end{itemize}
 
 \section{Post-installation Tests}
-\lipsum[17] % Placeholder text
+
+After installation and initial configuration, perform the following tests to ensure proper operation:
+
+\subsection{Power System Test}
+\begin{enumerate}
+    \item Power on the system
+    \item Verify the control unit performs its self-test routine
+    \item Observe the LED indicators for proper power-up sequence
+    \item Measure voltage at test points to confirm proper power distribution
+\end{enumerate}
+
+\subsection{Functional Test}
+\begin{enumerate}
+    \item Perform a complete cycle test of each landing gear actuator
+    \item Perform a complete cycle test of the rudder actuator
+    \item Verify that limit switches properly stop actuator movement
+    \item Confirm that LED indicators correctly show the status of each component
+\end{enumerate}
+
+\subsection{Safety Interlock Test}
+\begin{enumerate}
+    \item Verify the system prevents improper configurations (extended gear for water operations)
+    \item Test overcurrent protection by simulating excessive load
+    \item Test voltage monitoring by simulating under/over voltage conditions
+    \item Validate error indication for all tested fault conditions
+\end{enumerate}
 
 \section{Common Installation Issues and Solutions}
-\lipsum[18] % Placeholder text
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{4pt} % Reduce column spacing
+\begin{tabular}{|p{0.33\textwidth}|p{0.57\textwidth}|}
+\hline
+\tableheadfont\textbf{Issue} & \tableheadfont\textbf{Solution} \\
+\hline
+\tabletextfont System does not power up & Check circuit breaker, power connections, and input voltage range \\
+\hline
+\tabletextfont Actuator moves in wrong direction & Change the 'inverse\_motor' setting in channel configuration \\
+\hline
+\tabletextfont Limit switches not detected & Verify switch connections and correct NO/NC configuration \\
+\hline
+\tabletextfont Excessive actuator current draw & Check for mechanical binding, incorrect voltage, or faulty actuator \\
+\hline
+\tabletextfont I2C communication errors & Verify correct addressing, check wiring for electromagnetic interference, add ferrite cores if necessary \\
+\hline
+\tabletextfont LED indicators not functioning & Check LED connections, verify power supply, update LED configuration \\
+\hline
+\tabletextfont PC application cannot connect & Check UART communication cable, verify COM port settings \\
+\hline
+\end{tabular}
+\caption{Troubleshooting Common Installation Issues}
+\end{table}
 
 \chapter{Operation}
 \newpage % Start content on a new page
 
 \section{Start-up and Shutdown Procedures}
-\lipsum[19] % Placeholder text
+
+\subsection{Normal Start-up Procedure}
+\begin{enumerate}
+    \item Ensure aircraft master switch is on
+    \item Observe the Digital Floats Control System LEDs for self-test sequence
+    \item Verify that the LED indicators display the current status of landing gear and rudder
+    \item Confirm that the switch positions match the current configuration
+    \item System is ready for operation when self-test completes without errors
+\end{enumerate}
+
+\subsection{Emergency Start-up Procedure}
+If the control system does not start normally:
+\begin{enumerate}
+    \item Check circuit breaker and reset if necessary
+    \item Cycle aircraft power to reinitiate the self-test sequence
+    \item If the system continues to show errors, refer to the Troubleshooting section
+\end{enumerate}
+
+\subsection{Shutdown Procedure}
+\begin{enumerate}
+    \item Ensure all landing gear and rudder movements are completed
+    \item Power can be removed at any time; the system maintains the last known state
+    \item Current configuration settings are saved in non-volatile memory
+\end{enumerate}
 
 \section{Control Panel and User Interface}
-\lipsum[20] % Placeholder text
+
+\subsection{Control Panel Layout}
+The Digital Floats Control System features a simple, intuitive control panel consisting of:
+\begin{itemize}
+    \item Gear selector switch (UP/DOWN positions)
+    \item Rudder selector switch (UP/DOWN positions)
+    \item Five RGB status LEDs (four for landing gear, one for rudder)
+\end{itemize}
+
+{\color{missingred}[Required: Technical drawing of control panel showing physical layout, dimensions, switch types, LED positioning, mounting details, and panel material specifications. Should include cockpit installation position recommendations and label specifications.]}
+
+\subsection{Status Indicator LEDs}
+The system uses RGB LEDs to provide clear visual feedback on system status:
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{5pt} % Reduce column spacing
+\begin{tabular}{|p{0.2\textwidth}|p{0.2\textwidth}|p{0.5\textwidth}|}
+\hline
+\tableheadfont\textbf{LED Color} & \tableheadfont\textbf{Pattern} & \tableheadfont\textbf{Indication} \\
+\hline
+\tabletextfont Green & Solid & Gear/Rudder is DOWN (extended) \\
+\hline
+\tabletextfont Blue & Solid & Gear/Rudder is UP (retracted) \\
+\hline
+\tabletextfont White & Pulsing & Gear/Rudder is in motion \\
+\hline
+\tabletextfont Yellow & Blinking (pattern) & Warning condition \\
+\hline
+\tabletextfont Red & Blinking (pattern) & Error condition \\
+\hline
+\end{tabular}
+\caption{LED Status Indicator Meanings}
+\end{table}
+
+\subsection{Switch Operation}
+\begin{itemize}
+    \item \textbf{Gear Selector Switch:} Controls all landing gear simultaneously
+    \begin{itemize}
+        \item UP position: Retracts landing gear for water operations
+        \item DOWN position: Extends landing gear for land operations
+    \end{itemize}
+    \item \textbf{Rudder Selector Switch:} Controls water rudder position
+    \begin{itemize}
+        \item UP position: Retracts rudder for normal flight and land operations
+        \item DOWN position: Extends rudder for water maneuvering
+    \end{itemize}
+\end{itemize}
 
 \section{Operating Modes}
-\lipsum[21] % Placeholder text
+
+The Digital Floats Control System supports three distinct operating modes, each appropriate for different phases of operation:
+
+\subsection{Land Mode}
+\begin{itemize}
+    \item \textbf{Purpose:} Configures the aircraft for takeoff, landing, and operation on land
+    \item \textbf{Configuration:}
+    \begin{itemize}
+        \item Landing gear: EXTENDED (DOWN)
+        \item Rudder: RETRACTED (UP)
+    \end{itemize}
+    \item \textbf{Switch Positions:}
+    \begin{itemize}
+        \item Gear switch: DOWN position
+        \item Rudder switch: UP position (preferred)
+    \end{itemize}
+    \item \textbf{Indicator Status:}
+    \begin{itemize}
+        \item Gear LEDs: GREEN (all four)
+        \item Rudder LED: BLUE
+    \end{itemize}
+\end{itemize}
+
+\subsection{Water Mode}
+\begin{itemize}
+    \item \textbf{Purpose:} Configures the aircraft for takeoff, landing, and general operation on water
+    \item \textbf{Configuration:}
+    \begin{itemize}
+        \item Landing gear: RETRACTED (UP)
+        \item Rudder: RETRACTED (UP)
+    \end{itemize}
+    \item \textbf{Switch Positions:}
+    \begin{itemize}
+        \item Gear switch: UP position
+        \item Rudder switch: UP position
+    \end{itemize}
+    \item \textbf{Indicator Status:}
+    \begin{itemize}
+        \item Gear LEDs: BLUE (all four)
+        \item Rudder LED: BLUE
+    \end{itemize}
+\end{itemize}
+
+\subsection{Water Maneuvering Mode}
+\begin{itemize}
+    \item \textbf{Purpose:} Configures the aircraft for improved directional control during slow-speed water operations
+    \item \textbf{Configuration:}
+    \begin{itemize}
+        \item Landing gear: RETRACTED (UP)
+        \item Rudder: EXTENDED (DOWN)
+    \end{itemize}
+    \item \textbf{Switch Positions:}
+    \begin{itemize}
+        \item Gear switch: UP position
+        \item Rudder switch: DOWN position
+    \end{itemize}
+    \item \textbf{Indicator Status:}
+    \begin{itemize}
+        \item Gear LEDs: BLUE (all four)
+        \item Rudder LED: GREEN
+    \end{itemize}
+\end{itemize}
 
 \section{Status Indications and Error Messages}
-\lipsum[22] % Placeholder text
+
+\subsection{Normal Status Indications}
+During normal operation, the LED indicators show the current position of each component:
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{5pt} % Reduce column spacing
+\begin{tabular}{|p{0.3\textwidth}|p{0.2\textwidth}|p{0.4\textwidth}|}
+\hline
+\tableheadfont\textbf{Component State} & \tableheadfont\textbf{LED Color} & \tableheadfont\textbf{Description} \\
+\hline
+\tabletextfont Gear/Rudder UP & Blue & Component is fully retracted \\
+\hline
+\tabletextfont Gear/Rudder DOWN & Green & Component is fully extended \\
+\hline
+\tabletextfont Gear/Rudder MOVING & White (pulsing) & Component is in motion between positions \\
+\hline
+\end{tabular}
+\caption{Normal Status Indications}
+\end{table}
+
+\subsection{Warning Indications}
+Warning conditions indicate potential issues that don't prevent operation but require attention:
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{5pt} % Reduce column spacing
+\begin{tabular}{|p{0.3\textwidth}|p{0.25\textwidth}|p{0.35\textwidth}|}
+\hline
+\tableheadfont\textbf{Warning Type} & \tableheadfont\textbf{LED Pattern} & \tableheadfont\textbf{Description} \\
+\hline
+\tabletextfont Low Motor Impedance & Yellow (2 blinks) & Motor impedance is below expected range \\
+\hline
+\tabletextfont High Motor Impedance & Yellow (3 blinks) & Motor impedance is above expected range \\
+\hline
+\tabletextfont Low Power Voltage & Yellow (4 blinks) & Power supply voltage is below threshold \\
+\hline
+\tabletextfont High Power Voltage & Yellow (5 blinks) & Power supply voltage is above threshold \\
+\hline
+\end{tabular}
+\caption{Warning Indications}
+\end{table}
+
+\subsection{Error Indications}
+Error conditions indicate issues that prevent normal operation:
+
+\begin{table}[h]
+\centering
+\setlength{\tabcolsep}{4pt} % Reduce column spacing
+\begin{tabular}{|p{0.1\textwidth}|p{0.22\textwidth}|p{0.18\textwidth}|p{0.38\textwidth}|}
+\hline
+\tableheadfont\textbf{Error Code} & \tableheadfont\textbf{Error Type} & \tableheadfont\textbf{LED Pattern} & \tableheadfont\textbf{Description} \\
+\hline
+\tabletextfont 1 & Open Circuit & Red (1 blink) & Motor circuit is open \\
+\hline
+\tabletextfont 2 & Short Circuit & Red (2 blinks) & Short circuit detected \\
+\hline
+\tabletextfont 3 & Time Exceeded & Red (3 blinks) & Movement time limit exceeded \\
+\hline
+\tabletextfont 4 & PCF Communication & Red (4 blinks) & I/O expander communication failure \\
+\hline
+\tabletextfont 5 & INA Communication & Red (5 blinks) & Current sensor communication failure \\
+\hline
+\tabletextfont 6 & Endstop Short & Red (6 blinks) & Limit switch short circuit \\
+\hline
+\tabletextfont 7 & Relay Issue & Red (7 blinks) & Relay control problem detected \\
+\hline
+\end{tabular}
+\caption{Error Indications}
+\end{table}
 
 \section{In-flight Operating Procedures}
-\lipsum[23] % Placeholder text
+
+\subsection{Pre-takeoff Procedures}
+\begin{enumerate}
+    \item \textbf{For land takeoff:}
+    \begin{itemize}
+        \item Set gear switch to DOWN position
+        \item Set rudder switch to UP position
+        \item Verify all gear LEDs show GREEN
+        \item Verify rudder LED shows BLUE
+    \end{itemize}
+    \item \textbf{For water takeoff:}
+    \begin{itemize}
+        \item Set gear switch to UP position
+        \item Set rudder switch to UP position
+        \item Verify all gear LEDs show BLUE
+        \item Verify rudder LED shows BLUE
+    \end{itemize}
+\end{enumerate}
+
+\subsection{In-flight Gear/Rudder Transition}
+\begin{enumerate}
+    \item Maintain appropriate airspeed as specified in the aircraft flight manual
+    \item Move the gear and/or rudder switches to the desired positions
+    \item Monitor LED indicators for transition status
+    \item Confirm completion of transition before landing
+\end{enumerate}
+
+\subsection{Pre-landing Procedures}
+\begin{enumerate}
+    \item \textbf{For land landing:}
+    \begin{itemize}
+        \item Set gear switch to DOWN position
+        \item Set rudder switch to UP position
+        \item Verify all gear LEDs show GREEN (solid)
+        \item Verify rudder LED shows BLUE (solid)
+    \end{itemize}
+    \item \textbf{For water landing:}
+    \begin{itemize}
+        \item Set gear switch to UP position
+        \item Set rudder switch to UP position
+        \item Verify all gear LEDs show BLUE (solid)
+        \item Verify rudder LED shows BLUE (solid)
+    \end{itemize}
+\end{enumerate}
 
 \section{Emergency Procedures}
-\lipsum[24] % Placeholder text
+
+\subsection{Partial Gear Extension/Retraction}
+If one or more gear legs fail to fully extend or retract:
+\begin{enumerate}
+    \item Note which LED indicators are not showing the expected state
+    \item Attempt to cycle the gear by moving the switch to the opposite position and back
+    \item If cycling does not resolve the issue, land on the surface that matches the majority of the gear positions
+    \item For water landing with any gear extended, prepare for significant drag and possible capsizing
+    \item For land landing with any gear retracted, prepare for possible damage to the floats
+\end{enumerate}
+
+\subsection{Complete System Failure}
+In case of complete electrical failure or control system failure:
+\begin{enumerate}
+    \item Gear and rudder will remain in their last position
+    \item Refer to the aircraft flight manual for emergency procedures
+    \item Consider landing on the surface that matches the current gear configuration
+    \item Be prepared for manual gear operation upon landing, if available
+\end{enumerate}
+
+\subsection{Abnormal LED Indications}
+If LEDs show warning or error patterns:
+\begin{enumerate}
+    \item Note the specific pattern to identify the error type (refer to tables in Section 4.4)
+    \item For warnings (yellow), monitor system performance but operation can continue
+    \item For errors (red), the affected channel may not function correctly
+    \item Consider landing on the surface that matches the current gear configuration
+    \item Document the error pattern for maintenance reference
+\end{enumerate}
 
 \chapter{Integration with Other Systems}
 \newpage % Start content on a new page
