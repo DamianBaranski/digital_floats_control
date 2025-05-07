@@ -6,14 +6,27 @@ import json
 # ... existing imports and class definition ...
 
 class StatusPanelCompositeWidget(tk.Canvas):
-    def __init__(self, parent, layout_json_path):
+    def __init__(self, parent, layout_json_path, edit_mode=False):
         self.layout_json_path = layout_json_path
+        self.edit_mode = edit_mode
         # Load layout from JSON
         with open(layout_json_path, "r") as f:
             layout = json.load(f)
 
         panel_path = layout["panel_image"]
         indicators = layout["indicators"]
+
+        # Load rocker images if present
+        self.rocker_up_img = None
+        self.rocker_down_img = None
+        if "rocker_up_image" in layout:
+            rocker_up_path = layout["rocker_up_image"]
+            if os.path.exists(rocker_up_path):
+                self.rocker_up_img = Image.open(rocker_up_path).convert("RGBA")
+        if "rocker_down_image" in layout:
+            rocker_down_path = layout["rocker_down_image"]
+            if os.path.exists(rocker_down_path):
+                self.rocker_down_img = Image.open(rocker_down_path).convert("RGBA")
 
         # Load panel background (with alpha) at its native size
         self.panel_img = Image.open(panel_path).convert("RGBA")
@@ -38,20 +51,21 @@ class StatusPanelCompositeWidget(tk.Canvas):
         self.tk_img = None
         self.image_id = None
         
-        # Add save button
-        self.save_button = tk.Button(parent, text="Save Positions", command=self.save_positions)
-        self.save_button.pack(side=tk.BOTTOM, pady=5)
+        # Add save button only in edit mode
+        if self.edit_mode:
+            self.save_button = tk.Button(parent, text="Save Positions", command=self.save_positions)
+            self.save_button.pack(side=tk.BOTTOM, pady=5)
 
-        # Drag and drop variables
-        self.dragging = False
-        self.current_key = None
-        self.start_x = 0
-        self.start_y = 0
+            # Drag and drop variables
+            self.dragging = False
+            self.current_key = None
+            self.start_x = 0
+            self.start_y = 0
 
-        # Bind mouse events
-        self.bind("<Button-1>", self.start_drag)
-        self.bind("<B1-Motion>", self.drag)
-        self.bind("<ButtonRelease-1>", self.stop_drag)
+            # Bind mouse events only in edit mode
+            self.bind("<Button-1>", self.start_drag)
+            self.bind("<B1-Motion>", self.drag)
+            self.bind("<ButtonRelease-1>", self.stop_drag)
 
         self.draw_panel()
 
@@ -132,11 +146,33 @@ class StatusPanelCompositeWidget(tk.Canvas):
             self.after(interval, step)
         step()
 
+    def set_edit_mode(self, enabled):
+        """Enable or disable edit mode after initialization"""
+        if enabled != self.edit_mode:
+            self.edit_mode = enabled
+            if enabled:
+                # Add save button
+                self.save_button = tk.Button(self.master, text="Save Positions", command=self.save_positions)
+                self.save_button.pack(side=tk.BOTTOM, pady=5)
+                # Bind mouse events
+                self.bind("<Button-1>", self.start_drag)
+                self.bind("<B1-Motion>", self.drag)
+                self.bind("<ButtonRelease-1>", self.stop_drag)
+            else:
+                # Remove save button
+                if hasattr(self, 'save_button'):
+                    self.save_button.destroy()
+                # Unbind mouse events
+                self.unbind("<Button-1>")
+                self.unbind("<B1-Motion>")
+                self.unbind("<ButtonRelease-1>")
+
 def main():
     root = tk.Tk()
     root.title("Status Panel Composite Widget Test")
     layout_json_path = "panel_layout.json"
     widget = StatusPanelCompositeWidget(root, layout_json_path)
+    widget.set_edit_mode(True)
     widget.pack()
     widget.animate_indicators(interval=1000)
     root.mainloop()

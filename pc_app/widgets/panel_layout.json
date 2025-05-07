@@ -1,36 +1,36 @@
 {
-    "panel_image": "panel_raw.png",
+    "panel_image": "res/panel_raw.png",
     "indicators": {
         "FL": {
-            "image": "fl.png",
+            "image": "res/fl.png",
             "position": [
                 283,
                 229
             ]
         },
         "FR": {
-            "image": "fr.png",
+            "image": "res/fr.png",
             "position": [
                 413,
                 229
             ]
         },
         "RL": {
-            "image": "rl.png",
+            "image": "res/rl.png",
             "position": [
                 283,
                 346
             ]
         },
         "RR": {
-            "image": "rr.png",
+            "image": "res/rr.png",
             "position": [
                 415,
                 347
             ]
         },
         "RUDDER": {
-            "image": "rudder.png",
+            "image": "res/rudder.png",
             "position": [
                 284,
                 461
