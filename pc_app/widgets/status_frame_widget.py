@@ -2,6 +2,7 @@ from .firmware_upload import FirmwareUpload
 from .release import Release
 import multiprocessing
 from .status_panel_composite_widget import StatusPanelCompositeWidget
+from .log_widget import LogWidget
 import os
 
 try:
@@ -25,12 +26,20 @@ class StatusFrameWidget(tk.Frame):
         self.updating = multiprocessing.Value('b', False)
         self.version = None
 
-        # Add the status panel composite widget for layout mock
+        # Split view: top = status panel, bottom = log widget
+        paned = tk.PanedWindow(self, orient=tk.VERTICAL, sashrelief=tk.RAISED)
+        paned.grid(row=3, column=1, columnspan=2, sticky="nsew", padx=10, pady=10)
+        self.grid_rowconfigure(3, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+
         base_dir = os.path.dirname(os.path.abspath(__file__))
         layout_json_path = os.path.join(base_dir, "res", "panel_layout.json")
-        self.status_panel = StatusPanelCompositeWidget(self, layout_json_path)
+        self.status_panel = StatusPanelCompositeWidget(paned, layout_json_path)
         self.status_panel.animate_indicators_edit_mode(interval=1000)
-        self.status_panel.grid(row=3, column=1, columnspan=2, padx=10, pady=10)
+        paned.add(self.status_panel)
+
+        self.log_widget = LogWidget(paned)
+        paned.add(self.log_widget)
 
     def update(self):
         if not self.app_protocol.uart.isOpen():
