@@ -6,35 +6,46 @@
             "position": [
                 283,
                 229
-            ]
+            ],
+            "scale": 1.0
         },
         "FR": {
             "image": "res/fr.png",
             "position": [
                 413,
                 229
-            ]
+            ],
+            "scale": 1.0
         },
         "RL": {
             "image": "res/rl.png",
             "position": [
                 283,
                 346
-            ]
+            ],
+            "scale": 1.0
         },
         "RR": {
             "image": "res/rr.png",
             "position": [
                 415,
                 347
-            ]
+            ],
+            "scale": 1.0
         },
         "RUDDER": {
             "image": "res/rudder.png",
             "position": [
                 284,
                 461
-            ]
+            ],
+            "scale": 1.0
+        },
+        "ROCKER": {
+            "image_up": "res/rocker_up.png",
+            "image_down": "res/rocker_down.png",
+            "position": [350, 100],
+            "scale": 1.0
         }
     }
 }
