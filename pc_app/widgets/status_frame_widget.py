@@ -3,6 +3,7 @@ from .release import Release
 import multiprocessing
 from .status_panel_composite_widget import StatusPanelCompositeWidget
 from .log_widget import LogWidget
+from .quick_status_widget import QuickStatusWidget
 import os
 
 try:
@@ -26,20 +27,26 @@ class StatusFrameWidget(tk.Frame):
         self.updating = multiprocessing.Value('b', False)
         self.version = None
 
-        # Split view: top = status panel, bottom = log widget
-        paned = tk.PanedWindow(self, orient=tk.VERTICAL, sashrelief=tk.RAISED)
-        paned.grid(row=3, column=1, columnspan=2, sticky="nsew", padx=10, pady=10)
+        # Main horizontal split: left = status panel + log, right = quick status
+        main_paned = tk.PanedWindow(self, orient=tk.HORIZONTAL, sashrelief=tk.RAISED)
+        main_paned.grid(row=3, column=1, columnspan=2, sticky="nsew", padx=10, pady=10)
         self.grid_rowconfigure(3, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
+        # Left: vertical split (status panel + log)
+        left_paned = tk.PanedWindow(main_paned, orient=tk.VERTICAL, sashrelief=tk.RAISED)
         base_dir = os.path.dirname(os.path.abspath(__file__))
         layout_json_path = os.path.join(base_dir, "res", "panel_layout.json")
-        self.status_panel = StatusPanelCompositeWidget(paned, layout_json_path)
+        self.status_panel = StatusPanelCompositeWidget(left_paned, layout_json_path)
         self.status_panel.animate_indicators_edit_mode(interval=1000)
-        paned.add(self.status_panel)
+        left_paned.add(self.status_panel)
+        self.log_widget = LogWidget(left_paned)
+        left_paned.add(self.log_widget)
+        main_paned.add(left_paned)
 
-        self.log_widget = LogWidget(paned)
-        paned.add(self.log_widget)
+        # Right: quick status
+        self.quick_status = QuickStatusWidget(main_paned)
+        main_paned.add(self.quick_status)
 
     def update(self):
         if not self.app_protocol.uart.isOpen():
