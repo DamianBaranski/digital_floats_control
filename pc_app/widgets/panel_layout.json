@@ -1,0 +1,40 @@
+{
+    "panel_image": "panel_raw.png",
+    "indicators": {
+        "FL": {
+            "image": "fl.png",
+            "position": [
+                283,
+                229
+            ]
+        },
+        "FR": {
+            "image": "fr.png",
+            "position": [
+                413,
+                229
+            ]
+        },
+        "RL": {
+            "image": "rl.png",
+            "position": [
+                283,
+                346
+            ]
+        },
+        "RR": {
+            "image": "rr.png",
+            "position": [
+                415,
+                347
+            ]
+        },
+        "RUDDER": {
+            "image": "rudder.png",
+            "position": [
+                284,
+                461
+            ]
+        }
+    }
+}
