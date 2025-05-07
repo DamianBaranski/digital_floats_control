@@ -5,6 +5,20 @@ import json
 
 # ... existing imports and class definition ...
 
+def make_white_bg_transparent(img, tolerance=190):
+    img = img.convert("RGBA")
+    datas = img.getdata()
+    new_data = []
+    for item in datas:
+        # Calculate distance from white
+        dist = ((item[0] - 255) ** 2 + (item[1] - 255) ** 2 + (item[2] - 255) ** 2) ** 0.5
+        if dist < tolerance:
+            new_data.append((255, 255, 255, 0))
+        else:
+            new_data.append(item)
+    img.putdata(new_data)
+    return img
+
 class StatusPanelCompositeWidget(tk.Canvas):
     def __init__(self, parent, layout_json_path, edit_mode=False):
         self.layout_json_path = layout_json_path
@@ -26,6 +40,7 @@ class StatusPanelCompositeWidget(tk.Canvas):
         self.indicator_imgs = {}
         self.positions = {}
         self.scales = {}
+        self.animated_bg_color = (255, 255, 255, 255)  # Default white
         for key, info in indicators.items():
             pos = tuple(info["position"])
             scale = info.get("scale", 1.0)
@@ -39,6 +54,9 @@ class StatusPanelCompositeWidget(tk.Canvas):
                 img_path = info["image"]
                 if os.path.exists(img_path):
                     img = Image.open(img_path).convert("RGBA")
+                    # For RR, RL, FL, FR: preprocess to make white bg transparent
+                    if key in ("RR", "RL", "FL", "FR", "RUDDER"):
+                        img = make_white_bg_transparent(img)
                     self.indicator_imgs[key] = img
                 else:
                     self.indicator_imgs[key] = None
@@ -164,6 +182,15 @@ class StatusPanelCompositeWidget(tk.Canvas):
                     w, h = int(img.width * scale), int(img.height * scale)
                     img_resized = img.resize((w, h), Image.LANCZOS)
                     base.alpha_composite(img_resized, (x, y))
+            elif key in ("RR", "RL", "FL", "FR", "RUDDER") and self.indicator_imgs[key]:
+                # Composite over animated background color
+                img = self.indicator_imgs[key]
+                w, h = int(img.width * scale), int(img.height * scale)
+                img_resized = img.resize((w, h), Image.LANCZOS)
+                # Create a background of the current color
+                bg = Image.new("RGBA", (w, h), self.animated_bg_color)
+                bg.alpha_composite(img_resized, (0, 0))
+                base.alpha_composite(bg, (x, y))
             elif state and self.indicator_imgs[key]:
                 img = self.indicator_imgs[key]
                 w, h = int(img.width * scale), int(img.height * scale)
@@ -186,17 +213,23 @@ class StatusPanelCompositeWidget(tk.Canvas):
             self.indicator_state[key] = not self.indicator_state[key]
             self.draw_panel()
 
-    def animate_indicators(self, interval=500):
+    def animate_indicators_edit_mode(self, interval=500):
         keys = list(self.indicator_state.keys())
         import itertools
+        import colorsys
         cycle = itertools.cycle(keys)
+        color_hue = [0]  # mutable for closure
         def step():
             for k in keys:
                 if isinstance(self.indicator_imgs[k], dict):
-                    # Toggle rocker state each time
                     self.indicator_state[k] = not self.indicator_state[k]
                 else:
                     self.indicator_state[k] = True
+            # Animate background color for RR, RL, FL, FR
+            h = (color_hue[0] % 360) / 360.0
+            r, g, b = [int(x * 255) for x in colorsys.hsv_to_rgb(h, 1, 1)]
+            self.animated_bg_color = (r, g, b, 255)
+            color_hue[0] += 10
             self.draw_panel()
             self.after(interval, step)
         step()
@@ -235,7 +268,7 @@ def main():
     widget = StatusPanelCompositeWidget(root, layout_json_path)
     widget.set_edit_mode(True)
     widget.pack()
-    widget.animate_indicators(interval=1000)
+    widget.animate_indicators_edit_mode(interval=1000)
     root.mainloop()
 
 if __name__ == "__main__":
