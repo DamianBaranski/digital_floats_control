@@ -10,6 +10,10 @@ class QuickStatusWidget(tk.Frame):
         self.mock_update()
 
     def create_widgets(self):
+        # Title at the top
+        title = tk.Label(self, text="CONNECTED DEVICE INFORMATION", bg="#23272a", fg="#fff", font=("Segoe UI", 14, "bold"))
+        title.pack(fill="x", pady=(10, 0))
+
         # Section: System Information
         sysinfo_frame = self.section_frame("System Information")
         self.fw_version = self.info_row(sysinfo_frame, "Firmware Version:", "v1.2.3", col=2)
@@ -21,34 +25,35 @@ class QuickStatusWidget(tk.Frame):
 
         # Section: System Health
         health_frame = self.section_frame("System Health")
-        self.uptime = self.info_row(health_frame, "System Uptime:", "00:12:34", col=2)
-        self.power_status = self.info_row(health_frame, "Power Status:", "13.2 V", fg="#43d17a", col=2)
-        self.health_label = self.health_text_row(health_frame, "Overall Health:", 98, "Good", color="#43d17a")
-        self.mem_label, self.mem_bar = self.health_row(health_frame, "Memory Usage:", 45, "180/400 MB", color="#43d17a")
-        self.uart_label, self.uart_bar = self.health_row(health_frame, "UART Load:", 12, "12% (1.2 kB/s)", color="#43d17a")
+        self.uptime = self.info_row(health_frame, "System Uptime:", "00:12:34", col=2, pady=6)
+        self.power_status = self.info_row(health_frame, "Power Status:", "13.2 V", fg="#43d17a", col=2, pady=6)
+        self.health_label = self.health_text_row(health_frame, "Overall Health:", 98, "Good", color="#43d17a", col=2, pady=6)
+        self.mem_label, self.mem_bar = self.health_row_3col(health_frame, "Memory Usage:", 45, "180/400 MB (45%)", color="#43d17a", pady=6)
+        self.uart_label, self.uart_bar = self.health_row_3col(health_frame, "UART Load:", 12, "1.2 kB/s (12%)", color="#43d17a", pady=6)
         health_frame.pack(fill="x", padx=10, pady=(15, 0))
 
         # Section: Operation Status
         op_frame = self.section_frame("Operation Status")
-        self.remote_mode = self.status_row(op_frame, "Remote Control Mode:", "OFF", fg="#e74c3c", col=2)
-        self.last_test = self.status_row(op_frame, "Last Test Status:", "Success (2025-05-07 12:10)", fg="#43d17a", col=2)
-        self.last_comm = self.status_row(op_frame, "Last Communication:", "2025-05-07 12:12", col=2)
+        self.remote_mode = self.info_row(op_frame, "Remote Control Mode:", "OFF", fg="#e74c3c", col=2, pady=6)
+        self.last_test = self.info_row(op_frame, "Last Test Status:", "Success (2025-05-07 12:10)", fg="#43d17a", col=2, pady=6)
+        self.last_comm = self.info_row(op_frame, "Last Communication:", "2025-05-07 12:12", col=2, pady=6)
         op_frame.pack(fill="x", padx=10, pady=(15, 0))
 
         # Section: Controls
         ctrl_frame = self.section_frame("Controls")
         self.reset_btn = tk.Button(ctrl_frame, text="System Reset", bg="#2d333b", fg="#fff", activebackground="#43d17a", relief=tk.RAISED, command=self.mock_reset)
-        self.reset_btn.grid(row=0, column=0, sticky="ew", pady=4, columnspan=2)
+        self.reset_btn.grid(row=0, column=0, sticky="ew", pady=4, columnspan=3)
         self.remote_btn = tk.Button(ctrl_frame, text="Enable Remote Control Mode", bg="#2d333b", fg="#fff", activebackground="#7289da", relief=tk.RAISED, command=self.toggle_remote_mode)
-        self.remote_btn.grid(row=1, column=0, sticky="ew", pady=4, columnspan=2)
+        self.remote_btn.grid(row=1, column=0, sticky="ew", pady=4, columnspan=3)
         self.fw_update_btn = tk.Button(ctrl_frame, text="Firmware Update", bg="#2d333b", fg="#fff", activebackground="#7289da", relief=tk.RAISED, command=self.open_fw_update_popup)
-        self.fw_update_btn.grid(row=2, column=0, sticky="ew", pady=4, columnspan=2)
+        self.fw_update_btn.grid(row=2, column=0, sticky="ew", pady=4, columnspan=3)
         ctrl_frame.pack(fill="x", padx=10, pady=(15, 10))
 
         # Make responsive
         for frame in [sysinfo_frame, health_frame, op_frame, ctrl_frame]:
+            frame.columnconfigure(0, weight=1)
             frame.columnconfigure(1, weight=1)
-            frame.columnconfigure(2, weight=1)
+            frame.columnconfigure(2, weight=2)
         self.pack_propagate(False)
 
         # State for remote control mode
@@ -62,40 +67,32 @@ class QuickStatusWidget(tk.Frame):
         label.grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 5))
         return frame
 
-    def info_row(self, parent, label, value, fg="#fff", col=2):
+    def info_row(self, parent, label, value, fg="#fff", col=2, pady=2):
         row = parent.grid_size()[1]
-        tk.Label(parent, text=label, bg="#23272a", fg="#aaa").grid(row=row, column=0, sticky="w")
+        tk.Label(parent, text=label, bg="#23272a", fg="#aaa").grid(row=row, column=0, sticky="w", pady=pady)
         val = tk.Label(parent, text=value, bg="#23272a", fg=fg, font=("Segoe UI", 10, "bold"))
-        val.grid(row=row, column=col, sticky="e")
+        val.grid(row=row, column=col, sticky="e", pady=pady)
         return val
 
-    def health_text_row(self, parent, label, percent, text, color="#43d17a"):
+    def health_text_row(self, parent, label, percent, text, color="#43d17a", col=2, pady=2):
         row = parent.grid_size()[1]
-        tk.Label(parent, text=label, bg="#23272a", fg="#aaa").grid(row=row, column=0, sticky="w")
-        # Only show text and percent in 3rd column
+        tk.Label(parent, text=label, bg="#23272a", fg="#aaa").grid(row=row, column=0, sticky="w", pady=pady)
         label2 = tk.Label(parent, text=f"{text} ({percent}%)", bg="#23272a", fg=color, font=("Segoe UI", 10, "bold"))
-        label2.grid(row=row, column=2, sticky="e", padx=5)
+        label2.grid(row=row, column=col, sticky="e", padx=5, pady=pady)
         return label2
 
-    def health_row(self, parent, label, percent, text, color="#43d17a"):
+    def health_row_3col(self, parent, label, percent, text, color="#43d17a", pady=2):
         row = parent.grid_size()[1]
-        tk.Label(parent, text=label, bg="#23272a", fg="#aaa").grid(row=row, column=0, sticky="w")
-        bar = ttk.Progressbar(parent, value=percent, maximum=100, length=120)
-        bar.grid(row=row, column=1, sticky="ew", padx=5)
+        tk.Label(parent, text=label, bg="#23272a", fg="#aaa").grid(row=row, column=0, sticky="w", pady=pady)
+        bar = ttk.Progressbar(parent, value=percent, maximum=100, length=90)
+        bar.grid(row=row, column=1, sticky="ew", padx=(0, 5), pady=pady)
         bar_style = ttk.Style()
         bar_style.theme_use('default')
         bar_style.configure(f"{label}_bar.Horizontal.TProgressbar", troughcolor="#2d333b", background=color, bordercolor="#23272a", lightcolor=color, darkcolor=color)
         bar.configure(style=f"{label}_bar.Horizontal.TProgressbar")
-        label2 = tk.Label(parent, text=f"{text} ({percent}%)" if isinstance(text, str) and not text.endswith('%') else text, bg="#23272a", fg=color, font=("Segoe UI", 10, "bold"))
-        label2.grid(row=row, column=2, sticky="e", padx=5)
+        label2 = tk.Label(parent, text=text, bg="#23272a", fg=color, font=("Segoe UI", 10, "bold"))
+        label2.grid(row=row, column=2, sticky="e", padx=5, pady=pady)
         return label2, bar
-
-    def status_row(self, parent, label, value, fg="#fff", col=2):
-        row = parent.grid_size()[1]
-        tk.Label(parent, text=label, bg="#23272a", fg="#aaa").grid(row=row, column=0, sticky="w")
-        val = tk.Label(parent, text=value, bg="#23272a", fg=fg, font=("Segoe UI", 10, "bold"))
-        val.grid(row=row, column=col, sticky="e")
-        return val
 
     def mock_update(self):
         # This would be replaced with real data updates
