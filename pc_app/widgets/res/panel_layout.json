@@ -41,6 +41,14 @@
             ],
             "scale": 1.0
         },
+        "TEST": {
+            "image": "res/test_button.png",
+            "position": [
+                380,
+                656
+            ],
+            "scale": 1.0
+        },
         "ROCKER1": {
             "image_up": "res/rocker_up.png",
             "image_down": "res/rocker_down.png",

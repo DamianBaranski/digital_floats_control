@@ -1,6 +1,8 @@
 from .firmware_upload import FirmwareUpload
 from .release import Release
 import multiprocessing
+from .status_panel_composite_widget import StatusPanelCompositeWidget
+import os
 
 try:
     # python 3.x
@@ -22,6 +24,13 @@ class StatusFrameWidget(tk.Frame):
         #self.firmware_upload_button.grid(row=2, column=1)
         self.updating = multiprocessing.Value('b', False)
         self.version = None
+
+        # Add the status panel composite widget for layout mock
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        layout_json_path = os.path.join(base_dir, "res", "panel_layout.json")
+        self.status_panel = StatusPanelCompositeWidget(self, layout_json_path)
+        self.status_panel.animate_indicators_edit_mode(interval=1000)
+        self.status_panel.grid(row=3, column=1, columnspan=2, padx=10, pady=10)
 
     def update(self):
         if not self.app_protocol.uart.isOpen():
