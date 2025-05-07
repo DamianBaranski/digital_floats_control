@@ -13,13 +13,16 @@ class QuickStatusWidget(tk.Frame):
         # Section: System Information
         sysinfo_frame = self.section_frame("System Information")
         self.fw_version = self.info_row(sysinfo_frame, "Firmware Version:", "v1.2.3")
+        self.hw_version = self.info_row(sysinfo_frame, "Hardware Version:", "HW-2024A")
+        self.hw_config = self.info_row(sysinfo_frame, "Hardware Configuration:", "STD-4CH")
+        self.mfg_date = self.info_row(sysinfo_frame, "Mfg Date:", "2024-05-01")
         self.last_update = self.info_row(sysinfo_frame, "Last FW Update:", "2025-05-07 12:00")
-        self.uptime = self.info_row(sysinfo_frame, "System Uptime:", "00:12:34")
-        self.power_status = self.info_row(sysinfo_frame, "Power Status:", "13.2 V", fg="#43d17a")
         sysinfo_frame.pack(fill="x", padx=10, pady=(10, 0))
 
         # Section: System Health
         health_frame = self.section_frame("System Health")
+        self.uptime = self.info_row(health_frame, "System Uptime:", "00:12:34")
+        self.power_status = self.info_row(health_frame, "Power Status:", "13.2 V", fg="#43d17a")
         self.health_label, self.health_bar = self.health_row(health_frame, "Overall Health:", 98, "Good", color="#43d17a")
         self.mem_label, self.mem_bar = self.health_row(health_frame, "Memory Usage:", 45, "180/400 MB", color="#43d17a")
         self.uart_label, self.uart_bar = self.health_row(health_frame, "UART Load:", 12, "12% (1.2 kB/s)", color="#43d17a")
@@ -38,6 +41,8 @@ class QuickStatusWidget(tk.Frame):
         self.reset_btn.grid(row=0, column=0, sticky="ew", pady=4, columnspan=2)
         self.remote_btn = tk.Button(ctrl_frame, text="Enable Remote Control Mode", bg="#2d333b", fg="#fff", activebackground="#7289da", relief=tk.RAISED, command=self.toggle_remote_mode)
         self.remote_btn.grid(row=1, column=0, sticky="ew", pady=4, columnspan=2)
+        self.fw_update_btn = tk.Button(ctrl_frame, text="Firmware Update", bg="#2d333b", fg="#fff", activebackground="#7289da", relief=tk.RAISED, command=self.open_fw_update_popup)
+        self.fw_update_btn.grid(row=2, column=0, sticky="ew", pady=4, columnspan=2)
         ctrl_frame.pack(fill="x", padx=10, pady=(15, 10))
 
         # Make responsive
@@ -100,4 +105,32 @@ class QuickStatusWidget(tk.Frame):
             self.remote_btn.config(text="Disable Remote Control Mode", bg="#7289da")
         else:
             self.remote_mode.config(text="OFF", fg="#e74c3c")
-            self.remote_btn.config(text="Enable Remote Control Mode", bg="#2d333b") 
+            self.remote_btn.config(text="Enable Remote Control Mode", bg="#2d333b")
+
+    def open_fw_update_popup(self):
+        popup = tk.Toplevel(self)
+        popup.title("Firmware Update")
+        popup.configure(bg="#23272a")
+        tk.Label(popup, text="Release:", bg="#23272a", fg="#fff").pack(padx=10, pady=(10, 2), anchor="w")
+        release_var = tk.StringVar(value="v1.2.3")
+        option_var = tk.StringVar(value="Newest")
+        option_menu = tk.OptionMenu(popup, option_var, "Newest", "Other")
+        option_menu.config(bg="#2d333b", fg="#fff", highlightthickness=0, activebackground="#7289da")
+        option_menu.pack(padx=10, pady=2, fill="x")
+        entry = tk.Entry(popup, textvariable=release_var, bg="#2d333b", fg="#888", insertbackground="#fff", state="disabled")
+        entry.pack(padx=10, pady=2, fill="x")
+        btn_frame = tk.Frame(popup, bg="#23272a")
+        btn_frame.pack(padx=10, pady=10, fill="x")
+        def on_option_change(*args):
+            if option_var.get() == "Other":
+                entry.config(state="normal", fg="#fff")
+            else:
+                entry.config(state="disabled", fg="#888")
+        option_var.trace_add("write", on_option_change)
+        def do_update():
+            # Here you would trigger the real update
+            self.last_update.config(text=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+            popup.destroy()
+        tk.Button(btn_frame, text="Update", command=do_update, bg="#43d17a", fg="#fff").pack(side="left", expand=True, fill="x", padx=(0,5))
+        tk.Button(btn_frame, text="Cancel", command=popup.destroy, bg="#2d333b", fg="#fff").pack(side="left", expand=True, fill="x", padx=(5,0))
+        entry.focus_set() 
