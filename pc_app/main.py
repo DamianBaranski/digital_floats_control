@@ -94,7 +94,7 @@ class DigitalFloatsApp(tk.Frame):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.geometry("800x950")
+    root.geometry("1400x900")
     app = DigitalFloatsApp(root)
     app.grid(row=0, column=0, sticky="nsew")
     root.grid_rowconfigure(0, weight=1)  # Make sure the main frame can expand

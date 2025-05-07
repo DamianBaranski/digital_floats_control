@@ -12,27 +12,27 @@ class QuickStatusWidget(tk.Frame):
     def create_widgets(self):
         # Section: System Information
         sysinfo_frame = self.section_frame("System Information")
-        self.fw_version = self.info_row(sysinfo_frame, "Firmware Version:", "v1.2.3")
-        self.hw_version = self.info_row(sysinfo_frame, "Hardware Version:", "HW-2024A")
-        self.hw_config = self.info_row(sysinfo_frame, "Hardware Configuration:", "STD-4CH")
-        self.mfg_date = self.info_row(sysinfo_frame, "Mfg Date:", "2024-05-01")
-        self.last_update = self.info_row(sysinfo_frame, "Last FW Update:", "2025-05-07 12:00")
+        self.fw_version = self.info_row(sysinfo_frame, "Firmware Version:", "v1.2.3", col=2)
+        self.hw_version = self.info_row(sysinfo_frame, "Hardware Version:", "HW-2024A", col=2)
+        self.hw_config = self.info_row(sysinfo_frame, "Hardware Configuration:", "STD-4CH", col=2)
+        self.mfg_date = self.info_row(sysinfo_frame, "Mfg Date:", "2024-05-01", col=2)
+        self.last_update = self.info_row(sysinfo_frame, "Last FW Update:", "2025-05-07 12:00", col=2)
         sysinfo_frame.pack(fill="x", padx=10, pady=(10, 0))
 
         # Section: System Health
         health_frame = self.section_frame("System Health")
-        self.uptime = self.info_row(health_frame, "System Uptime:", "00:12:34")
-        self.power_status = self.info_row(health_frame, "Power Status:", "13.2 V", fg="#43d17a")
-        self.health_label, self.health_bar = self.health_row(health_frame, "Overall Health:", 98, "Good", color="#43d17a")
+        self.uptime = self.info_row(health_frame, "System Uptime:", "00:12:34", col=2)
+        self.power_status = self.info_row(health_frame, "Power Status:", "13.2 V", fg="#43d17a", col=2)
+        self.health_label = self.health_text_row(health_frame, "Overall Health:", 98, "Good", color="#43d17a")
         self.mem_label, self.mem_bar = self.health_row(health_frame, "Memory Usage:", 45, "180/400 MB", color="#43d17a")
         self.uart_label, self.uart_bar = self.health_row(health_frame, "UART Load:", 12, "12% (1.2 kB/s)", color="#43d17a")
         health_frame.pack(fill="x", padx=10, pady=(15, 0))
 
         # Section: Operation Status
         op_frame = self.section_frame("Operation Status")
-        self.remote_mode = self.status_row(op_frame, "Remote Control Mode:", "OFF", fg="#e74c3c")
-        self.last_test = self.status_row(op_frame, "Last Test Status:", "Success (2025-05-07 12:10)", fg="#43d17a")
-        self.last_comm = self.status_row(op_frame, "Last Communication:", "2025-05-07 12:12")
+        self.remote_mode = self.status_row(op_frame, "Remote Control Mode:", "OFF", fg="#e74c3c", col=2)
+        self.last_test = self.status_row(op_frame, "Last Test Status:", "Success (2025-05-07 12:10)", fg="#43d17a", col=2)
+        self.last_comm = self.status_row(op_frame, "Last Communication:", "2025-05-07 12:12", col=2)
         op_frame.pack(fill="x", padx=10, pady=(15, 0))
 
         # Section: Controls
@@ -48,6 +48,7 @@ class QuickStatusWidget(tk.Frame):
         # Make responsive
         for frame in [sysinfo_frame, health_frame, op_frame, ctrl_frame]:
             frame.columnconfigure(1, weight=1)
+            frame.columnconfigure(2, weight=1)
         self.pack_propagate(False)
 
         # State for remote control mode
@@ -61,12 +62,20 @@ class QuickStatusWidget(tk.Frame):
         label.grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 5))
         return frame
 
-    def info_row(self, parent, label, value, fg="#fff"):
+    def info_row(self, parent, label, value, fg="#fff", col=2):
         row = parent.grid_size()[1]
         tk.Label(parent, text=label, bg="#23272a", fg="#aaa").grid(row=row, column=0, sticky="w")
         val = tk.Label(parent, text=value, bg="#23272a", fg=fg, font=("Segoe UI", 10, "bold"))
-        val.grid(row=row, column=1, sticky="e")
+        val.grid(row=row, column=col, sticky="e")
         return val
+
+    def health_text_row(self, parent, label, percent, text, color="#43d17a"):
+        row = parent.grid_size()[1]
+        tk.Label(parent, text=label, bg="#23272a", fg="#aaa").grid(row=row, column=0, sticky="w")
+        # Only show text and percent in 3rd column
+        label2 = tk.Label(parent, text=f"{text} ({percent}%)", bg="#23272a", fg=color, font=("Segoe UI", 10, "bold"))
+        label2.grid(row=row, column=2, sticky="e", padx=5)
+        return label2
 
     def health_row(self, parent, label, percent, text, color="#43d17a"):
         row = parent.grid_size()[1]
@@ -81,11 +90,11 @@ class QuickStatusWidget(tk.Frame):
         label2.grid(row=row, column=2, sticky="e", padx=5)
         return label2, bar
 
-    def status_row(self, parent, label, value, fg="#fff"):
+    def status_row(self, parent, label, value, fg="#fff", col=2):
         row = parent.grid_size()[1]
         tk.Label(parent, text=label, bg="#23272a", fg="#aaa").grid(row=row, column=0, sticky="w")
         val = tk.Label(parent, text=value, bg="#23272a", fg=fg, font=("Segoe UI", 10, "bold"))
-        val.grid(row=row, column=1, sticky="e")
+        val.grid(row=row, column=col, sticky="e")
         return val
 
     def mock_update(self):
