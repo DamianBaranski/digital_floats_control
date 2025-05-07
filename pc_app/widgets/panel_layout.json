@@ -41,11 +41,23 @@
             ],
             "scale": 1.0
         },
-        "ROCKER": {
+        "ROCKER1": {
             "image_up": "res/rocker_up.png",
             "image_down": "res/rocker_down.png",
-            "position": [350, 100],
-            "scale": 1.0
+            "position": [
+                100,
+                263
+            ],
+            "scale": 0.35049389948139215
+        },
+        "ROCKER2": {
+            "image_up": "res/rocker_up.png",
+            "image_down": "res/rocker_down.png",
+            "position": [
+                600,
+                260
+            ],
+            "scale": 0.35049389948139215
         }
     }
 }
