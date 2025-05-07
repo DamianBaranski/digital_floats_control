@@ -1,5 +1,6 @@
 {
     "panel_image": "res/panel_raw.png",
+    "panel_scale": 0.5,
     "indicators": {
         "FL": {
             "image": "res/fl.png",

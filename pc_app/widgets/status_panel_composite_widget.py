@@ -35,10 +35,13 @@ class StatusPanelCompositeWidget(tk.Canvas):
         panel_path = layout["panel_image"]
         if not os.path.isabs(panel_path):
             panel_path = os.path.join(base_dir, panel_path)
+        self.panel_scale = layout.get("panel_scale", 1.0)
         indicators = layout["indicators"]
 
-        # Load panel background (with alpha) at its native size
-        self.panel_img = Image.open(panel_path).convert("RGBA")
+        # Load panel background (with alpha) at its native size, then scale
+        self.panel_img_orig = Image.open(panel_path).convert("RGBA")
+        orig_width, orig_height = self.panel_img_orig.size
+        self.panel_img = self.panel_img_orig.resize((int(orig_width * self.panel_scale), int(orig_height * self.panel_scale)), Image.LANCZOS)
         self.width, self.height = self.panel_img.size
         super().__init__(parent, width=self.width, height=self.height, highlightthickness=0)
 
@@ -106,7 +109,7 @@ class StatusPanelCompositeWidget(tk.Canvas):
     def start_drag(self, event):
         # Find which indicator was clicked
         for key, pos in self.positions.items():
-            scale = self.scales.get(key, 1.0)
+            scale = self.scales.get(key, 1.0) * self.panel_scale
             img = None
             if isinstance(self.indicator_imgs[key], dict):
                 # Rocker: use current state to get correct image
@@ -115,20 +118,23 @@ class StatusPanelCompositeWidget(tk.Canvas):
             else:
                 img = self.indicator_imgs[key]
             if img:
+                # Convert stored position to display position
+                x_disp, y_disp = int(pos[0] * self.panel_scale), int(pos[1] * self.panel_scale)
                 w, h = int(img.width * scale), int(img.height * scale)
-                x, y = pos
-                if (x <= event.x <= x + w and 
-                    y <= event.y <= y + h):
+                if (x_disp <= event.x <= x_disp + w and 
+                    y_disp <= event.y <= y_disp + h):
                     self.dragging = True
                     self.current_key = key
-                    self.start_x = event.x - x
-                    self.start_y = event.y - y
+                    # Store offset in display space, but convert to unscaled for updating
+                    self.start_x = (event.x - x_disp) / self.panel_scale
+                    self.start_y = (event.y - y_disp) / self.panel_scale
                     break
 
     def drag(self, event):
         if self.dragging and self.current_key:
-            new_x = event.x - self.start_x
-            new_y = event.y - self.start_y
+            # Convert mouse position to unscaled/original space
+            new_x = (event.x / self.panel_scale) - self.start_x
+            new_y = (event.y / self.panel_scale) - self.start_y
             self.positions[self.current_key] = (new_x, new_y)
             self.draw_panel()
 
@@ -180,15 +186,17 @@ class StatusPanelCompositeWidget(tk.Canvas):
         if self.edit_mode and self.draw_grid:
             import PIL.ImageDraw
             draw = PIL.ImageDraw.Draw(base)
-            grid_spacing = 50
+            grid_spacing = int(50 * self.panel_scale)
             w, h = base.size
             for x in range(0, w, grid_spacing):
                 draw.line([(x, 0), (x, h)], fill=(180, 180, 180, 80), width=1)
             for y in range(0, h, grid_spacing):
                 draw.line([(0, y), (w, y)], fill=(180, 180, 180, 80), width=1)
         for key, state in self.indicator_state.items():
-            x, y = self.positions[key]
-            scale = self.scales.get(key, 1.0)
+            # Scale position and size by panel_scale
+            orig_x, orig_y = self.positions[key]
+            x, y = int(orig_x * self.panel_scale), int(orig_y * self.panel_scale)
+            scale = self.scales.get(key, 1.0) * self.panel_scale
             if isinstance(self.indicator_imgs[key], dict):
                 # Rocker: always draw, use up or down image based on state
                 img = self.indicator_imgs[key]["up"] if state else self.indicator_imgs[key]["down"]
