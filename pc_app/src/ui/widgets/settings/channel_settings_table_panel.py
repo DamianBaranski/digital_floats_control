@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 from .channel_settings import ChannelSettings
+from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT
 
 
 class ChannelSettingsTablePanel(tk.Frame):
@@ -215,27 +216,103 @@ class EditDialog:
     def __init__(self, parent, settings, callback):
         self.top = tk.Toplevel(parent)
         self.top.title(f"Edit Channel Settings")
+        self.top.configure(bg=DARK_BG)
         self.settings = settings
         self.callback = callback
         self.entries = {}
+        self.tooltip = None
+
+        # Create a frame for better organization
+        main_frame = tk.Frame(self.top, bg=DARK_BG)
+        main_frame.pack(padx=20, pady=20, fill='both', expand=True)
+
+        # Define tooltips for each setting
+        self.tooltips = {
+            'enable': 'Enable/disable this channel',
+            'bridge': 'Enable bridge mode for motor control',
+            'inverse_motor': 'Invert the motor direction',
+            'inverse_up_limit_switch': 'Invert the up limit switch logic',
+            'inverse_down_limit_switch': 'Invert the down limit switch logic',
+            'inverse_limit_switch': 'Invert both limit switches logic',
+            'rudder': 'Configure channel as rudder control',
+            'ina_addr': 'I2C address of the INA current sensor (hex)',
+            'ina_calibration': 'Calibration value for current measurement',
+            'pcf_addr': 'I2C address of the PCF expander (hex)',
+            'pcf_channel': 'Channel number on the PCF expander (0 or 1)',
+            'max_voltage_limit': 'Maximum voltage limit in 0.1V units',
+            'min_voltage_limit': 'Minimum voltage limit in 0.1V units',
+            'max_current_limit': 'Maximum current limit in 0.1A units',
+            'min_current_limit': 'Minimum current limit in 0.1A units'
+        }
+
         for idx, (key, value) in enumerate(settings.values.items()):
-            label = tk.Label(self.top, text=key)
-            label.grid(row=idx, column=0, padx=10, pady=5)
+            # Create a frame for each row to handle tooltips
+            row_frame = tk.Frame(main_frame, bg=DARK_BG)
+            row_frame.grid(row=idx, column=0, columnspan=2, sticky='w', padx=10, pady=5)
+            
+            label = tk.Label(row_frame, text=key, bg=DARK_BG, fg=TEXT_COLOR, font=FONT)
+            label.pack(side='left')
+            
+            # Bind tooltip events to the label
+            label.bind('<Enter>', lambda e, k=key: self._show_tooltip(e, k))
+            label.bind('<Leave>', self._hide_tooltip)
+            
             if isinstance(value, bool):
                 var = tk.BooleanVar(value=value)
-                checkbox = tk.Checkbutton(self.top, variable=var)
-                checkbox.grid(row=idx, column=1, padx=10, pady=5)
+                checkbox = tk.Checkbutton(row_frame, variable=var, 
+                                        bg=DARK_BG, fg=TEXT_COLOR, 
+                                        selectcolor=DARKER_BG,
+                                        activebackground=BORDER_COLOR,
+                                        activeforeground=TEXT_COLOR)
+                checkbox.pack(side='left', padx=10)
                 self.entries[key] = var
             else:
-                spinbox = tk.Spinbox(self.top, from_=0, to=65535, increment=1, width=10)
+                spinbox = tk.Spinbox(row_frame, from_=0, to=65535, increment=1, width=10,
+                                   bg=DARKER_BG, fg=TEXT_COLOR,
+                                   insertbackground=TEXT_COLOR,
+                                   buttonbackground=BORDER_COLOR,
+                                   font=FONT)
                 spinbox.delete(0, 'end')
                 spinbox.insert(0, str(value))
-                spinbox.grid(row=idx, column=1, padx=10, pady=5)
+                spinbox.pack(side='left', padx=10)
                 self.entries[key] = spinbox
-        save_button = tk.Button(self.top, text="Save", command=self.save)
-        save_button.grid(row=len(settings.values), column=0, padx=10, pady=10)
-        cancel_button = tk.Button(self.top, text="Cancel", command=self.top.destroy)
-        cancel_button.grid(row=len(settings.values), column=1, padx=10, pady=10)
+
+        # Button frame
+        button_frame = tk.Frame(main_frame, bg=DARK_BG)
+        button_frame.grid(row=len(settings.values), column=0, columnspan=2, pady=20)
+
+        save_button = tk.Button(button_frame, text="Save", command=self.save,
+                              bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
+                              activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
+        save_button.pack(side='left', padx=10)
+
+        cancel_button = tk.Button(button_frame, text="Cancel", command=self.top.destroy,
+                                bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
+                                activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
+        cancel_button.pack(side='left', padx=10)
+
+    def _show_tooltip(self, event, key):
+        if self.tooltip:
+            self.tooltip.destroy()
+        
+        x, y, _, _ = event.widget.bbox("insert")
+        x += event.widget.winfo_rootx() + 25
+        y += event.widget.winfo_rooty() + 25
+
+        self.tooltip = tk.Toplevel(self.top)
+        self.tooltip.wm_overrideredirect(True)
+        self.tooltip.wm_geometry(f"+{x}+{y}")
+        
+        label = tk.Label(self.tooltip, text=self.tooltips[key],
+                        bg="#ffffe0", relief="solid", borderwidth=1,
+                        font=FONT, padx=5, pady=2)
+        label.pack()
+
+    def _hide_tooltip(self, event):
+        if self.tooltip:
+            self.tooltip.destroy()
+            self.tooltip = None
+
     def save(self):
         for key, entry in self.entries.items():
             if isinstance(entry, tk.BooleanVar):
