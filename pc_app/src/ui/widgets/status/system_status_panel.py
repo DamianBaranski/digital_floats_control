@@ -41,7 +41,7 @@ class SystemStatusPanel(tk.Frame):
         # Left: vertical split (status panel + log)
         left_paned = tk.PanedWindow(main_paned, orient=tk.VERTICAL, sashrelief=tk.RAISED, bg=DARK_BG)
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        layout_json_path = os.path.join(base_dir, "res", "panel_layout.json")
+        layout_json_path = os.path.join(base_dir, "resources", "panel_layout.json")
         self.status_panel = HardwareStatusCanvas(left_paned, layout_json_path)
         self.status_panel.animate_indicators_edit_mode(interval=1000)
         self.status_panel.pack(fill="both", expand=True)

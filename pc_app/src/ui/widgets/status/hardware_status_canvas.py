@@ -45,7 +45,7 @@ class HardwareStatusCanvas(tk.Canvas):
 
         panel_path = layout["panel_image"]
         if not os.path.isabs(panel_path):
-            panel_path = os.path.join(base_dir, panel_path)
+            panel_path = os.path.join(os.path.dirname(layout_json_path), panel_path)
         self.panel_scale = layout.get("panel_scale", 1.0)
         indicators = layout["indicators"]
 
