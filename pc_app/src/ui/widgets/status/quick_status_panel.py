@@ -19,54 +19,38 @@ class QuickStatusPanel(tk.Frame):
         Tooltip(title, "This section displays information about the currently connected device.")
 
         # Section: System Information
-        sysinfo_frame = self.section_frame("System Information")
+        sysinfo_frame = self.section_frame("System Information", "Displays basic system information about the connected device including firmware version, hardware details, and manufacturing information.")
         self.fw_version = self.info_row(sysinfo_frame, "Firmware Version:", "v1.2.3", col=2)
-        Tooltip(self.fw_version, "The firmware version currently running on the device.")
         self.hw_version = self.info_row(sysinfo_frame, "Hardware Version:", "HW-2024A", col=2)
-        Tooltip(self.hw_version, "The hardware version of the connected device.")
         self.hw_config = self.info_row(sysinfo_frame, "Hardware Configuration:", "STD-4CH", col=2)
-        Tooltip(self.hw_config, "The hardware configuration (e.g., number of channels).")
         self.mfg_date = self.info_row(sysinfo_frame, "Mfg Date:", "2024-05-01", col=2)
-        Tooltip(self.mfg_date, "The manufacturing date of the device.")
         self.last_update = self.info_row(sysinfo_frame, "Last FW Update:", "2025-05-07 12:00", col=2)
-        Tooltip(self.last_update, "The last date and time the firmware was updated.")
         sysinfo_frame.pack(fill="x", padx=10, pady=(10, 0))
 
         # Section: System Health
-        health_frame = self.section_frame("System Health")
+        health_frame = self.section_frame("System Health", "Shows the current health status of the system including uptime, power status, memory usage, and communication load.")
         self.uptime = self.info_row(health_frame, "System Uptime:", "00:12:34", col=2, pady=6)
-        Tooltip(self.uptime, "How long the device has been running since last power on.")
         self.power_status = self.info_row(health_frame, "Power Status:", "13.2 V", fg=SUCCESS, col=2, pady=6)
-        Tooltip(self.power_status, "Current power supply voltage.")
         self.health_label = self.health_text_row(health_frame, "Overall Health:", 98, "Good", color=SUCCESS, col=2, pady=6)
-        Tooltip(self.health_label, "Overall health status and percentage.")
         self.mem_label, self.mem_bar = self.health_row_3col(health_frame, "Memory Usage:", 45, "180/400 MB (45%)", color=SUCCESS, pady=6)
-        Tooltip(self.mem_label, "Current memory usage.")
         self.uart_label, self.uart_bar = self.health_row_3col(health_frame, "UART Load:", 12, "1.2 kB/s (12%)", color=SUCCESS, pady=6)
-        Tooltip(self.uart_label, "Current UART communication load.")
         health_frame.pack(fill="x", padx=10, pady=(15, 0))
 
         # Section: Operation Status
-        op_frame = self.section_frame("Operation Status")
+        op_frame = self.section_frame("Operation Status", "Displays the current operational status of the device including remote control mode and test results.")
         self.remote_mode = self.info_row(op_frame, "Remote Control Mode:", "OFF", fg=ERROR, col=2, pady=6)
-        Tooltip(self.remote_mode, "Indicates if remote control mode is enabled.")
         self.last_test = self.info_row(op_frame, "Last Test Status:", "Success (2025-05-07 12:10)", fg=SUCCESS, col=2, pady=6)
-        Tooltip(self.last_test, "Result and time of the last test performed.")
         self.last_comm = self.info_row(op_frame, "Last Communication:", "2025-05-07 12:12", col=2, pady=6)
-        Tooltip(self.last_comm, "Time of the last successful communication with the device.")
         op_frame.pack(fill="x", padx=10, pady=(15, 0))
 
         # Section: Controls
-        ctrl_frame = self.section_frame("Controls")
+        ctrl_frame = self.section_frame("Controls", "Provides control buttons for system operations including reset, remote control mode, and firmware updates.")
         self.reset_btn = tk.Button(ctrl_frame, text="System Reset", bg=DARKER_BG, fg=TEXT_COLOR, activebackground=SUCCESS, relief=tk.RAISED, font=FONT, borderwidth=1, highlightthickness=0, command=self.mock_reset)
         self.reset_btn.grid(row=0, column=0, sticky="ew", pady=4, columnspan=3)
-        Tooltip(self.reset_btn, "Reset the system to its initial state.")
         self.remote_btn = tk.Button(ctrl_frame, text="Enable Remote Control Mode", bg=DARKER_BG, fg=TEXT_COLOR, activebackground=ACCENT, relief=tk.RAISED, font=FONT, borderwidth=1, highlightthickness=0, command=self.toggle_remote_mode)
         self.remote_btn.grid(row=1, column=0, sticky="ew", pady=4, columnspan=3)
-        Tooltip(self.remote_btn, "Toggle remote control mode for the device.")
         self.fw_update_btn = tk.Button(ctrl_frame, text="Firmware Update", bg=DARKER_BG, fg=TEXT_COLOR, activebackground=ACCENT, relief=tk.RAISED, font=FONT, borderwidth=1, highlightthickness=0, command=self.open_fw_update_popup)
         self.fw_update_btn.grid(row=2, column=0, sticky="ew", pady=4, columnspan=3)
-        Tooltip(self.fw_update_btn, "Update the device firmware.")
         ctrl_frame.pack(fill="x", padx=10, pady=(15, 10))
 
         # Make responsive
@@ -79,12 +63,14 @@ class QuickStatusPanel(tk.Frame):
         # State for remote control mode
         self.remote_enabled = False
 
-    def section_frame(self, title):
+    def section_frame(self, title, tooltip_text=None):
         frame = tk.Frame(self, bg=DARK_BG)
         divider = tk.Frame(self, bg=BORDER_COLOR, height=2)
         divider.pack(fill="x", padx=5, pady=(10, 0))
         label = tk.Label(frame, text=title, bg=DARK_BG, fg=TEXT_COLOR, font=SECTION_FONT)
         label.grid(row=0, column=0, columnspan=3, sticky="w", pady=(0, 5))
+        if tooltip_text:
+            Tooltip(frame, tooltip_text)
         return frame
 
     def info_row(self, parent, label, value, fg=TEXT_COLOR, col=2, pady=2):
