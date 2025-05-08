@@ -45,6 +45,8 @@ class StatusPanelCompositeWidget(tk.Canvas):
         self.panel_img = self.panel_img_orig.resize((int(orig_width * self.panel_scale), int(orig_height * self.panel_scale)), Image.LANCZOS)
         self.width, self.height = self.panel_img.size
         super().__init__(parent, width=self.width, height=self.height, highlightthickness=0, bg=DARK_BG)
+        self.bind('<Configure>', self._on_resize)
+        self._last_drawn_size = (self.width, self.height)
 
         # Load indicator images, positions, and scales from JSON
         self.indicator_imgs = {}
@@ -108,6 +110,27 @@ class StatusPanelCompositeWidget(tk.Canvas):
             self.bind("<Button-5>", self.scale_dragged_indicator)    # Linux scroll down
 
         self.draw_panel()
+
+    def _on_resize(self, event):
+        # Calculate new scale to fit the available space, keep aspect ratio
+        canvas_w = event.width
+        canvas_h = event.height
+        orig_w, orig_h = self.panel_img_orig.size
+        scale_w = canvas_w / orig_w
+        scale_h = canvas_h / orig_h
+        scale = min(scale_w, scale_h)
+        # Only redraw if size or scale changed
+        if self._last_drawn_size != (canvas_w, canvas_h):
+            self.set_panel_scale(scale, center_x=canvas_w//2, center_y=canvas_h//2)
+            self._last_drawn_size = (canvas_w, canvas_h)
+
+    def set_panel_scale(self, new_scale, center_x=None, center_y=None):
+        self.panel_scale = new_scale
+        orig_width, orig_height = self.panel_img_orig.size
+        self.panel_img = self.panel_img_orig.resize((int(orig_width * self.panel_scale), int(orig_height * self.panel_scale)), Image.LANCZOS)
+        self.width, self.height = self.panel_img.size
+        self.config(width=self.width, height=self.height)
+        self.draw_panel(center_x, center_y)
 
     def start_drag(self, event):
         # Find which indicator was clicked
@@ -183,7 +206,7 @@ class StatusPanelCompositeWidget(tk.Canvas):
         
         print("Positions and scales saved successfully!")
 
-    def draw_panel(self):
+    def draw_panel(self, center_x=None, center_y=None):
         base = self.panel_img.copy()
         # Draw grid in edit mode
         if self.edit_mode and self.draw_grid:
@@ -223,9 +246,16 @@ class StatusPanelCompositeWidget(tk.Canvas):
                 base.alpha_composite(img_resized, (x, y))
         self.composited_img = base
         self.tk_img = ImageTk.PhotoImage(self.composited_img)
-        if self.image_id is None:
-            self.image_id = self.create_image(0, 0, anchor=tk.NW, image=self.tk_img)
+        if center_x is not None and center_y is not None:
+            x = center_x - self.width // 2
+            y = center_y - self.height // 2
         else:
+            x = 0
+            y = 0
+        if self.image_id is None:
+            self.image_id = self.create_image(x, y, anchor=tk.NW, image=self.tk_img)
+        else:
+            self.coords(self.image_id, x, y)
             self.itemconfig(self.image_id, image=self.tk_img)
 
     def set_indicator(self, key, state=True):

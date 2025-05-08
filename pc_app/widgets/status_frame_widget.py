@@ -51,6 +51,22 @@ class StatusFrameWidget(tk.Frame):
         self.quick_status = QuickStatusWidget(main_paned)
         main_paned.add(self.quick_status)
 
+        # Restore resizing logic
+        self._last_panel_scale = None
+        left_paned.bind('<Configure>', self.on_left_pane_resize)
+
+    def on_left_pane_resize(self, event):
+        width = event.width
+        height = event.height // 2  # since left_paned is vertical split (panel + log)
+        aspect = self.status_panel.get_aspect_ratio()
+        orig_w, orig_h = self.status_panel.panel_img_orig.size
+        scale_w = width / orig_w
+        scale_h = height / orig_h
+        scale = min(scale_w, scale_h)
+        if self._last_panel_scale is None or abs(self._last_panel_scale - scale) > 0.01:
+            self.status_panel.set_panel_scale(scale)
+            self._last_panel_scale = scale
+
     def update(self):
         if not self.app_protocol.uart.isOpen():
             self.updateVersion('N/A')
