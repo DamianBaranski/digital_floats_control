@@ -8,8 +8,8 @@ except ImportError:
     import Tkinter as tk
     import Tkinter.scrolledtext as scrolledtext
 
-from ..status.log_table_panel import LogTablePanel
-from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
+from src.ui.widgets.status.log_table_panel import LogTablePanel
+from src.ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
 class LogOutputPanel(tk.Frame):
     def __init__(self, parent, app_protocol):

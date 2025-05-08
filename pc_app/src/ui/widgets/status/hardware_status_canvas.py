@@ -3,7 +3,7 @@ from PIL import Image, ImageTk
 import os
 import json
 try:
-    from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
+    from src.ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 except ImportError:
     # Fallback for running as a script: define defaults
     DARK_BG = "#23272a"

@@ -1,10 +1,10 @@
-from .firmware_upload import FirmwareUpload
-from .release import Release
+from src.ui.widgets.status.firmware_upload import FirmwareUpload
+from src.ui.widgets.status.release import Release
 import multiprocessing
-from .hardware_status_canvas import HardwareStatusCanvas
-from .log_table_panel import LogTablePanel
-from .quick_status_panel import QuickStatusPanel
-from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
+from src.ui.widgets.status.hardware_status_canvas import HardwareStatusCanvas
+from src.ui.widgets.status.log_table_panel import LogTablePanel
+from src.ui.widgets.status.quick_status_panel import QuickStatusPanel
+from src.ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 import os
 import logging
 from typing import List, Optional
