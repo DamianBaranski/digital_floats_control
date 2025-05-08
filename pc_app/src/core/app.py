@@ -108,10 +108,6 @@ class DigitalFloatsApp(tk.Frame):
         self.comport.stop()
         self.parent.destroy()   # Destroy the window
         
-    def submit(self):
-        self.ui_status_bar.config(text="my_text")
-        pass
-
     def update(self):
         # Get the index of the currently selected tab
         selected_tab_index = self.ui_tabs.index(self.ui_tabs.select())
