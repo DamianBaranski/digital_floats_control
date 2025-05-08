@@ -10,6 +10,76 @@ from widgets.ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT,
 import tkinter as tk
 from tkinter import ttk
 
+class DetachableNotebook(ttk.Notebook):
+    def __init__(self, master=None, tab_factories=None, **kw):
+        super().__init__(master, **kw)
+        self.tab_factories = tab_factories or {}
+        self._active = None
+        self._drag_data = {}
+        self._detached_tabs = {}  # tab_text: (window, frame)
+        self.bind('<ButtonPress-1>', self.on_tab_press, True)
+        self.bind('<B1-Motion>', self.on_tab_motion, True)
+        self.bind('<ButtonRelease-1>', self.on_tab_release, True)
+
+    def on_tab_press(self, event):
+        x, y = event.x, event.y
+        elem = self.identify(x, y)
+        if 'label' in elem:
+            self._active = self.index(f"@{x},{y}")
+            self._drag_data = {'x': x, 'y': y}
+
+    def on_tab_motion(self, event):
+        pass
+
+    def on_tab_release(self, event):
+        if self._active is not None:
+            x_root, y_root = event.x_root, event.y_root
+            tab_id = self.tabs()[self._active]
+            tab_text = self.tab(self._active, 'text')
+            nb_x = self.winfo_rootx()
+            nb_y = self.winfo_rooty()
+            nb_w = self.winfo_width()
+            nb_h = self.winfo_height()
+            if not (nb_x <= x_root <= nb_x + nb_w and nb_y <= y_root <= nb_y + nb_h):
+                self.detach_tab(self._active, tab_text, x_root, y_root)
+            self._active = None
+            self._drag_data = {}
+
+    def detach_tab(self, tab_index, tab_text, x_root, y_root):
+        # Remove the tab and destroy its frame
+        tab_id = self.tabs()[tab_index]
+        tab_frame = self.nametowidget(tab_id)
+        self.forget(tab_index)
+        tab_frame.destroy()
+        # Create a new window and new frame for the tab
+        new_win = tk.Toplevel(self)
+        new_win.title(tab_text)
+        new_win.configure(bg=DARK_BG)
+        frame = tk.Frame(new_win, bg=DARK_BG)
+        frame.pack(fill='both', expand=True)
+        # Create the tab content using the factory
+        widget = self.tab_factories[tab_text](frame)
+        widget.pack(fill='both', expand=True)
+        btn = tk.Button(new_win, text="Reattach Tab", command=lambda: self.reattach_tab(tab_text, new_win, frame),
+                        bg=DARKER_BG, fg=TEXT_COLOR, font=FONT, activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
+        btn.pack(side='bottom', fill='x')
+        new_win.geometry(f"600x400+{x_root}+{y_root}")
+        self._detached_tabs[tab_text] = (new_win, frame)
+        new_win.protocol("WM_DELETE_WINDOW", lambda: self.reattach_tab(tab_text, new_win, frame))
+
+    def reattach_tab(self, tab_text, win, frame):
+        if tab_text in self._detached_tabs:
+            win.withdraw()
+            win.destroy()
+            frame.destroy()
+            # Recreate the tab in the notebook
+            new_frame = tk.Frame(self, bg=DARK_BG)
+            widget = self.tab_factories[tab_text](new_frame)
+            widget.pack(fill='both', expand=True)
+            self.add(new_frame, text=tab_text)
+            self.select(new_frame)
+            del self._detached_tabs[tab_text]
+
 class DigitalFloatsApp(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent, bg=DARK_BG)
@@ -70,20 +140,24 @@ class DigitalFloatsApp(tk.Frame):
         self.vert_separator = ttk.Separator(self, orient='vertical')
         self.vert_separator.grid(row=0, column=1, sticky='ns')
 
-        # Create the notebook for tabs
-        self.ui_tabs = ttk.Notebook(self)
+        # Tab factories for robust detach/reattach
+        tab_factories = {
+            "Status": lambda parent: StatusFrameWidget(parent, self.app_protocol),
+            "Settings": lambda parent: SettingsFrameWidget(parent, self.app_protocol),
+            "Monitoring": lambda parent: MonitoringFrameWidget(parent, self.app_protocol),
+            "Logs": lambda parent: LogsFrameWidget(parent, self.app_protocol),
+        }
+
+        # Create the detachable notebook for tabs
+        self.ui_tabs = DetachableNotebook(self, tab_factories=tab_factories)
         self.ui_tabs.grid(row=0, column=2, sticky="nsew")  # Fill horizontally and vertically
 
-        # Create and add tabs to the notebook
-        self.ui_status_tab = StatusFrameWidget(self.ui_tabs, self.app_protocol)
-        self.ui_settings_tab = SettingsFrameWidget(self.ui_tabs, self.app_protocol)
-        self.ui_monitoring_tab = MonitoringFrameWidget(self.ui_tabs, self.app_protocol)
-        self.ui_logs_tab = LogsFrameWidget(self.ui_tabs, self.app_protocol)
-
-        self.ui_tabs.add(self.ui_status_tab, text="Status")
-        self.ui_tabs.add(self.ui_settings_tab, text="Settings")
-        self.ui_tabs.add(self.ui_monitoring_tab, text="Monitoring")
-        self.ui_tabs.add(self.ui_logs_tab, text="Logs")
+        # Create and add tabs to the notebook using factories
+        for tab_name in ["Status", "Settings", "Monitoring", "Logs"]:
+            frame = tk.Frame(self.ui_tabs, bg=DARK_BG)
+            widget = tab_factories[tab_name](frame)
+            widget.pack(fill='both', expand=True)
+            self.ui_tabs.add(frame, text=tab_name)
 
         # Create and place the status bar at the bottom
         self.ui_status_bar = ttk.Label(parent, relief=tk.SUNKEN, anchor="w", background=DARKER_BG, foreground=TEXT_COLOR, font=FONT)
@@ -110,25 +184,24 @@ class DigitalFloatsApp(tk.Frame):
     def update(self):
         # Get the index of the currently selected tab
         selected_tab_index = self.ui_tabs.index(self.ui_tabs.select())
-
-        # Update the selected tab only
-        if selected_tab_index == 0:
-            self.ui_status_tab.update()
-        elif selected_tab_index == 1:
-            self.ui_settings_tab.update()
-        elif selected_tab_index == 2:
-            self.ui_monitoring_tab.update()
-        elif selected_tab_index == 3:
-            self.ui_logs_tab.update()
-
-        # Also update the ComPortWidget since it's not part of the notebook
+        tab_names = ["Status", "Settings", "Monitoring", "Logs"]
+        if 0 <= selected_tab_index < len(tab_names):
+            tab_name = tab_names[selected_tab_index]
+            for frame in self.ui_tabs.winfo_children():
+                if self.ui_tabs.tab(frame, option='text') == tab_name:
+                    for child in frame.winfo_children():
+                        if hasattr(child, 'update'):
+                            child.update()
         self.ui_port.update()
-        # call this function again in one second
         self.after(100, self.update)
         
     def on_connected(self, status):
         if status:
-            self.ui_status_tab.update()
+            for frame in self.ui_tabs.winfo_children():
+                if self.ui_tabs.tab(frame, option='text') == "Status":
+                    for child in frame.winfo_children():
+                        if hasattr(child, 'update'):
+                            child.update()
 
 if __name__ == "__main__":
     root = tk.Tk()
