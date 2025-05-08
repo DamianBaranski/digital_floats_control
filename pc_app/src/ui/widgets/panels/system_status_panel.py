@@ -4,8 +4,10 @@ import multiprocessing
 from .hardware_status_canvas import HardwareStatusCanvas
 from .log_table_panel import LogTablePanel
 from .quick_status_panel import QuickStatusPanel
-from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
+from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 import os
+import logging
+from typing import List, Optional
 
 try:
     # python 3.x

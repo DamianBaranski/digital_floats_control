@@ -1,14 +1,15 @@
 try:
     # python 3.x
     import tkinter as tk
-    from tkinter.ttk import *
+    from tkinter import ttk
     import tkinter.scrolledtext as scrolledtext
 except ImportError:
     # python 2.x
     import Tkinter as tk
     import Tkinter.scrolledtext as scrolledtext
 
-from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
+from .log_table_panel import LogTablePanel
+from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
 class LogOutputPanel(tk.Frame):
     def __init__(self, parent, app_protocol):

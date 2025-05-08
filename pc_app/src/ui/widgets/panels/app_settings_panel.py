@@ -5,7 +5,7 @@ from .user_settings_panel import UserSettingsPanel
 from .channel_settings import ChannelSettings
 from .channel_settings_table_panel import ChannelSettingsTablePanel
 from .auto_detect import AutoDetect
-from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT, SECTION_FONT
+from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT, SECTION_FONT
 
 class UserSettingField(tk.Frame):
     def __init__(self, parent, name, input_type="entry"):

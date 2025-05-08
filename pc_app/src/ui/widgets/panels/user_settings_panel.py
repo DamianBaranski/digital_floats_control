@@ -2,7 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 import json
 import os
-from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
+import struct
+from typing import List
+from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
 class UserSettingsPanel:
     def __init__(self, parent):

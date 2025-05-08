@@ -2,9 +2,9 @@ import base64
 import binascii
 import logging
 from typing import Generic, TypeVar, Union, Optional
-from widgets.user_settings_panel import UserSettingsPanel
-from widgets.channel_settings import ChannelSettings
-from widgets.monitoring_data import MonitoringData
+from ..ui.widgets.panels.user_settings_panel import UserSettingsPanel
+from ..ui.widgets.panels.channel_settings import ChannelSettings
+from ..ui.widgets.panels.monitoring_data import MonitoringData
 
 # Configure logging with INFO level and log format
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")

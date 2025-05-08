@@ -1,13 +1,16 @@
 try:
     # python 3.x
     import tkinter as tk
-    from tkinter.ttk import *
+    from tkinter import ttk
 except ImportError:
     # python 2.x
     import Tkinter as tk
+from tkinter import ttk
+import logging
+from typing import List, Optional
 from .monitoring_table_panel import MonitoringTablePanel
 import time
-from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT, HEADER_FONT
+from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT, HEADER_FONT
 
 class MonitoringPanel(tk.Frame):
     def __init__(self, parent, protocol):
