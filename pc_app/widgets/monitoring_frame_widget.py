@@ -7,15 +7,16 @@ except ImportError:
     import Tkinter as tk
 from .monitoring_table import MonitoringTable
 import time
+from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT, HEADER_FONT
 
 class MonitoringFrameWidget(tk.Frame):
     def __init__(self, parent, protocol):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, bg=DARK_BG)
         self.protocol = protocol
-        frame = tk.Frame(self)
+        frame = tk.Frame(self, bg=DARK_BG)
         frame.pack(side="top", fill="x", padx=10, pady=10)
         
-        self.label = tk.Label(frame, text="Monitoring")
+        self.label = tk.Label(frame, text="Monitoring", bg=DARK_BG, fg=TEXT_COLOR, font=HEADER_FONT)
         self.table = MonitoringTable(self)
         self.label.pack(side="top", fill="x")
         self.table.pack(side="top", fill="x", padx=20)

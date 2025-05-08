@@ -63,7 +63,14 @@ class DetachableNotebook(ttk.Notebook):
         btn = tk.Button(new_win, text="Reattach Tab", command=lambda: self.reattach_tab(tab_text, new_win, frame),
                         bg=DARKER_BG, fg=TEXT_COLOR, font=FONT, activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
         btn.pack(side='bottom', fill='x')
-        new_win.geometry(f"600x400+{x_root}+{y_root}")
+        # Get parent window size and position
+        root = self.winfo_toplevel()
+        root.update_idletasks()
+        width = root.winfo_width()
+        height = root.winfo_height()
+        x = root.winfo_rootx()
+        y = root.winfo_rooty()
+        new_win.geometry(f"{width}x{height}+{x}+{y}")
         self._detached_tabs[tab_text] = (new_win, frame)
         new_win.protocol("WM_DELETE_WINDOW", lambda: self.reattach_tab(tab_text, new_win, frame))
 
@@ -187,8 +194,9 @@ class DigitalFloatsApp(tk.Frame):
         tab_names = ["Status", "Settings", "Monitoring", "Logs"]
         if 0 <= selected_tab_index < len(tab_names):
             tab_name = tab_names[selected_tab_index]
-            for frame in self.ui_tabs.winfo_children():
-                if self.ui_tabs.tab(frame, option='text') == tab_name:
+            for tab_id in self.ui_tabs.tabs():
+                frame = self.ui_tabs.nametowidget(tab_id)
+                if self.ui_tabs.tab(tab_id, option='text') == tab_name:
                     for child in frame.winfo_children():
                         if hasattr(child, 'update'):
                             child.update()

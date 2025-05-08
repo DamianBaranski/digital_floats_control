@@ -2,7 +2,17 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import os
 import json
-from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
+try:
+    from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
+except ImportError:
+    # Fallback for running as a script: define defaults
+    DARK_BG = "#23272a"
+    DARKER_BG = "#2d333b"
+    BORDER_COLOR = "#36393f"
+    TEXT_COLOR = "#fff"
+    SECONDARY_TEXT = "#aaa"
+    FONT = ("Segoe UI", 10)
+    HEADER_FONT = ("Segoe UI", 14, "bold")
 
 # ... existing imports and class definition ...
 
