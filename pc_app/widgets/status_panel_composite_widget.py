@@ -47,6 +47,8 @@ class StatusPanelCompositeWidget(tk.Canvas):
         super().__init__(parent, width=self.width, height=self.height, highlightthickness=0, bg=DARK_BG)
         self.bind('<Configure>', self._on_resize)
         self._last_drawn_size = (self.width, self.height)
+        self._center_x = self.width // 2
+        self._center_y = self.height // 2
 
         # Load indicator images, positions, and scales from JSON
         self.indicator_imgs = {}
@@ -112,16 +114,16 @@ class StatusPanelCompositeWidget(tk.Canvas):
         self.draw_panel()
 
     def _on_resize(self, event):
-        # Calculate new scale to fit the available space, keep aspect ratio
         canvas_w = event.width
         canvas_h = event.height
         orig_w, orig_h = self.panel_img_orig.size
         scale_w = canvas_w / orig_w
         scale_h = canvas_h / orig_h
         scale = min(scale_w, scale_h)
-        # Only redraw if size or scale changed
         if self._last_drawn_size != (canvas_w, canvas_h):
-            self.set_panel_scale(scale, center_x=canvas_w//2, center_y=canvas_h//2)
+            self._center_x = canvas_w // 2
+            self._center_y = canvas_h // 2
+            self.set_panel_scale(scale)
             self._last_drawn_size = (canvas_w, canvas_h)
 
     def set_panel_scale(self, new_scale, center_x=None, center_y=None):
@@ -130,7 +132,10 @@ class StatusPanelCompositeWidget(tk.Canvas):
         self.panel_img = self.panel_img_orig.resize((int(orig_width * self.panel_scale), int(orig_height * self.panel_scale)), Image.LANCZOS)
         self.width, self.height = self.panel_img.size
         self.config(width=self.width, height=self.height)
-        self.draw_panel(center_x, center_y)
+        if center_x is not None and center_y is not None:
+            self._center_x = center_x
+            self._center_y = center_y
+        self.draw_panel()
 
     def start_drag(self, event):
         # Find which indicator was clicked
@@ -246,12 +251,9 @@ class StatusPanelCompositeWidget(tk.Canvas):
                 base.alpha_composite(img_resized, (x, y))
         self.composited_img = base
         self.tk_img = ImageTk.PhotoImage(self.composited_img)
-        if center_x is not None and center_y is not None:
-            x = center_x - self.width // 2
-            y = center_y - self.height // 2
-        else:
-            x = 0
-            y = 0
+        # Always use the last known center
+        x = self._center_x - self.width // 2
+        y = self._center_y - self.height // 2
         if self.image_id is None:
             self.image_id = self.create_image(x, y, anchor=tk.NW, image=self.tk_img)
         else:

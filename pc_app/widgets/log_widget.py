@@ -68,6 +68,7 @@ class LogWidget(tk.Frame):
             self.tree.delete(row)
         for row in data[-50:]:  # Show last 50
             tag = self.get_row_tag(row)
+            # No wrapping, just display as is
             self.tree.insert("", "end", values=row, tags=(tag,))
         # Muted, dark-theme-friendly colors
         self.tree.tag_configure("Success", background="#26734d")   # dark green
