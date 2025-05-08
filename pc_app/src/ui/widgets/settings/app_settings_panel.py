@@ -64,7 +64,7 @@ class AppSettingsPanel(tk.Frame):
             lambda e: self.main_canvas.configure(scrollregion=self.main_canvas.bbox("all"))
         )
 
-        self.main_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.main_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw", width=self.winfo_width())
         self.main_canvas.configure(yscrollcommand=self.scrollbar.set)
 
         # Pack the canvas and scrollbar
@@ -79,16 +79,17 @@ class AppSettingsPanel(tk.Frame):
         # Create Channel Settings Section
         self.create_channel_settings_section()
 
-        # Create LED Settings Section
-        self.create_led_settings_section()
+        # Bind resize event
+        self.bind('<Configure>', self.on_resize)
 
-        # Create Communication Settings Section
-        self.create_communication_settings_section()
+    def on_resize(self, event):
+        # Update the width of the scrollable frame when the window is resized
+        self.main_canvas.itemconfig(self.main_canvas.find_withtag("all")[0], width=event.width)
 
     def create_channel_settings_section(self):
         # Channel Settings Frame
         channel_frame = tk.Frame(self.scrollable_frame, bg=DARK_BG)
-        channel_frame.pack(fill="x", padx=20, pady=(0, 20))
+        channel_frame.pack(fill="x", padx=10, pady=(0, 20))
 
         # Channel Settings Title
         channel_title = tk.Label(channel_frame, text="Channel Settings", font=SECTION_FONT,
@@ -99,6 +100,12 @@ class AppSettingsPanel(tk.Frame):
         self.channel_settings_table = ChannelSettingsTablePanel(channel_frame)
         self.channel_settings_table.pack(fill="x", pady=(0, 10))
 
+        # Configure the treeview columns to be more compact
+        if hasattr(self.channel_settings_table, 'tree'):
+            self.channel_settings_table.tree.column("#0", width=50, minwidth=50)  # Channel column
+            for col in self.channel_settings_table.tree["columns"]:
+                self.channel_settings_table.tree.column(col, width=80, minwidth=80)
+
         # Channel Settings Buttons
         button_frame = tk.Frame(channel_frame, bg=DARK_BG)
         button_frame.pack(fill="x", pady=(0, 10))
@@ -106,136 +113,22 @@ class AppSettingsPanel(tk.Frame):
         self.load_button = tk.Button(button_frame, text="Load", command=self.loadChannelSettings,
                                    bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
                                    activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
-        self.load_button.pack(side="right", padx=5)
+        self.load_button.pack(side="right", padx=2)
 
         self.save_button = tk.Button(button_frame, text="Save", command=self.saveChannelSettings,
                                    bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
                                    activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
-        self.save_button.pack(side="right", padx=5)
+        self.save_button.pack(side="right", padx=2)
 
         self.auto_detect_button = tk.Button(button_frame, text="Auto Detect", command=self.autoDetect,
                                           bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
                                           activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
-        self.auto_detect_button.pack(side="right", padx=5)
+        self.auto_detect_button.pack(side="right", padx=2)
 
         self.help_button = tk.Button(button_frame, text="Help", command=self.channelHelp,
                                    bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
                                    activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
-        self.help_button.pack(side="right", padx=5)
-
-    def create_led_settings_section(self):
-        # LED Settings Frame
-        led_frame = tk.Frame(self.scrollable_frame, bg=DARK_BG)
-        led_frame.pack(fill="x", padx=20, pady=(0, 20))
-
-        # LED Settings Title
-        led_title = tk.Label(led_frame, text="LED Settings", font=SECTION_FONT,
-                           bg=DARK_BG, fg=TEXT_COLOR)
-        led_title.pack(anchor="w", pady=(0, 10))
-
-        # LED Settings Fields
-        self.brightness = UserSettingField(led_frame, "Brightness")
-        self.ldg_up_color = UserSettingField(led_frame, "LDG Up Color", input_type="color")
-        self.ldg_down_color = UserSettingField(led_frame, "LDG Down Color", input_type="color")
-        self.rudder_up_color = UserSettingField(led_frame, "Rudder Up Color", input_type="color")
-        self.rudder_down_color = UserSettingField(led_frame, "Rudder Down Color", input_type="color")
-        self.rudder_inactive_color = UserSettingField(led_frame, "Rudder Inactive Color", input_type="color")
-        self.warning_color = UserSettingField(led_frame, "Warning Color", input_type="color")
-        self.error_color = UserSettingField(led_frame, "Error Color", input_type="color")
-
-        self.brightness.pack(fill="x", pady=5)
-        self.ldg_up_color.pack(fill="x", pady=5)
-        self.ldg_down_color.pack(fill="x", pady=5)
-        self.rudder_up_color.pack(fill="x", pady=5)
-        self.rudder_down_color.pack(fill="x", pady=5)
-        self.rudder_inactive_color.pack(fill="x", pady=5)
-        self.warning_color.pack(fill="x", pady=5)
-        self.error_color.pack(fill="x", pady=5)
-
-        # LED Settings Buttons
-        button_frame = tk.Frame(led_frame, bg=DARK_BG)
-        button_frame.pack(fill="x", pady=(10, 0))
-
-        self.load_led_button = tk.Button(button_frame, text="Load", command=self.loadUserSettings,
-                                       bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
-                                       activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
-        self.load_led_button.pack(side="right", padx=5)
-
-        self.save_led_button = tk.Button(button_frame, text="Save", command=self.saveUserSettings,
-                                       bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
-                                       activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
-        self.save_led_button.pack(side="right", padx=5)
-
-        self.default_led_button = tk.Button(button_frame, text="Load Default", command=self.loadDefaultSettings,
-                                          bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
-                                          activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
-        self.default_led_button.pack(side="right", padx=5)
-
-    def create_communication_settings_section(self):
-        # Communication Settings Frame
-        comm_frame = tk.Frame(self.scrollable_frame, bg=DARK_BG)
-        comm_frame.pack(fill="x", padx=20, pady=(0, 20))
-
-        # Communication Settings Title
-        comm_title = tk.Label(comm_frame, text="Communication Settings", font=SECTION_FONT,
-                            bg=DARK_BG, fg=TEXT_COLOR)
-        comm_title.pack(anchor="w", pady=(0, 10))
-
-        # Communication Settings Fields
-        self.default_port = UserSettingField(comm_frame, "Default Port")
-        self.baud_rate = UserSettingField(comm_frame, "Baud Rate")
-        self.timeout = UserSettingField(comm_frame, "Timeout")
-        self.retry_count = UserSettingField(comm_frame, "Retry Count")
-
-        self.default_port.pack(fill="x", pady=5)
-        self.baud_rate.pack(fill="x", pady=5)
-        self.timeout.pack(fill="x", pady=5)
-        self.retry_count.pack(fill="x", pady=5)
-
-        # Communication Settings Buttons
-        button_frame = tk.Frame(comm_frame, bg=DARK_BG)
-        button_frame.pack(fill="x", pady=(10, 0))
-
-        self.apply_comm_button = tk.Button(button_frame, text="Apply", command=self.apply_settings,
-                                         bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
-                                         activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
-        self.apply_comm_button.pack(side="right", padx=5)
-
-    def updateUserSettings(self):
-        # Set values from UserSettings to each field
-        self.brightness.set_value(self.user_settings.get('brightness'))
-        self.ldg_up_color.set_value(self.user_settings.get('ldg_up_color'))
-        self.ldg_down_color.set_value(self.user_settings.get('ldg_down_color'))
-        self.rudder_up_color.set_value(self.user_settings.get('rudder_up_color'))
-        self.rudder_down_color.set_value(self.user_settings.get('rudder_down_color'))
-        self.rudder_inactive_color.set_value(self.user_settings.get('rudder_inactive_color'))
-        self.warning_color.set_value(self.user_settings.get('warning_color'))
-        self.error_color.set_value(self.user_settings.get('error_color'))
-
-    def loadUserSettings(self):
-        def callback(data):
-            if data != None:
-                self.user_settings = data
-            self.updateUserSettings()
-    
-        self.app_protocol.getUserSettings(callback)
-
-    def saveUserSettings(self):
-        # Save the current values from fields to UserSettings
-        self.user_settings.set('brightness', self.brightness.get_value())
-        self.user_settings.set('ldg_up_color', self.ldg_up_color.get_value())
-        self.user_settings.set('ldg_down_color', self.ldg_down_color.get_value())
-        self.user_settings.set('rudder_up_color', self.rudder_up_color.get_value())
-        self.user_settings.set('rudder_down_color', self.rudder_down_color.get_value())
-        self.user_settings.set('rudder_inactive_color', self.rudder_inactive_color.get_value())
-        self.user_settings.set('warning_color', self.warning_color.get_value())
-        self.user_settings.set('error_color', self.error_color.get_value())
-        self.app_protocol.updateUserSettings(self.user_settings)
-
-    def loadDefaultSettings(self):
-        # Load default settings
-        self.user_settings.setDefaults()
-        self.updateUserSettings()
+        self.help_button.pack(side="right", padx=2)
 
     def autoDetect(self):
         auto_detect = AutoDetect(self.app_protocol, self.channel_settings_table)
@@ -260,17 +153,4 @@ class AppSettingsPanel(tk.Frame):
         for i in range(6):
             channel_settings = self.channel_settings_table.getData(i)
             self.app_protocol.updateChannelSettings(i, channel_settings)
-
-    def apply_settings(self):
-        # Get settings from fields
-        settings = {
-            'default_port': self.default_port.get_value(),
-            'baud_rate': self.baud_rate.get_value(),
-            'timeout': self.timeout.get_value(),
-            'retry_count': self.retry_count.get_value()
-        }
-        
-        # Apply settings to app protocol
-        if self.app_protocol:
-            self.app_protocol.apply_settings(settings)
             
