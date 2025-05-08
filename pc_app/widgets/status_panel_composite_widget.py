@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 import os
 import json
+from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
 # ... existing imports and class definition ...
 
@@ -43,13 +44,13 @@ class StatusPanelCompositeWidget(tk.Canvas):
         orig_width, orig_height = self.panel_img_orig.size
         self.panel_img = self.panel_img_orig.resize((int(orig_width * self.panel_scale), int(orig_height * self.panel_scale)), Image.LANCZOS)
         self.width, self.height = self.panel_img.size
-        super().__init__(parent, width=self.width, height=self.height, highlightthickness=0)
+        super().__init__(parent, width=self.width, height=self.height, highlightthickness=0, bg=DARK_BG)
 
         # Load indicator images, positions, and scales from JSON
         self.indicator_imgs = {}
         self.positions = {}
         self.scales = {}
-        self.animated_bg_color = (255, 255, 255, 255)  # Default white
+        self.animated_bg_color = (255, 255, 255, 255)
         for key, info in indicators.items():
             pos = tuple(info["position"])
             scale = info.get("scale", 1.0)
@@ -93,7 +94,9 @@ class StatusPanelCompositeWidget(tk.Canvas):
 
         # Add save button only in edit mode
         if self.edit_mode:
-            self.save_button = tk.Button(parent, text="Save Positions", command=self.save_positions)
+            self.save_button = tk.Button(parent, text="Save Positions", command=self.save_positions,
+                                       bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
+                                       activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
             self.save_button.pack(side=tk.BOTTOM, pady=5)
 
             # Bind mouse events only in edit mode
@@ -262,7 +265,9 @@ class StatusPanelCompositeWidget(tk.Canvas):
             self.edit_mode = enabled
             if enabled:
                 # Add save button
-                self.save_button = tk.Button(self.master, text="Save Positions", command=self.save_positions)
+                self.save_button = tk.Button(self.master, text="Save Positions", command=self.save_positions,
+                                           bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
+                                           activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
                 self.save_button.pack(side=tk.BOTTOM, pady=5)
                 # Bind mouse events
                 self.bind("<Button-1>", self.start_drag)

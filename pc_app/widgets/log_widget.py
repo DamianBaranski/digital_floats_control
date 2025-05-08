@@ -3,6 +3,7 @@ from tkinter import ttk, filedialog
 import csv
 import json
 from datetime import datetime
+from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, SUCCESS, ERROR, FONT, HEADER_FONT
 
 MOCK_DATA = [
     ["FL", "Deploy", "2025-05-07 12:00", "2025-05-07 12:00", 1.5, "Success"],
@@ -17,7 +18,7 @@ COLUMNS = ["Component", "Action", "Start Time", "End Time", "Duration (s)", "Sta
 
 class LogWidget(tk.Frame):
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__(parent, bg=DARK_BG)
         self.data = MOCK_DATA.copy()
         self.filtered_data = self.data.copy()
         self.create_widgets()
@@ -25,17 +26,32 @@ class LogWidget(tk.Frame):
 
     def create_widgets(self):
         # Search/filter bar
-        filter_frame = tk.Frame(self)
+        filter_frame = tk.Frame(self, bg=DARK_BG)
         filter_frame.pack(fill="x", padx=5, pady=2)
-        tk.Label(filter_frame, text="Search:").pack(side="left")
+        tk.Label(filter_frame, text="Search:", bg=DARK_BG, fg=TEXT_COLOR, font=FONT).pack(side="left")
         self.search_var = tk.StringVar()
         self.search_var.trace_add("write", self.on_search)
-        search_entry = tk.Entry(filter_frame, textvariable=self.search_var)
+        search_entry = tk.Entry(filter_frame, textvariable=self.search_var, 
+                              bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
+                              insertbackground=TEXT_COLOR)
         search_entry.pack(side="left", padx=5)
-        tk.Button(filter_frame, text="Export CSV", command=self.export_csv).pack(side="right", padx=2)
-        tk.Button(filter_frame, text="Export JSON", command=self.export_json).pack(side="right", padx=2)
+        
+        export_frame = tk.Frame(filter_frame, bg=DARK_BG)
+        export_frame.pack(side="right")
+        
+        tk.Button(export_frame, text="Export CSV", command=self.export_csv,
+                 bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
+                 activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR).pack(side="right", padx=2)
+        tk.Button(export_frame, text="Export JSON", command=self.export_json,
+                 bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
+                 activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR).pack(side="right", padx=2)
 
         # Table
+        style = ttk.Style()
+        style.configure("Treeview", background=DARKER_BG, foreground=TEXT_COLOR, fieldbackground=DARKER_BG)
+        style.configure("Treeview.Heading", background=DARK_BG, foreground=TEXT_COLOR, font=FONT)
+        style.map('Treeview', background=[('selected', BORDER_COLOR)])
+        
         self.tree = ttk.Treeview(self, columns=COLUMNS, show="headings", height=12)
         for col in COLUMNS:
             self.tree.heading(col, text=col, command=lambda c=col: self.sort_by(c, False))
@@ -53,10 +69,11 @@ class LogWidget(tk.Frame):
         for row in data[-50:]:  # Show last 50
             tag = self.get_row_tag(row)
             self.tree.insert("", "end", values=row, tags=(tag,))
-        self.tree.tag_configure("Success", background="#d4f8e8")
-        self.tree.tag_configure("Failure", background="#ffd6d6")
-        self.tree.tag_configure("Timeout", background="#fff7cc")
-        self.tree.tag_configure("Warning", background="#fff7cc")
+        # Muted, dark-theme-friendly colors
+        self.tree.tag_configure("Success", background="#26734d")   # dark green
+        self.tree.tag_configure("Failure", background="#a93226")   # dark red
+        self.tree.tag_configure("Timeout", background="#b9770e")   # dark orange
+        self.tree.tag_configure("Warning", background="#b9770e")   # dark orange
 
     def get_row_tag(self, row):
         status = row[-1]

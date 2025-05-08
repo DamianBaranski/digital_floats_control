@@ -4,6 +4,7 @@ import multiprocessing
 from .status_panel_composite_widget import StatusPanelCompositeWidget
 from .log_widget import LogWidget
 from .quick_status_widget import QuickStatusWidget
+from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 import os
 
 try:
@@ -16,11 +17,13 @@ except ImportError:
 
 class StatusFrameWidget(tk.Frame):
     def __init__(self, parent, app_protocol):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, bg=DARK_BG)
         self.app_protocol = app_protocol
-        self.ver_label = tk.Label(self, text="Firmware ver:")
-        self.ver_value = tk.Label(self, text="N/A")
-        self.firmware_upload_button = tk.Button(self, text="Update firmware", command=self.firmware_upload)
+        self.ver_label = tk.Label(self, text="Firmware ver:", bg=DARK_BG, fg=TEXT_COLOR, font=FONT)
+        self.ver_value = tk.Label(self, text="N/A", bg=DARK_BG, fg=TEXT_COLOR, font=FONT)
+        self.firmware_upload_button = tk.Button(self, text="Update firmware", command=self.firmware_upload,
+                                              bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
+                                              activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
         self.ver_label.grid(padx=10, row=1, column=1)
         self.ver_value.grid(row=1, column=2)
         #self.firmware_upload_button.grid(row=2, column=1)
@@ -28,13 +31,13 @@ class StatusFrameWidget(tk.Frame):
         self.version = None
 
         # Main horizontal split: left = status panel + log, right = quick status
-        main_paned = tk.PanedWindow(self, orient=tk.HORIZONTAL, sashrelief=tk.RAISED)
+        main_paned = tk.PanedWindow(self, orient=tk.HORIZONTAL, sashrelief=tk.RAISED, bg=DARK_BG)
         main_paned.grid(row=3, column=1, columnspan=2, sticky="nsew", padx=10, pady=10)
         self.grid_rowconfigure(3, weight=1)
         self.grid_columnconfigure(1, weight=1)
 
         # Left: vertical split (status panel + log)
-        left_paned = tk.PanedWindow(main_paned, orient=tk.VERTICAL, sashrelief=tk.RAISED)
+        left_paned = tk.PanedWindow(main_paned, orient=tk.VERTICAL, sashrelief=tk.RAISED, bg=DARK_BG)
         base_dir = os.path.dirname(os.path.abspath(__file__))
         layout_json_path = os.path.join(base_dir, "res", "panel_layout.json")
         self.status_panel = StatusPanelCompositeWidget(left_paned, layout_json_path)
