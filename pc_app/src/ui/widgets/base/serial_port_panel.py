@@ -6,7 +6,7 @@ import threading
 import time
 import logging
 from typing import List, Optional, Tuple
-from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
+from src.ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
 class SerialPortPanel(tk.Frame):
     def __init__(self, parent, com_port):

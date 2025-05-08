@@ -2,18 +2,17 @@
 
 A Python application for controlling digital floats via serial communication.
 
-## Installation
+## Quick Start
 
-1. Clone the repository
-2. Install the package:
 ```bash
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Linux/Mac
+# or
+.\venv\Scripts\activate  # On Windows
+
+# Install and run
 pip install -e .
-```
-
-## Running the Application
-
-Run the main application:
-```bash
 python main.py
 ```
 
@@ -21,14 +20,21 @@ python main.py
 
 ```
 pc_app/
-├── src/                      # Main source code directory
-│   ├── core/                 # Core application logic
-│   ├── ui/                   # UI components
-│   └── utils/               # Utility functions
-├── resources/              # Static resources
-├── requirements.txt        # Project dependencies
-└── main.py                # Entry point
+├── src/                      # Source code
+│   ├── core/                 # Core logic and serial communication
+│   ├── ui/                   # User interface components
+│   │   ├── widgets/         # Custom UI widgets
+│   │   └── theme.py         # UI styling
+│   └── utils/               # Helper functions
+├── resources/               # Images and configuration files
+└── main.py                 # Application entry point
 ```
+
+The project is organized into:
+- `core/`: Handles the main business logic and serial communication with the floats
+- `ui/`: Contains all UI components and styling
+- `utils/`: Shared utility functions
+- `resources/`: Static files like images and JSON configurations
 
 ## Dependencies
 

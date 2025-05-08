@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT
+from src.ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT
 
 class DetachableNotebook(ttk.Notebook):
     """

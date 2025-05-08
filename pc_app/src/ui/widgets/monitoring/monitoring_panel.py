@@ -1,16 +1,12 @@
-try:
-    # python 3.x
-    import tkinter as tk
-    from tkinter import ttk
-except ImportError:
-    # python 2.x
-    import Tkinter as tk
+import tkinter as tk
 from tkinter import ttk
-import logging
+import json
+import os
+import struct
 from typing import List, Optional
-from .monitoring_table_panel import MonitoringTablePanel
+from ui.widgets.monitoring.monitoring_table_panel import MonitoringTablePanel
 import time
-from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT, HEADER_FONT
+from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
 class MonitoringPanel(tk.Frame):
     def __init__(self, parent, protocol):

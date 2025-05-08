@@ -1,4 +1,4 @@
-from src.core.app import DigitalFloatsApp
+from core.app import DigitalFloatsApp
 import tkinter as tk
 
 def main():

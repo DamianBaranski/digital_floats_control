@@ -1,9 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="digital_floats_control",
+    name="pc_app",
     version="0.1.0",
-    packages=find_packages(),
+    package_dir={"": "src"},
+    packages=find_packages(where="src"),
     install_requires=[
         "pyserial>=3.5",
         "requests>=2.31.0",

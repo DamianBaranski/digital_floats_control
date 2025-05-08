@@ -4,7 +4,7 @@ import json
 import os
 import struct
 from typing import List
-from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
+from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
 class UserSettingsPanel:
     def __init__(self, parent):

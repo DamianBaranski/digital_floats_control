@@ -1,12 +1,12 @@
-from src.core.com_port import ComPort
-from src.core.protocol import AppProtocol
-from src.ui.widgets.base.serial_port_panel import SerialPortPanel
-from src.ui.widgets.status.system_status_panel import SystemStatusPanel
-from src.ui.widgets.settings.app_settings_panel import AppSettingsPanel
-from src.ui.widgets.monitoring.monitoring_panel import MonitoringPanel
-from src.ui.widgets.logs.log_output_panel import LogOutputPanel
-from src.ui.widgets.base.detachable_notebook import DetachableNotebook
-from src.ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT, HEADER_FONT
+from core.com_port import ComPort
+from core.protocol import AppProtocol
+from ui.widgets.base.serial_port_panel import SerialPortPanel
+from ui.widgets.status.system_status_panel import SystemStatusPanel
+from ui.widgets.settings.app_settings_panel import AppSettingsPanel
+from ui.widgets.monitoring.monitoring_panel import MonitoringPanel
+from ui.widgets.logs.log_output_panel import LogOutputPanel
+from ui.widgets.base.detachable_notebook import DetachableNotebook
+from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT, HEADER_FONT
 
 import tkinter as tk
 from tkinter import ttk

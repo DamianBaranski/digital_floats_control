@@ -32,12 +32,13 @@ def make_white_bg_transparent(img, tolerance=190):
 
 class HardwareStatusCanvas(tk.Canvas):
     def __init__(self, parent, layout_json_path, edit_mode=False):
-        self.layout_json_path = layout_json_path
         self.edit_mode = edit_mode
         self.draw_grid = False
         # Always resolve resource paths relative to this script
         base_dir = os.path.dirname(os.path.abspath(__file__))
-        layout_json_path = os.path.join(base_dir, layout_json_path) if not os.path.isabs(layout_json_path) else layout_json_path
+        # If layout_json_path is not absolute, assume it's relative to the resources directory
+        if not os.path.isabs(layout_json_path):
+            layout_json_path = os.path.join(base_dir, "resources", layout_json_path)
         self.layout_json_path = layout_json_path
         # Load layout from JSON
         with open(layout_json_path, "r") as f:
@@ -65,25 +66,20 @@ class HardwareStatusCanvas(tk.Canvas):
         self.positions = {}
         self.scales = {}
         self.animated_bg_color = (255, 255, 255, 255)
+        resources_dir = os.path.dirname(layout_json_path)
         for key, info in indicators.items():
             pos = tuple(info["position"])
             scale = info.get("scale", 1.0)
             self.positions[key] = pos
             self.scales[key] = scale
             if "image_up" in info and "image_down" in info:
-                img_up_path = info["image_up"]
-                img_down_path = info["image_down"]
-                if not os.path.isabs(img_up_path):
-                    img_up_path = os.path.join(base_dir, img_up_path)
-                if not os.path.isabs(img_down_path):
-                    img_down_path = os.path.join(base_dir, img_down_path)
+                img_up_path = os.path.join(resources_dir, info["image_up"])
+                img_down_path = os.path.join(resources_dir, info["image_down"])
                 img_up = Image.open(img_up_path).convert("RGBA") if os.path.exists(img_up_path) else None
                 img_down = Image.open(img_down_path).convert("RGBA") if os.path.exists(img_down_path) else None
                 self.indicator_imgs[key] = {"up": img_up, "down": img_down}
             elif "image" in info:
-                img_path = info["image"]
-                if not os.path.isabs(img_path):
-                    img_path = os.path.join(base_dir, img_path)
+                img_path = os.path.join(resources_dir, info["image"])
                 if os.path.exists(img_path):
                     img = Image.open(img_path).convert("RGBA")
                     # For RR, RL, FL, FR, RUDDER: preprocess to make white bg transparent
@@ -91,6 +87,7 @@ class HardwareStatusCanvas(tk.Canvas):
                         img = make_white_bg_transparent(img)
                     self.indicator_imgs[key] = img
                 else:
+                    print(f"Warning: Image file not found: {img_path}")
                     self.indicator_imgs[key] = None
             else:
                 self.indicator_imgs[key] = None
@@ -333,7 +330,7 @@ class HardwareStatusCanvas(tk.Canvas):
 def main():
     root = tk.Tk()
     root.title("Status Panel Composite Widget Test")
-    layout_json_path = "res/panel_layout.json"
+    layout_json_path = "panel_layout.json"  # Just the filename, the class will handle the resources directory
     widget = HardwareStatusCanvas(root, layout_json_path)
     widget.set_edit_mode(True)
     widget.pack()

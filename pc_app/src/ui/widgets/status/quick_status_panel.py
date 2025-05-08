@@ -1,5 +1,5 @@
-from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, SUCCESS, ERROR, ACCENT, FONT, HEADER_FONT, SECTION_FONT
-from ..base.tooltip import Tooltip
+from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, SUCCESS, ERROR, FONT, HEADER_FONT, SECTION_FONT, ACCENT
+from ui.widgets.base.tooltip import Tooltip
 
 import tkinter as tk
 from tkinter import ttk

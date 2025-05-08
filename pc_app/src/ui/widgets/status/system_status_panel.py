@@ -1,10 +1,10 @@
 from src.ui.widgets.status.firmware_upload import FirmwareUpload
 from src.ui.widgets.status.release import Release
 import multiprocessing
-from src.ui.widgets.status.hardware_status_canvas import HardwareStatusCanvas
-from src.ui.widgets.status.log_table_panel import LogTablePanel
-from src.ui.widgets.status.quick_status_panel import QuickStatusPanel
-from src.ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
+from ui.widgets.status.hardware_status_canvas import HardwareStatusCanvas
+from ui.widgets.status.log_table_panel import LogTablePanel
+from ui.widgets.status.quick_status_panel import QuickStatusPanel
+from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 import os
 import logging
 from typing import List, Optional
@@ -12,7 +12,7 @@ from typing import List, Optional
 try:
     # python 3.x
     import tkinter as tk
-    from tkinter.ttk import *
+    from tkinter import ttk
 except ImportError:
     # python 2.x
     import Tkinter as tk

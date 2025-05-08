@@ -3,7 +3,7 @@ from tkinter import ttk, filedialog
 import csv
 import json
 from datetime import datetime
-from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, SUCCESS, ERROR, FONT, HEADER_FONT
+from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, SUCCESS, ERROR, FONT, HEADER_FONT
 
 MOCK_DATA = [
     ["FL", "Deploy", "2025-05-07 12:00", "2025-05-07 12:00", 1.5, "Success"],

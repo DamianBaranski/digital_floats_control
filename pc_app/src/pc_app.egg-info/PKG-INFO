@@ -1,0 +1,8 @@
+Metadata-Version: 2.1
+Name: pc-app
+Version: 0.1.0
+Summary: Digital Floats Control Application
+Author: Your Name
+Author-email: your.email@example.com
+Keywords: serial,control,gui
+Requires-Python: >=3.6

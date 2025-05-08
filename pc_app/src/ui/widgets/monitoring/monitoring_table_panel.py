@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from .monitoring_data import MonitoringData
-from ....ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT
+from ui.widgets.monitoring.monitoring_data import MonitoringData
+from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
 class MonitoringTablePanel(tk.Frame):
     def __init__(self, parent):
