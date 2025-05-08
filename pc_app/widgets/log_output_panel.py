@@ -10,7 +10,7 @@ except ImportError:
 
 from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
-class LogsFrameWidget(tk.Frame):
+class LogOutputPanel(tk.Frame):
     def __init__(self, parent, app_protocol):
         tk.Frame.__init__(self, parent, bg=DARK_BG)
         self.app_protocol = app_protocol

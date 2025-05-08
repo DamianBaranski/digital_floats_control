@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 from .monitoring_data import MonitoringData
 from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT
 
-class MonitoringTable(tk.Frame):
+class MonitoringTablePanel(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent, bg=DARK_BG)
         self.monitoring_list = []

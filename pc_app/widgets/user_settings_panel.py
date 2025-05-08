@@ -4,7 +4,7 @@ import json
 import os
 from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
-class UserSettings:
+class UserSettingsPanel:
     def __init__(self, parent):
         self.parent = parent
         self.settings = {}

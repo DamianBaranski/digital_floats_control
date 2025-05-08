@@ -1,10 +1,10 @@
 from com_port import ComPort
 from protocol import AppProtocol
-from widgets.com_port_widget import ComPortWidget
-from widgets.status_frame_widget import StatusFrameWidget
-from widgets.settings_frame_widget import SettingsFrameWidget
-from widgets.monitoring_frame_widget import MonitoringFrameWidget
-from widgets.logs_frame_widget import LogsFrameWidget
+from widgets.serial_port_panel import SerialPortPanel
+from widgets.system_status_panel import SystemStatusPanel
+from widgets.app_settings_panel import AppSettingsPanel
+from widgets.monitoring_panel import MonitoringPanel
+from widgets.log_output_panel import LogOutputPanel
 from widgets.ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT, HEADER_FONT
 from widgets.detachable_notebook import DetachableNotebook
 
@@ -64,7 +64,7 @@ class DigitalFloatsApp(tk.Frame):
         self.left_frame.grid(row=0, column=0, sticky="ns")
 
         # Place the ComPortWidget at the top of the left column
-        self.ui_port = ComPortWidget(self.left_frame, self.comport)
+        self.ui_port = SerialPortPanel(self.left_frame, self.comport)
         self.ui_port.pack(padx=10, pady=10, side=tk.TOP, fill=tk.X)
 
         # Add a vertical separator between left and right columns
@@ -73,10 +73,10 @@ class DigitalFloatsApp(tk.Frame):
 
         # Tab factories for robust detach/reattach
         tab_factories = {
-            "Status": lambda parent: StatusFrameWidget(parent, self.app_protocol),
-            "Settings": lambda parent: SettingsFrameWidget(parent, self.app_protocol),
-            "Monitoring": lambda parent: MonitoringFrameWidget(parent, self.app_protocol),
-            "Logs": lambda parent: LogsFrameWidget(parent, self.app_protocol),
+            "Status": lambda parent: SystemStatusPanel(parent, self.app_protocol),
+            "Settings": lambda parent: AppSettingsPanel(parent, self.app_protocol),
+            "Monitoring": lambda parent: MonitoringPanel(parent, self.app_protocol),
+            "Logs": lambda parent: LogOutputPanel(parent, self.app_protocol),
         }
 
         # Create the detachable notebook for tabs

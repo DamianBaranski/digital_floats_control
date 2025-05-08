@@ -3,7 +3,7 @@ from tkinter import ttk, messagebox
 from .channel_settings import ChannelSettings
 
 
-class ChannelSettingsTable(tk.Frame):
+class ChannelSettingsTablePanel(tk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         self.channel_settings_list = []

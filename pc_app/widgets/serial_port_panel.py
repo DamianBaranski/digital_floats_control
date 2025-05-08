@@ -10,7 +10,7 @@ except ImportError:
 
 from .ui_theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
-class ComPortWidget(tk.Frame):
+class SerialPortPanel(tk.Frame):
     def __init__(self, parent, com_port):
         tk.Frame.__init__(self, parent, bg=DARK_BG)
         self.label = tk.Label(self, text="Port:", bg=DARK_BG, fg=TEXT_COLOR, font=FONT)

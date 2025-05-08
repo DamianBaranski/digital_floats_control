@@ -2,7 +2,7 @@ import base64
 import binascii
 import logging
 from typing import Generic, TypeVar, Union, Optional
-from widgets.user_settings import UserSettings
+from widgets.user_settings_panel import UserSettingsPanel
 from widgets.channel_settings import ChannelSettings
 from widgets.monitoring_data import MonitoringData
 
@@ -143,7 +143,7 @@ class AppProtocol:
         Retrieves user settings from the device.
         Calls fnc with the UserSettings object.
         """
-        settings = UserSettings()
+        settings = UserSettingsPanel()
         if not self.uart.isOpen():
             logger.warning("UART port is not open.")
             fnc(settings)
