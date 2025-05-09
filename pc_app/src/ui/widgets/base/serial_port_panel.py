@@ -1,19 +1,21 @@
-try:
-    # python 3.x
-    import tkinter as tk
-    from tkinter.ttk import *
-    import tkinter.messagebox
-except ImportError:
-    # python 2.x
-    import Tkinter as tk
-    import Tkinter.messagebox
+import tkinter as tk
+from tkinter import ttk
+import serial
+import serial.tools.list_ports
+import threading
+import time
+import logging
+from typing import List, Optional, Tuple
+from src.ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
-class ComPortWidget(tk.Frame):
+class SerialPortPanel(tk.Frame):
     def __init__(self, parent, com_port):
-        tk.Frame.__init__(self, parent)
-        self.label = tk.Label(self, text="Port:")
-        self.port_list = Combobox(self)
-        self.button = tk.Button(self, text="Open", command=self.button_callback)
+        tk.Frame.__init__(self, parent, bg=DARK_BG)
+        self.label = tk.Label(self, text="Port:", bg=DARK_BG, fg=TEXT_COLOR, font=FONT)
+        self.port_list = ttk.Combobox(self, font=FONT)
+        self.button = tk.Button(self, text="Open", command=self.button_callback,
+                              bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
+                              activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
         self.label.pack(side="top", fill=tk.X)
         self.port_list.pack(side="top", fill=tk.X)
         self.button.pack(side="top", fill=tk.X)

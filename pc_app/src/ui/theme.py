@@ -1,0 +1,11 @@
+DARK_BG = "#23272a"
+DARKER_BG = "#2d333b"
+BORDER_COLOR = "#36393f"
+TEXT_COLOR = "#fff"
+SECONDARY_TEXT = "#aaa"
+SUCCESS = "#43d17a"
+ERROR = "#e74c3c"
+ACCENT = "#7289da"
+FONT = ("Segoe UI", 10)
+HEADER_FONT = ("Segoe UI", 14, "bold")
+SECTION_FONT = ("Segoe UI", 11, "bold") 

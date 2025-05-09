@@ -2,9 +2,9 @@ import base64
 import binascii
 import logging
 from typing import Generic, TypeVar, Union, Optional
-from widgets.user_settings import UserSettings
-from widgets.channel_settings import ChannelSettings
-from widgets.monitoring_data import MonitoringData
+from src.ui.widgets.settings.user_settings_panel import UserSettingsPanel
+from src.ui.widgets.settings.channel_settings import ChannelSettings
+from src.ui.widgets.monitoring.monitoring_data import MonitoringData
 
 # Configure logging with INFO level and log format
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -143,7 +143,7 @@ class AppProtocol:
         Retrieves user settings from the device.
         Calls fnc with the UserSettings object.
         """
-        settings = UserSettings()
+        settings = UserSettingsPanel()
         if not self.uart.isOpen():
             logger.warning("UART port is not open.")
             fnc(settings)

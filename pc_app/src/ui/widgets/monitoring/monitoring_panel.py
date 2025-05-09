@@ -1,22 +1,22 @@
-try:
-    # python 3.x
-    import tkinter as tk
-    from tkinter.ttk import *
-except ImportError:
-    # python 2.x
-    import Tkinter as tk
-from .monitoring_table import MonitoringTable
+import tkinter as tk
+from tkinter import ttk
+import json
+import os
+import struct
+from typing import List, Optional
+from ui.widgets.monitoring.monitoring_table_panel import MonitoringTablePanel
 import time
+from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
-class MonitoringFrameWidget(tk.Frame):
+class MonitoringPanel(tk.Frame):
     def __init__(self, parent, protocol):
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, bg=DARK_BG)
         self.protocol = protocol
-        frame = tk.Frame(self)
+        frame = tk.Frame(self, bg=DARK_BG)
         frame.pack(side="top", fill="x", padx=10, pady=10)
         
-        self.label = tk.Label(frame, text="Monitoring")
-        self.table = MonitoringTable(self)
+        self.label = tk.Label(frame, text="Monitoring", bg=DARK_BG, fg=TEXT_COLOR, font=HEADER_FONT)
+        self.table = MonitoringTablePanel(self)
         self.label.pack(side="top", fill="x")
         self.table.pack(side="top", fill="x", padx=20)
         self.data_ready = [True, True, True, True, True, True]

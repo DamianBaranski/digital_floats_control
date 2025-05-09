@@ -1,0 +1,72 @@
+{
+    "panel_image": "panel_raw.png",
+    "panel_scale": 0.5,
+    "indicators": {
+        "FL": {
+            "image": "fl.png",
+            "position": [
+                283,
+                229
+            ],
+            "scale": 1.0
+        },
+        "FR": {
+            "image": "fr.png",
+            "position": [
+                413,
+                229
+            ],
+            "scale": 1.0
+        },
+        "RL": {
+            "image": "rl.png",
+            "position": [
+                283,
+                346
+            ],
+            "scale": 1.0
+        },
+        "RR": {
+            "image": "rr.png",
+            "position": [
+                415,
+                347
+            ],
+            "scale": 1.0
+        },
+        "RUDDER": {
+            "image": "rudder.png",
+            "position": [
+                284,
+                461
+            ],
+            "scale": 1.0
+        },
+        "TEST": {
+            "image": "test_button.png",
+            "position": [
+                380,
+                656
+            ],
+            "scale": 1.0
+        },
+        "ROCKER1": {
+            "image_up": "rocker_up.png",
+            "image_down": "rocker_down.png",
+            "position": [
+                100,
+                263
+            ],
+            "scale": 0.35049389948139215
+        },
+        "ROCKER2": {
+            "image_up": "rocker_up.png",
+            "image_down": "rocker_down.png",
+            "position": [
+                600,
+                260
+            ],
+            "scale": 0.35049389948139215
+        }
+    }
+}

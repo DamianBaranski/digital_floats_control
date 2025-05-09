@@ -1,20 +1,25 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from .monitoring_data import MonitoringData
-class MonitoringTable(tk.Frame):
+from ui.widgets.monitoring.monitoring_data import MonitoringData
+from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
+
+class MonitoringTablePanel(tk.Frame):
     def __init__(self, parent):
-        super().__init__(parent)
+        super().__init__(parent, bg=DARK_BG)
         self.monitoring_list = []
         self.create_treeview()
         self.dragged_item = None  # Track the item being dragged
 
     def create_treeview(self):
         # Create a frame for the Treeview and Scrollbars
-        frame = tk.Frame(self)
+        frame = tk.Frame(self, bg=DARK_BG)
         frame.pack(fill='both', expand=True)
 
         # Create the Treeview
-        self.tree = ttk.Treeview(frame, selectmode='browse')
+        style = ttk.Style()
+        style.configure("Monitoring.Treeview", background=DARKER_BG, foreground=TEXT_COLOR, fieldbackground=DARKER_BG, font=FONT)
+        style.configure("Monitoring.Treeview.Heading", background=DARK_BG, foreground=TEXT_COLOR, font=FONT)
+        self.tree = ttk.Treeview(frame, selectmode='browse', style="Monitoring.Treeview")
         self.tree.pack(side='left', fill='both', expand=True)
 
         # Create a horizontal scrollbar
