@@ -1,5 +1,5 @@
-#ifndef PWM_H
-#define PWM_H
+#ifndef PWM_DMA_H
+#define PWM_DMA_H
 
 #include "ipwm_dma.h"
 #include "stm32f1xx_hal.h"

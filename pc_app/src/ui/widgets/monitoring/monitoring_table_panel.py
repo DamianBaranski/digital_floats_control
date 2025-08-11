@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from ui.widgets.monitoring.monitoring_data import MonitoringData
+from src.core.datatypes.monitoring_data import MonitoringData
 from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
 class MonitoringTablePanel(tk.Frame):

@@ -1,3 +1,6 @@
+#ifndef BIT_MASK_H
+#define BIT_MASK_H
+
 /// @brief A template class for managing a bitmask of flags.
 ///
 /// This class provides methods to set, clear, and check individual bits in a bitmask
@@ -38,6 +41,16 @@ public:
         return mData & static_cast<uint32_t>(data);
     }
 
+    /// @brief Check if any bits are set in the bitmask.
+    ///
+    /// This method returns true if any bits in the bitmask are set.
+    /// @return true if any bits are set, false otherwise.
+    bool any() const {
+        return mData != 0;
+    }
+
 private:
     uint32_t mData; ///< The bitmask data.
 };
+
+#endif // BIT_MASK_H

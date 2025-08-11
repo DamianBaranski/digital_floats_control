@@ -13,7 +13,7 @@ class MonitoringData:
         self.setDefaults()
 
     def setDefaults(self):
-        self.values['voltage'] = None
+        self.values['timestamp'] = None      
         self.values['current'] = None
         self.values['state'] = None
         self.values['up_switch'] = None
@@ -25,14 +25,14 @@ class MonitoringData:
     def fromByteArray(self, data):
         try:
             # Unpack the byte array into individual fields
-            unpacked_data = struct.unpack('<hhBB', data)
-            voltage = unpacked_data[0] * 0.001  # Voltage scaled by 0.1
-            current = unpacked_data[1] * 0.001  # Current scaled by 0.1
+            unpacked_data = struct.unpack('<IhBB', data)
+            timestamp = unpacked_data[0]  # Timestamp in milliseconds
+            current = unpacked_data[1] * 0.001  # Convert current from mA to A
             state = unpacked_data[2]  # State from the byte
             switches = unpacked_data[3]  # Switch status from the byte
 
             # Update values in the dictionary
-            self.values['voltage'] = f"{voltage:.2f}"
+            self.values['timestamp'] = timestamp
             self.values['current'] = f"{current:.2f}"
             self.values['state'] = self.getStateName(state)
             self.values['up_switch'] = 'ON' if switches & 0x01 else 'OFF'
@@ -55,17 +55,12 @@ class MonitoringData:
     def __str__(self):
         return (
             f"Monitoring Data:\n"
-            f"Voltage: {self.values['voltage']}V\n"
+            f"Timestamp: {self.values['timestamp']} ms\n"
             f"Current: {self.values['current']}A\n"
             f"State: {self.values['state']}\n"
             f"Up Switch: {self.values['up_switch']}\n"
             f"Down Switch: {self.values['down_switch']}\n"
         )
-
-    def getVoltage(self):
-        if not self.values['voltage']:
-            return 'N/A'
-        return f"{self.values['voltage']} V"
 
     # Method to get the formatted current value
     def getCurrent(self):

@@ -18,9 +18,8 @@ except ImportError:
     import Tkinter as tk
 
 class SystemStatusPanel(tk.Frame):
-    def __init__(self, parent, app_protocol):
+    def __init__(self, parent):
         tk.Frame.__init__(self, parent, bg=DARK_BG)
-        self.app_protocol = app_protocol
         self.ver_label = tk.Label(self, text="Firmware ver:", bg=DARK_BG, fg=TEXT_COLOR, font=FONT)
         self.ver_value = tk.Label(self, text="N/A", bg=DARK_BG, fg=TEXT_COLOR, font=FONT)
         self.firmware_upload_button = tk.Button(self, text="Update firmware", command=self.firmware_upload,
@@ -43,7 +42,7 @@ class SystemStatusPanel(tk.Frame):
         base_dir = os.path.dirname(os.path.abspath(__file__))
         layout_json_path = os.path.join(base_dir, "resources", "panel_layout.json")
         self.status_panel = HardwareStatusCanvas(left_paned, layout_json_path)
-        self.status_panel.animate_indicators_edit_mode(interval=1000)
+        #self.status_panel.animate_indicators_edit_mode(interval=1000)
         self.status_panel.pack(fill="both", expand=True)
         left_paned.add(self.status_panel)
         self.log_widget = LogTablePanel(left_paned)
@@ -54,13 +53,28 @@ class SystemStatusPanel(tk.Frame):
         self.quick_status = QuickStatusPanel(main_paned)
         main_paned.add(self.quick_status)
 
-    def update(self):
-        if not self.app_protocol.uart.isOpen():
-            self.updateVersion('N/A')
-            return
+    def setStatus(self, status):
+        self.quick_status.update_uptime(status.get_uptime())
         
-        if self.updating.value == False:
-            self.app_protocol.getVersion(self.updateVersion)
+        
+    def update(self):
+        pass
+        #if not self.app_protocol.uart.isOpen():
+        #    self.updateVersion('N/A')
+        #    return
+        
+        #if self.updating.value == False:
+        #    self.app_protocol.getVersion(self.updateVersion)
+        #    
+        #if self.quick_status.remote_enabled:
+        #    self.app_protocol.simulate(lambda response: None, 0, 0, 0)
+            
+        #for i in range(6):
+        #    self.app_protocol.getMonitoringData(i, lambda data, idx=i: self._update_callback(data, idx))
+
+    def _update_callback(self, data, idx):
+        pass
+        #self.status_panel.
         
     def updateVersion(self, version):
         if self.updating.value == True:
@@ -83,8 +97,8 @@ class SystemStatusPanel(tk.Frame):
     def firmware_upload(self):
         with self.updating.get_lock():
             self.updating.value = True
-        uploader = FirmwareUpload(self.app_protocol, None)
-        uploader.start(callback=self.on_upgrade_finished)
+        #uploader = FirmwareUpload(self.app_protocol, None)
+        #uploader.start(callback=self.on_upgrade_finished)
     
     def on_upgrade_finished(self, result):
         with self.updating.get_lock():

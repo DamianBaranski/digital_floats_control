@@ -9,9 +9,8 @@ import time
 from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
 class MonitoringPanel(tk.Frame):
-    def __init__(self, parent, protocol):
+    def __init__(self, parent):
         tk.Frame.__init__(self, parent, bg=DARK_BG)
-        self.protocol = protocol
         frame = tk.Frame(self, bg=DARK_BG)
         frame.pack(side="top", fill="x", padx=10, pady=10)
         
@@ -28,8 +27,8 @@ class MonitoringPanel(tk.Frame):
             self.data_request_time = time.time()
             self.data_ready = [False] * len(self.data_ready)
             self.table.populate_treeview()
-            for i in range(6):
-                self.protocol.getMonitoringData(i, lambda data, idx=i: self._update_callback(data, idx))
+            #for i in range(6):
+                #self.protocol.getMonitoringData(i, lambda data, idx=i: self._update_callback(data, idx))
 
     def _update_callback(self, data, idx):
         self.table.setData(idx, data)

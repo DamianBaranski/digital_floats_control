@@ -5,6 +5,7 @@ uart.cpp
 flash.cpp
 pwm_dma.cpp
 spi.cpp
+pwm.cpp
 )
 
 target_include_directories(common_lib PUBLIC 

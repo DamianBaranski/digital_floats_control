@@ -1,5 +1,5 @@
 target_sources(common_lib PRIVATE
-ina219.cpp
+adc121c.cpp
 pcf8574.cpp
 w25x_flash.cpp
 )

@@ -1071,6 +1071,8 @@ static void I2C_Flush_DR(I2C_HandleTypeDef *hi2c)
   * @param  Timeout Timeout duration
   * @retval HAL status
   */
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
 HAL_StatusTypeDef HAL_I2C_Master_Transmit(I2C_HandleTypeDef *hi2c, uint16_t DevAddress, uint8_t *pData, uint16_t Size, uint32_t Timeout)
 {
   /* Init tickstart for timeout management*/
@@ -7632,7 +7634,7 @@ static void I2C_ConvertOtherXferOptions(I2C_HandleTypeDef *hi2c)
 /**
   * @}
   */
-
+#pragma GCC pop_options
 #endif /* HAL_I2C_MODULE_ENABLED */
 /**
   * @}

@@ -65,7 +65,13 @@ class HardwareStatusCanvas(tk.Canvas):
         self.indicator_imgs = {}
         self.positions = {}
         self.scales = {}
-        self.animated_bg_color = (255, 255, 255, 255)
+        self.animated_bg_color = {
+            "RR": (0, 0, 0, 255),
+            "RL": (0, 0, 0, 255),
+            "FL": (0, 0, 0, 255),
+            "FR": (0, 0, 0, 255),
+            "RUDDER": (0, 0, 0, 255),
+        }
         resources_dir = os.path.dirname(layout_json_path)
         for key, info in indicators.items():
             pos = tuple(info["position"])
@@ -248,7 +254,8 @@ class HardwareStatusCanvas(tk.Canvas):
                 w, h = int(img.width * scale), int(img.height * scale)
                 img_resized = img.resize((w, h), Image.LANCZOS)
                 # Create a background of the current color
-                bg = Image.new("RGBA", (w, h), self.animated_bg_color)
+                bg_color = self.animated_bg_color[key]
+                bg = Image.new("RGBA", (w, h), bg_color)
                 bg.alpha_composite(img_resized, (0, 0))
                 base.alpha_composite(bg, (x, y))
             elif state and self.indicator_imgs[key]:
@@ -292,7 +299,7 @@ class HardwareStatusCanvas(tk.Canvas):
             # Animate background color for RR, RL, FL, FR
             h = (color_hue[0] % 360) / 360.0
             r, g, b = [int(x * 255) for x in colorsys.hsv_to_rgb(h, 1, 1)]
-            self.animated_bg_color = (r, g, b, 255)
+            #self.animated_bg_color = (r, g, b, 255)
             color_hue[0] += 10
             self.draw_panel()
             self.after(interval, step)
@@ -326,6 +333,22 @@ class HardwareStatusCanvas(tk.Canvas):
                 self.unbind("<MouseWheel>")
                 self.unbind("<Button-4>")
                 self.unbind("<Button-5>")
+                
+    def set_led_color(self, key, color_uint32):
+        """
+        Args:
+            key (str): The indicator key (e.g., 'RR', 'RL', 'FL', 'FR', 'RUDDER').
+        """
+        
+        if key not in self.animated_bg_color:
+            print(f"Warning: Unknown indicator key '{key}' for background color.")
+            return
+
+        b = (color_uint32 >> 16) & 0xFF
+        g = (color_uint32 >> 8) & 0xFF
+        r = color_uint32 & 0xFF
+ 
+        self.animated_bg_color[key] = (r, g, b, 0xFF)
 
 def main():
     root = tk.Tk()

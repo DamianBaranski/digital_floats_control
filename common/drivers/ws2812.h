@@ -44,6 +44,8 @@ public:
     /// @param color A 24-bit color value in the format 0xRRGGBB.
     void setColor(uint32_t color);
 
+    uint32_t getColor(size_t led_id) const;
+
 private:
     /// @brief Short pulse duration for the WS2812 protocol.
     static constexpr uint16_t cShortPulse = 18;
@@ -121,4 +123,16 @@ void Ws2812<S>::setColor(uint32_t color)
     }
 }
 
+template <size_t S>
+uint32_t Ws2812<S>::getColor(size_t led_id) const
+{
+    if(led_id>=S) {
+        return 0;
+    }
+    uint32_t color;
+    color = mColors[led_id].red;
+    color |= mColors[led_id].green << 8;
+    color |= mColors[led_id].blue << 16;
+    return color;
+}
 #endif

@@ -1,5 +1,5 @@
-from core.com_port import ComPort
-from core.protocol import AppProtocol
+from core.protocol.device_client import DeviceClient
+from core.protocol import requests
 from ui.widgets.base.serial_port_panel import SerialPortPanel
 from ui.widgets.status.system_status_panel import SystemStatusPanel
 from ui.widgets.settings.app_settings_panel import AppSettingsPanel
@@ -17,6 +17,9 @@ class DigitalFloatsApp(tk.Frame):
         self.parent = parent
         self.parent.title("Digital Floats App")
         self.parent.configure(bg=DARK_BG)
+        self.device_client = DeviceClient()
+        self.device_client.subscribe(requests.FirmwareVersionRequest(), self.firmware_version_update)
+        self.device_client.subscribe(requests.StatusRequest(), self.status_update)
 
         # Configure ttk styles
         style = ttk.Style()
@@ -55,16 +58,12 @@ class DigitalFloatsApp(tk.Frame):
                   background=[("active", BORDER_COLOR)],
                   arrowcolor=[("active", TEXT_COLOR)])
 
-        # Initialize the ComPort
-        self.comport = ComPort(self.on_connected)
-        self.app_protocol = AppProtocol(self.comport)
-
         # Create a frame for the left column (including ComPortWidget and other widgets, if needed)
         self.left_frame = tk.Frame(self, bg=DARK_BG)
         self.left_frame.grid(row=0, column=0, sticky="ns")
 
         # Place the ComPortWidget at the top of the left column
-        self.ui_port = SerialPortPanel(self.left_frame, self.comport)
+        self.ui_port = SerialPortPanel(self.left_frame, self.connect_to_device)
         self.ui_port.pack(padx=10, pady=10, side=tk.TOP, fill=tk.X)
 
         # Add a vertical separator between left and right columns
@@ -73,22 +72,24 @@ class DigitalFloatsApp(tk.Frame):
 
         # Tab factories for robust detach/reattach
         tab_factories = {
-            "Status": lambda parent: SystemStatusPanel(parent, self.app_protocol),
-            "Settings": lambda parent: AppSettingsPanel(parent, self.app_protocol),
-            "Monitoring": lambda parent: MonitoringPanel(parent, self.app_protocol),
-            "Logs": lambda parent: LogOutputPanel(parent, self.app_protocol),
+            "Status": lambda parent: SystemStatusPanel(parent),
+            "Settings": lambda parent: AppSettingsPanel(parent),
+            "Monitoring": lambda parent: MonitoringPanel(parent),
+            "Logs": lambda parent: LogOutputPanel(parent),
         }
 
         # Create the detachable notebook for tabs
         self.ui_tabs = DetachableNotebook(self, tab_factories=tab_factories)
         self.ui_tabs.grid(row=0, column=2, sticky="nsew")  # Fill horizontally and vertically
 
+        self.tabs = {}
         # Create and add tabs to the notebook using factories
         for tab_name in ["Status", "Settings", "Monitoring", "Logs"]:
             frame = tk.Frame(self.ui_tabs, bg=DARK_BG)
             widget = tab_factories[tab_name](frame)
             widget.pack(fill='both', expand=True)
             self.ui_tabs.add(frame, text=tab_name)
+            self.tabs[tab_name] = widget
 
         # Create and place the status bar at the bottom
         self.ui_status_bar = ttk.Label(parent, relief=tk.SUNKEN, anchor="w", background=DARKER_BG, foreground=TEXT_COLOR, font=FONT)
@@ -101,32 +102,28 @@ class DigitalFloatsApp(tk.Frame):
         # Bind the window close event
         parent.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        self.update()
+        self.ui_port.setPorts(self.device_client.getPortList())
 
+    def connect_to_device(self, port):
+        if self.device_client.isConnected():
+            self.device_client.disconnect()
+        else:
+            self.device_client.connect(port)
+        self.ui_port.setStatus(self.device_client.isConnected())
+        
     def on_closing(self):
-        self.comport.close()
-        self.comport.stop()
         self.parent.destroy()   # Destroy the window
-        
-    def update(self):
-        # Get the index of the currently selected tab
-        selected_tab_index = self.ui_tabs.index(self.ui_tabs.select())
-        tab_names = ["Status", "Settings", "Monitoring", "Logs"]
-        if 0 <= selected_tab_index < len(tab_names):
-            tab_name = tab_names[selected_tab_index]
-            for tab_id in self.ui_tabs.tabs():
-                frame = self.ui_tabs.nametowidget(tab_id)
-                if self.ui_tabs.tab(tab_id, option='text') == tab_name:
-                    for child in frame.winfo_children():
-                        if hasattr(child, 'update'):
-                            child.update()
-        self.ui_port.update()
-        self.after(100, self.update)
-        
+
     def on_connected(self, status):
         if status:
             for frame in self.ui_tabs.winfo_children():
                 if self.ui_tabs.tab(frame, option='text') == "Status":
                     for child in frame.winfo_children():
                         if hasattr(child, 'update'):
-                            child.update() 
+                            child.update()
+                            
+    def firmware_version_update(self, version: str):
+        print(version)
+    
+    def status_update(self, status):
+        self.tabs['Status'].setStatus(status)

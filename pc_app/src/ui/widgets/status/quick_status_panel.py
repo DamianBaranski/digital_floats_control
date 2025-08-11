@@ -10,7 +10,6 @@ class QuickStatusPanel(tk.Frame):
         super().__init__(parent, bg=DARK_BG)
         self.configure(bg=DARK_BG)
         self.create_widgets()
-        self.mock_update()
 
     def create_widgets(self):
         # Title at the top
@@ -20,17 +19,17 @@ class QuickStatusPanel(tk.Frame):
 
         # Section: System Information
         sysinfo_frame = self.section_frame("System Information", "Displays basic system information about the connected device including firmware version, hardware details, and manufacturing information.")
-        self.fw_version = self.info_row(sysinfo_frame, "Firmware Version:", "v1.2.3", col=2)
-        self.hw_version = self.info_row(sysinfo_frame, "Hardware Version:", "HW-2024A", col=2)
-        self.hw_config = self.info_row(sysinfo_frame, "Hardware Configuration:", "STD-4CH", col=2)
-        self.mfg_date = self.info_row(sysinfo_frame, "Mfg Date:", "2024-05-01", col=2)
-        self.last_update = self.info_row(sysinfo_frame, "Last FW Update:", "2025-05-07 12:00", col=2)
+        self.fw_version = self.info_row(sysinfo_frame, "Firmware Version:", "N/A", col=2)
+        self.hw_version = self.info_row(sysinfo_frame, "Hardware Version:", "N/A", col=2)
+        self.hw_config = self.info_row(sysinfo_frame, "Hardware Configuration:", "N/A", col=2)
+        self.mfg_date = self.info_row(sysinfo_frame, "Mfg Date:", "N/A", col=2)
+        self.last_update = self.info_row(sysinfo_frame, "Last FW Update:", "N/A", col=2)
         sysinfo_frame.pack(fill="x", padx=10, pady=(10, 0))
 
         # Section: System Health
         health_frame = self.section_frame("System Health", "Shows the current health status of the system including uptime, power status, memory usage, and communication load.")
-        self.uptime = self.info_row(health_frame, "System Uptime:", "00:12:34", col=2, pady=6)
-        self.power_status = self.info_row(health_frame, "Power Status:", "13.2 V", fg=SUCCESS, col=2, pady=6)
+        self.uptime = self.info_row(health_frame, "System Uptime:", "N/A", col=2, pady=6)
+        self.power_status = self.info_row(health_frame, "Power Status:", "N/A", fg=SUCCESS, col=2, pady=6)
         self.health_label = self.health_text_row(health_frame, "Overall Health:", 98, "Good", color=SUCCESS, col=2, pady=6)
         self.mem_label, self.mem_bar = self.health_row_3col(health_frame, "Memory Usage:", 45, "180/400 MB (45%)", color=SUCCESS, pady=6)
         self.uart_label, self.uart_bar = self.health_row_3col(health_frame, "UART Load:", 12, "1.2 kB/s (12%)", color=SUCCESS, pady=6)
@@ -145,4 +144,9 @@ class QuickStatusPanel(tk.Frame):
             popup.destroy()
         tk.Button(btn_frame, text="Update", command=do_update, bg=SUCCESS, fg=TEXT_COLOR).pack(side="left", expand=True, fill="x", padx=(0,5))
         tk.Button(btn_frame, text="Cancel", command=popup.destroy, bg=DARKER_BG, fg=TEXT_COLOR).pack(side="left", expand=True, fill="x", padx=(5,0))
-        entry.focus_set() 
+        entry.focus_set()
+        
+    def update_uptime(self, uptime):
+        minutes, secs = divmod(int(uptime), 60)
+        hours, minutes = divmod(minutes, 60)
+        self.uptime.config(text=f"{hours:02d}:{minutes:02d}:{secs:02d}")

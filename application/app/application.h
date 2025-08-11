@@ -16,6 +16,9 @@
 #include "logger.h"
 #include "settings.h"
 #include "ws2812.h"
+#include "expander.h"
+#include "errors.h"
+#include "colors.h"
 
 /**
  * @brief Application version string macro
@@ -35,24 +38,6 @@ class Application
 {
 private:
   /**
-   * @struct UserSettings
-   * @brief Structure containing configurable user preferences for LED colors and brightness
-   * 
-   * This structure stores color settings for different states of the landing gear and
-   * rudder indicators, as well as status colors and the overall brightness level.
-   */
-  struct UserSettings {
-    uint32_t ldgUpColor;          /**< Color for landing gear in up position */
-    uint32_t ldgDownColor;        /**< Color for landing gear in down position */
-    uint32_t rudderUpColor;       /**< Color for rudder in up position */
-    uint32_t rudderDownColor;     /**< Color for rudder in down position */
-    uint32_t rudderInactiveColor; /**< Color for rudder in inactive state */
-    uint32_t warningColor;        /**< Color for warning indicators */
-    uint32_t errorColor;          /**< Color for error indicators */
-    uint8_t brightness;           /**< Global LED brightness (0-255) */
-  };
-
-  /**
    * @union InProtocolData
    * @brief A union representing different input data types for protocol commands.
    * 
@@ -61,14 +46,6 @@ private:
    */
   union InProtocolData
   {
-    struct
-    {
-      uint8_t i2cAddress; /**< I2C device address used in I2C scan command */
-    } i2cScan;
-    
-    /** @brief User settings data for color and brightness configuration */
-    struct UserSettings userSettings;
-    
     /** @brief Control channel settings and channel identifier */
     struct {
       ControlChannelSettings settings; /**< Configuration for a control channel */
@@ -85,8 +62,11 @@ private:
       uint8_t pcf_channel;  /**< Channel on PCF8574 to test */
     } channelTest;
     
-    /** @brief File size used for file-related commands (not currently implemented) */
-    size_t fileSize;
+    struct {
+      uint8_t test_switch_state;
+      uint8_t ldg_gear_switch_state;
+      uint8_t rudder_switch_state;
+    } simulation;
     
     /** @brief Raw byte access to the union data */
     uint8_t raw[32];
@@ -106,16 +86,7 @@ private:
     {
       char string[32]; /**< Application version string */
     } appVersion;
-    
-    /** @brief I2C scan result */
-    struct
-    {
-      bool result; /**< Result of the I2C scan (true if device is ready) */
-    } i2cScan;
-
-    /** @brief User settings data for color and brightness configuration */
-    struct UserSettings userSettings;
-    
+        
     /** @brief Control channel settings and channel identifier */
     struct {
       ControlChannelSettings settings; /**< Configuration for a control channel */
@@ -124,12 +95,22 @@ private:
     
     /** @brief Monitoring data for a channel */
     struct {
-      uint16_t voltage;  /**< Measured voltage in millivolts */
+      uint32_t timestamp; /**< Timestamp of the last measurement in milliseconds */
       uint16_t current;  /**< Measured current in milliamps */
       uint8_t state;     /**< Current state of the channel */
       uint8_t switches;  /**< State of switches (bit field) */
     } monitoringData;
     
+    /** @brief Status data */
+    struct __attribute__ ((packed)) {
+      uint16_t power_voltage;
+      uint16_t memory_usage;
+      uint32_t uptime;
+      uint8_t ldg_gear_switch: 1;
+      uint8_t rudder_switch: 1;
+      uint8_t test_button: 1;
+    } statusData;
+
     /** @brief Generic result code */
     uint8_t result;
     
@@ -166,6 +147,8 @@ private:
    */
   bool sendAppVersion(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
+  bool sendStatus(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
+
   /**
    * @brief Handles the 'r' command to reset the device
    * @param in Input protocol data (unused)
@@ -174,33 +157,6 @@ private:
    * @return true Always returns true
    */
   bool resetDevice(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
-
-  /**
-   * @brief Handles the 's' command to scan I2C devices
-   * @param in Input protocol data containing the I2C device address to scan
-   * @param out Output protocol data containing the result of the scan
-   * @param outlen Output length of the data being sent
-   * @return true Always returns true
-   */
-  bool scanI2cDevices(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
-
-  /**
-   * @brief Sends current user settings to the client
-   * @param in Input protocol data (unused)
-   * @param out Output protocol data containing user settings
-   * @param outlen Output length of the data being sent
-   * @return true if settings were successfully sent
-   */
-  bool sendUserSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
-
-  /**
-   * @brief Updates user settings with values from client
-   * @param in Input protocol data containing new user settings
-   * @param out Output protocol data with result
-   * @param outlen Output length of the data being sent
-   * @return true if settings were successfully updated
-   */
-  bool updateUserSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
   /**
    * @brief Sends control channel settings to the client
@@ -229,14 +185,7 @@ private:
    */
   bool sendMonitoringData(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
-  /**
-   * @brief Configures a channel for testing
-   * @param in Input protocol data containing test configuration
-   * @param out Output protocol data with result
-   * @param outlen Output length of the data being sent
-   * @return true if test channel was successfully configured
-   */
-  bool setTestChannel(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
+  bool simulateSwitches(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
   /**
    * @brief Performs a test procedure for switch functionality
@@ -320,7 +269,7 @@ private:
    * 
    * Processes incoming protocol messages and dispatches to appropriate handler methods.
    */
-  void handleUartCommunication();
+  bool handleUartCommunication();
   
   /**
    * @brief Sets the LED brightness based on current user settings
@@ -333,6 +282,12 @@ private:
   /** @brief Number of control channels in the system */
   static constexpr size_t NO_CHANNELS = 6;
   
+  static constexpr uint32_t cRudderInactiveColor = Colors::YELLOW;
+  static constexpr uint32_t cRudderDownColor = Colors::BLUE;
+  static constexpr uint32_t cRudderUpColor = Colors::GREEN;
+  static constexpr uint32_t cLdgGearDownColor = Colors::GREEN;
+  static constexpr uint32_t cLdgGearUpColor = Colors::BLUE;
+
   /**
    * @struct ChannelsSettings
    * @brief Structure containing settings for all control channels
@@ -351,14 +306,26 @@ private:
   /** @brief WS2812 LED controller for channel status indication */
   Ws2812<NO_CHANNELS> mLeds;
   
+  Expander mExpanders[NO_CHANNELS/2];
+
   /** @brief Array of control channel objects */
   ControlChannel mChannels[NO_CHANNELS];
   
   /** @brief Persistent storage for channel settings */
   Settings<ChannelsSettings> mChannelsSettings;
-  
-  /** @brief Persistent storage for user preferences */
-  Settings<UserSettings> mUserSettings;
+
+  Errors mErrors;
+
+  struct {
+    uint32_t mSimulationTimeout;
+    bool mLdgGearSwitchState;
+    bool mRudderSwitchState;
+    bool mTestSwitchState;
+  } mSinulationState;
+
+  bool mTestSwitchState;
+  bool mLdgGearSwitchState;
+  bool mRudderSwitchState;
 };
 
 #endif // APPLICATION_H

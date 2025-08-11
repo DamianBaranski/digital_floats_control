@@ -1,3 +1,6 @@
+#ifndef COLORS_H
+#define COLORS_H
+
 #include <cstdint>
 
 /// @brief A utility class for working with colors.
@@ -62,3 +65,5 @@ public:
         return ((time % period) < (period / 2)) ? color1 : color2;
     }
 };
+
+#endif // COLORS_H

@@ -2,6 +2,8 @@
 #include "colors.h"
 #include "version.h"
 
+#pragma GCC push_options
+#pragma GCC optimize ("Og")
 /**
  * System constants namespace
  * Contains configuration values and constants used throughout the application
@@ -18,6 +20,7 @@ namespace SysConst {
     constexpr uint32_t kColorChangeIntervalMs = 500;
     constexpr uint32_t kBlinkingIntervalMs = 500;
     constexpr uint32_t kMaxBrightnessWaitTimeMs = 5000;
+    constexpr uint32_t kSimulationTimeout = 1000;
 
     // Buffer sizes
     constexpr size_t kUartBufferSize = 128;
@@ -35,29 +38,58 @@ namespace SysConst {
 }
 
 Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
-                                     mChannels{ControlChannel(*mBsp.i2cBus),
-                                               ControlChannel(*mBsp.i2cBus),
-                                               ControlChannel(*mBsp.i2cBus),
-                                               ControlChannel(*mBsp.i2cBus),
-                                               ControlChannel(*mBsp.i2cBus),
-                                               ControlChannel(*mBsp.i2cBus)},
+                                     mExpanders{Expander(*mBsp.i2cBusRelays), Expander(*mBsp.i2cBusRelays), Expander(*mBsp.i2cBusRelays)},
+                                     mChannels{ControlChannel(mExpanders[0], *mBsp.i2cBusCurrent),
+                                               ControlChannel(mExpanders[0], *mBsp.i2cBusCurrent),
+                                               ControlChannel(mExpanders[1], *mBsp.i2cBusCurrent),
+                                               ControlChannel(mExpanders[1], *mBsp.i2cBusCurrent),
+                                               ControlChannel(mExpanders[2], *mBsp.i2cBusCurrent),
+                                               ControlChannel(mExpanders[2], *mBsp.i2cBusCurrent)},
                                      mChannelsSettings(*mBsp.extFlash, SysConst::kChannelSettingsFlashAddress), 
-                                     mUserSettings(*mBsp.extFlash, SysConst::kUserSettingsFlashAddress) {
+                                     mSinulationState{} {
+    mExpanders[0].setAddress(0x22);
+    mExpanders[1].setAddress(0x21);
+    mExpanders[2].setAddress(0x20);
+    
+    mChannels[0].setExpanderChannel(0);
+    mChannels[0].setCurrentSensorAddress(0x55);
+
+    mChannels[1].setExpanderChannel(0);
+    mChannels[1].setCurrentSensorAddress(0x55);
+
+    mChannels[2].setExpanderChannel(1);
+    mChannels[2].setCurrentSensorAddress(0x54);
+
+    mChannels[3].setExpanderChannel(0);
+    mChannels[3].setCurrentSensorAddress(0x52);    
+
+    mChannels[4].setExpanderChannel(1);
+    mChannels[4].setCurrentSensorAddress(0x51);
+
+    mChannels[5].setExpanderChannel(0);
+    mChannels[5].setCurrentSensorAddress(0x50);
+
     // Register command handlers for protocol communications
     mProtocol.registerCmd('v', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendAppVersion(in, out, outlen); });
     mProtocol.registerCmd('r', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->resetDevice(in, out, outlen); });
-    mProtocol.registerCmd('s', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->scanI2cDevices(in, out, outlen); });
-    mProtocol.registerCmd('u', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendUserSettings(in, out, outlen); });
-    mProtocol.registerCmd('U', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->updateUserSettings(in, out, outlen); });
+    mProtocol.registerCmd('S', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendStatus(in, out, outlen); });
     mProtocol.registerCmd('c', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendChannelSettings(in, out, outlen); });
     mProtocol.registerCmd('C', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->updateChannelSettings(in, out, outlen); });
     mProtocol.registerCmd('m', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendMonitoringData(in, out, outlen); });
-    mProtocol.registerCmd('t', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->setTestChannel(in, out, outlen); });
+    mProtocol.registerCmd('l', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->simulateSwitches(in, out, outlen); });
+    
 
     // Initialize application state
     loadSettings();
     setBrightness();
     relaysTest();
+
+    for(int i=0; i<127; i++) {
+        if(bsp.i2cBusRelays->isDeviceReady(i)) {
+            sleep(100);
+            LOG << "I2C device found at address: " << i;
+        }
+    }
 }
 
 /**
@@ -75,29 +107,45 @@ bool waitForPushRelease(uint32_t time_ms, IGpio &pin, bool expectedState) {
 }
 
 void Application::spin() {
-    // Test mode detection - check if test switch is active
-    if (!mBsp.testSwitch->get()) {
-        testSwitchProcedure();
-        sleep(SysConst::kTestSwitchSleepMs);
-        return;
-    }
-
+    mExpanders[0].update();
+    mExpanders[1].update();
+    mExpanders[2].update();
+        
     // Get current system state
     uint32_t time = getTime();
-    bool ldgGearSwitchState = getLdgGearSwitch();
-    bool rudderSwitchState = getRudderSwitch();
 
-    // Process all channels with current switch states
-    for (size_t channel = 0; channel < NO_CHANNELS; ++channel) {
-        processChannel(channel, rudderSwitchState, ldgGearSwitchState, time);
+    mTestSwitchState = !mBsp.testSwitch->get();
+    mLdgGearSwitchState = getLdgGearSwitch();
+    mRudderSwitchState = getRudderSwitch();
+
+    if(mSinulationState.mSimulationTimeout!=0 && mSinulationState.mSimulationTimeout>time) {
+        mTestSwitchState = mSinulationState.mTestSwitchState;
+        mLdgGearSwitchState = mSinulationState.mLdgGearSwitchState;
+        mRudderSwitchState = mSinulationState.mRudderSwitchState;
+    } else {
+        mSinulationState.mSimulationTimeout = 0;
+    }
+     
+    // Test mode detection - check if test switch is active
+    if (mTestSwitchState) {
+        testSwitchProcedure();
+    } else {
+        // Process all channels with current switch states
+        for (size_t channel = 0; channel < NO_CHANNELS; ++channel) {
+            processChannel(channel, mRudderSwitchState, mLdgGearSwitchState, time);
+        }
+        mExpanders[0].write();
+        mExpanders[1].write();
+        mExpanders[2].write();
+
+        // Update LED indicators
+        mLeds.update();
     }
 
-    // Update LED indicators
-    mLeds.update();
-
     // Process communication
-    handleUartCommunication();
-    sleep(SysConst::kDefaultSleepMs);
+    while(time + SysConst::kPollIntervalMs > getTime()) {
+        handleUartCommunication();
+    }
 }
 
 bool Application::sendAppVersion(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
@@ -107,33 +155,21 @@ bool Application::sendAppVersion(const InProtocolData &in, OutProtocolData &out,
     return true;
 }
 
+bool Application::sendStatus(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
+    LOG << "Getting status";
+    out.statusData.ldg_gear_switch = mLdgGearSwitchState;
+    out.statusData.rudder_switch = mRudderSwitchState;
+    out.statusData.test_button = mTestSwitchState;
+    out.statusData.memory_usage = 0;
+    out.statusData.power_voltage = 0;
+    out.statusData.uptime = getTime()/1000;
+    outlen = sizeof(out.statusData);
+    return true;
+}
+
 bool Application::resetDevice(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
     LOG << "Reset device";
     mBsp.reset();
-    return true;
-}
-
-bool Application::scanI2cDevices(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    bool result = mBsp.i2cBus->isDeviceReady(in.i2cScan.i2cAddress);
-    if(result) {
-        LOG << "Found I2C device:" << in.i2cScan.i2cAddress;
-    }
-    out.i2cScan.result = result;
-    outlen = sizeof(out.i2cScan);
-    return true;
-}
-
-bool Application::sendUserSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    memcpy(&out.userSettings,&mUserSettings.get(), sizeof(UserSettings));
-    outlen = sizeof(UserSettings);
-    return true;
-}
-
-bool Application::updateUserSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    mUserSettings.get() = in.userSettings;
-    bool result = mUserSettings.save();
-    out.result = result;
-    outlen = sizeof(out.result);
     return true;
 }
 
@@ -169,40 +205,27 @@ bool Application::updateChannelSettings(const InProtocolData &in, OutProtocolDat
 
 bool Application::sendMonitoringData(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
     uint8_t channel_id = in.channel_id;
-    uint16_t current = 0, voltage = 0;
+    CurrentStatus current = {};
     
-    // Read power sensor values for requested channel
-    mChannels[channel_id].getPowerSensorStatus(voltage, current);
+    current = mChannels[channel_id].getCurrent();
     
     // Prepare response
-    out.monitoringData.current = current;
-    out.monitoringData.voltage = voltage;
+    out.monitoringData.timestamp = current.timestamp;
+    out.monitoringData.current = current.current;
     out.monitoringData.state = static_cast<uint8_t>(mChannels[channel_id].getChannelState());
+    out.monitoringData.switches = mChannels[channel_id].getLimitSwitchState(LimitSwitch::UP) |
+                                  (mChannels[channel_id].getLimitSwitchState(LimitSwitch::DOWN) << 1);
     outlen = sizeof(out.monitoringData);
     return true;
 }
 
-bool Application::setTestChannel(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    // Create temporary channel for testing with default settings
-    ControlChannel testChannel(*mBsp.i2cBus.get());
-    ControlChannelSettings settings = {};
-    settings.enable = true;
-    settings.ina_addr = in.channelTest.ina_addr;
-    settings.ina_callibration = SysConst::kDefaultInaCalibration;
-    settings.pcf_addr = in.channelTest.pcf_addr;
-    settings.pcf_channel = in.channelTest.pcf_channel;
-    settings.max_voltage_limit = SysConst::kMaxVoltageLimitMv;
-    settings.min_voltage_limit = SysConst::kMinVoltageLimitMv;
-    
-    // Apply settings and run test
-    testChannel.setSettings(settings);
-    bool ret = testChannel.relaysTest();
-    
-    // Return result
-    out.result = ret;
-    outlen = sizeof(ret);
+bool Application::simulateSwitches(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
+    mSinulationState.mLdgGearSwitchState = in.simulation.ldg_gear_switch_state;
+    mSinulationState.mRudderSwitchState = in.simulation.rudder_switch_state;
+    mSinulationState.mTestSwitchState = in.simulation.test_switch_state;
+    mSinulationState.mSimulationTimeout = getTime() + SysConst::kSimulationTimeout;
     return true;
-}
+}    
 
 void Application::testSwitchProcedure() {
     // Run through a sequence of colors to indicate test mode
@@ -220,8 +243,23 @@ void Application::testSwitchProcedure() {
 
 void Application::loadSettings() {
     // Load saved settings from non-volatile storage
-    mUserSettings.load();
-    mChannelsSettings.load();
+    
+    for (int i =0; i < NO_CHANNELS; ++i) {
+        mChannelsSettings.get().channelSettings[i].enable = true;
+        mChannelsSettings.get().channelSettings[i].rudder = false;
+        mChannelsSettings.get().channelSettings[i].inverse_motor = false;
+        mChannelsSettings.get().channelSettings[i].bridge = false;                    
+        mChannelsSettings.get().channelSettings[i].inverse_up_limit_switch = false;   
+        mChannelsSettings.get().channelSettings[i].inverse_down_limit_switch = false; 
+        mChannelsSettings.get().channelSettings[i].inverse_limit_switch = false; 
+        mChannelsSettings.get().channelSettings[i].max_current_limit = 100;
+        mChannelsSettings.get().channelSettings[i].min_current_limit = 0;
+    }    
+    
+    mChannelsSettings.get().channelSettings[0].bridge = true;
+    mChannelsSettings.get().channelSettings[0].rudder = true;
+    mChannelsSettings.get().channelSettings[1].rudder = true;
+    
     
     // Apply channel settings to all channels
     for (size_t i = 0; i < NO_CHANNELS; ++i) {
@@ -271,9 +309,10 @@ void Application::processChannel(size_t channel, bool rudderSwitchState, bool ld
     }
 
     // Apply brightness setting and set LED color
-    color = Colors::setBrightness(color, mUserSettings.get().brightness);
+    color = Colors::setBrightness(color, 100);
     mLeds.setColor(channel, color);
-}
+
+    }
 
 uint32_t Application::getColorForDownState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time) {
     uint32_t color = 0;
@@ -282,7 +321,7 @@ uint32_t Application::getColorForDownState(bool isRudder, bool rudderSwitchState
     if (isRudder) {
         if (rudderSwitchState) {
             // Rudder switch active, color depends on landing gear switch
-            color = ldgGearSwitchState ? mUserSettings.get().rudderInactiveColor : mUserSettings.get().rudderDownColor;
+            color = ldgGearSwitchState ? cRudderInactiveColor : cRudderDownColor;
         } else {
             // Rudder switch inactive but channel is DOWN - show transition animation
             color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
@@ -292,7 +331,7 @@ uint32_t Application::getColorForDownState(bool isRudder, bool rudderSwitchState
     else {
         if (ldgGearSwitchState) {
             // Landing gear switch active matches DOWN state - show normal color
-            color = mUserSettings.get().ldgDownColor;
+            color = cLdgGearDownColor;
         } else {
             // Landing gear switch inactive but channel is DOWN - show transition animation
             color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
@@ -311,7 +350,7 @@ uint32_t Application::getColorForUpState(bool isRudder, bool rudderSwitchState, 
             color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);            
         } else {
             // Rudder switch inactive matches UP state - show normal color
-            color = mUserSettings.get().rudderUpColor;
+            color = cLdgGearUpColor;
         }
     } 
     // Logic for landing gear channels
@@ -321,7 +360,7 @@ uint32_t Application::getColorForUpState(bool isRudder, bool rudderSwitchState, 
             color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
         } else {
             // Landing gear switch inactive matches UP state - show normal color
-            color = mUserSettings.get().ldgUpColor;
+            color = cLdgGearUpColor;
         }
     }
     return color;
@@ -334,14 +373,14 @@ uint32_t Application::getColorForMovingState(bool isRudder, bool rudderSwitchSta
     if (isRudder) {
         if (rudderSwitchState) {
             // Moving toward down position for rudder
-            color = ldgGearSwitchState ? mUserSettings.get().rudderInactiveColor : mUserSettings.get().rudderDownColor;
+            color = ldgGearSwitchState ? cRudderInactiveColor : cRudderDownColor;
         } else {
             // Moving toward up position for rudder
-            color = mUserSettings.get().rudderUpColor;
+            color = cRudderUpColor;
         }
     } else {
         // For landing gear, determine color based on switch position
-        color = ldgGearSwitchState ? mUserSettings.get().ldgDownColor : mUserSettings.get().ldgUpColor;
+        color = ldgGearSwitchState ? cLdgGearDownColor : cLdgGearUpColor;
     }
     
     // Create blinking effect to indicate motion
@@ -357,16 +396,19 @@ bool Application::relaysTest() {
     return result;
 }
 
-void Application::handleUartCommunication() {
+bool Application::handleUartCommunication() {
     // Process UART communication if available
+    bool ret=false;
     char inBuff[SysConst::kUartBufferSize] = {};
     char outBuff[SysConst::kUartBufferSize] = {};
 
-    if (UartStream::getInstance()->readLine(inBuff, sizeof(inBuff), 0)) {
+    while(UartStream::getInstance()->readLine(inBuff, sizeof(inBuff), 0)) {
+        ret = true;
         if (mProtocol.process(inBuff, outBuff, sizeof(outBuff))) {
             Logger() << outBuff;
         }
     }
+    return ret;
 }
 
 void Application::setBrightness() {
@@ -385,10 +427,10 @@ void Application::setBrightness() {
             
             // If user selects this brightness level, save and exit
             if (waitForPushRelease(SysConst::kColorChangeIntervalMs, *mBsp.testSwitch, true)) {
-                mUserSettings.get().brightness = b;
-                mUserSettings.save();
                 return;
             }
         }
     }
 }
+
+#pragma GCC pop_options

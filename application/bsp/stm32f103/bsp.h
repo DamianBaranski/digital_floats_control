@@ -4,6 +4,7 @@
 #include "igpio.h"
 #include "ii2c_master.h"
 #include "iuart.h"
+#include "ipwm.h"
 #include "ipwm_dma.h"
 #include "ispi.h"
 #include "iflash.h"
@@ -25,7 +26,12 @@ public:
     /// @brief Unique pointer to an I2C master interface.
     ///
     /// This pointer is used to manage the I2C bus.
-    std::unique_ptr<II2cMaster> i2cBus;
+    std::unique_ptr<II2cMaster> i2cBusRelays;
+
+    /// @brief Unique pointer to an I2C master interface.
+    ///
+    /// This pointer is used to manage the I2C bus.
+    std::unique_ptr<II2cMaster> i2cBusCurrent;
 
     /// @brief Unique pointer to a UART interface.
     ///
@@ -37,17 +43,27 @@ public:
     std::unique_ptr<IGpio> rudSwitch;
     std::unique_ptr<IPwmDma> leds;
     std::unique_ptr<IFlash> extFlash;
-
+    std::unique_ptr<IPwm> buzzer;
 private:
     /// @brief Unique pointer to the GPIO pin used for SDA.
     ///
     /// This pointer is used to manage the SDA GPIO pin.
-    std::unique_ptr<IGpio> mSdaPin;
+    std::unique_ptr<IGpio> mSdaPin1;
 
     /// @brief Unique pointer to the GPIO pin used for SCL.
     ///
     /// This pointer is used to manage the SCL GPIO pin.
-    std::unique_ptr<IGpio> mSclPin;
+    std::unique_ptr<IGpio> mSclPin1;
+
+    /// @brief Unique pointer to the GPIO pin used for SDA.
+    ///
+    /// This pointer is used to manage the SDA GPIO pin.
+    std::unique_ptr<IGpio> mSdaPin2;
+
+    /// @brief Unique pointer to the GPIO pin used for SCL.
+    ///
+    /// This pointer is used to manage the SCL GPIO pin.
+    std::unique_ptr<IGpio> mSclPin2;
 
     /// @brief Unique pointer to the GPIO pin used for RX.
     ///
@@ -61,15 +77,17 @@ private:
 
     std::unique_ptr<IGpio> mLedDataPin;
 
-    std::unique_ptr<IGpio> mSpiClk;
+    /*std::unique_ptr<IGpio> mSpiClk;
 
     std::unique_ptr<IGpio> mSpiMosi;
 
     std::unique_ptr<IGpio> mSpiMiso;
-
+*/
     std::unique_ptr<ISpi> mSpi;
 
     std::unique_ptr<IGpio> mSpiCsPin;
+
+    std::unique_ptr<IGpio> mBuzzerPin;
 
     /// @brief Initializes the clock for the board.
     ///

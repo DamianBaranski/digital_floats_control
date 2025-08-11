@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk, colorchooser
 import json
 from ui.widgets.settings.user_settings_panel import UserSettingsPanel
-from ui.widgets.settings.channel_settings import ChannelSettings
+from src.core.datatypes.channel_settings import ChannelSettings
 from ui.widgets.settings.channel_settings_table_panel import ChannelSettingsTablePanel
 from ui.widgets.settings.auto_detect import AutoDetect
 from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT, SECTION_FONT
@@ -48,9 +48,8 @@ class UserSettingField(tk.Frame):
             return self.color_display.cget("bg")
 
 class AppSettingsPanel(tk.Frame):
-    def __init__(self, parent, app_protocol):
+    def __init__(self, parent):
         super().__init__(parent, bg=DARK_BG)
-        self.app_protocol = app_protocol
         self.create_widgets()
 
     def create_widgets(self):
@@ -131,8 +130,9 @@ class AppSettingsPanel(tk.Frame):
         self.help_button.pack(side="right", padx=2)
 
     def autoDetect(self):
-        auto_detect = AutoDetect(self.app_protocol, self.channel_settings_table)
-        auto_detect.start()
+        pass
+        #auto_detect = AutoDetect(self.app_protocol, self.channel_settings_table)
+        #auto_detect.start()
 
     def channelHelp(self):
         self.channel_settings_table.display_instructions()
@@ -146,11 +146,11 @@ class AppSettingsPanel(tk.Frame):
             if all(status):
                 self.channel_settings_table.populate_treeview()
 
-        for i in range(6):
-            self.app_protocol.getChannelSettings(i, lambda data, idx=i: callback(data, idx))
+        #for i in range(6):
+            #self.app_protocol.getChannelSettings(i, lambda data, idx=i: callback(data, idx))
 
     def saveChannelSettings(self):
         for i in range(6):
             channel_settings = self.channel_settings_table.getData(i)
-            self.app_protocol.updateChannelSettings(i, channel_settings)
+            #self.app_protocol.updateChannelSettings(i, channel_settings)
             

@@ -12,9 +12,8 @@ from src.ui.widgets.status.log_table_panel import LogTablePanel
 from src.ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT
 
 class LogOutputPanel(tk.Frame):
-    def __init__(self, parent, app_protocol):
+    def __init__(self, parent):
         tk.Frame.__init__(self, parent, bg=DARK_BG)
-        self.app_protocol = app_protocol
         # Configure the grid layout for better control
         self.grid_rowconfigure(1, weight=1)  # Text widget row should expand
         self.grid_columnconfigure(0, weight=1)  # Make sure it expands horizontally
@@ -36,7 +35,7 @@ class LogOutputPanel(tk.Frame):
 
     def update(self):
         self.log.config(state=tk.NORMAL)
-        self.log.insert("end", self.app_protocol.getLogs())
+        #self.log.insert("end", self.app_protocol.getLogs())
         self.log.config(state=tk.DISABLED)
         self.log.see("end")
 

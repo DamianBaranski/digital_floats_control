@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from .channel_settings import ChannelSettings
+from src.core.datatypes.channel_settings import ChannelSettings
 from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT
 
 

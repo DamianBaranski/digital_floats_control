@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from ui.widgets.settings.channel_settings import ChannelSettings
+from src.core.datatypes.channel_settings import ChannelSettings
 
 class AutoDetect:
     def __init__(self, protocol, channel_settings_table):

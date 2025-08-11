@@ -71,13 +71,13 @@ bool I2cMaster::read(uint8_t addr, uint8_t *data, uint8_t len) {
 
 bool I2cMaster::writeRegister(uint8_t addr, uint8_t reg, const uint8_t *data, uint8_t len) {
     HAL_StatusTypeDef result;
-    result = HAL_I2C_Mem_Write(&mI2cHandler, addr<<1, reg, sizeof(reg), const_cast<uint8_t*>(data), len, 100);
+    result = HAL_I2C_Mem_Write(&mI2cHandler, addr<<1, reg, I2C_MEMADD_SIZE_8BIT, const_cast<uint8_t*>(data), len, 100);
     return result == HAL_OK;
 }
 
 bool I2cMaster::readRegister(uint8_t addr, uint8_t reg, uint8_t *data, uint8_t len) {
     HAL_StatusTypeDef result;
-    result = HAL_I2C_Mem_Read(&mI2cHandler, addr<<1, reg, sizeof(reg), data, len, 100);
+    result = HAL_I2C_Mem_Read(&mI2cHandler, addr<<1, reg, I2C_MEMADD_SIZE_8BIT, data, len, 100);
     return result == HAL_OK;
 }
 
