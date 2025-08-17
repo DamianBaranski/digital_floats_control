@@ -23,7 +23,7 @@ namespace SysConst {
     constexpr uint32_t kSimulationTimeout = 1000;
 
     // Buffer sizes
-    constexpr size_t kUartBufferSize = 128;
+    constexpr size_t kUartBufferSize = 200;
 
     // Channel test settings
     constexpr uint16_t kDefaultInaCalibration = 500;
@@ -70,7 +70,7 @@ Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
     mChannels[5].setCurrentSensorAddress(0x50);
 
     // Register command handlers for protocol communications
-    mProtocol.registerCmd('v', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendAppVersion(in, out, outlen); });
+    mProtocol.registerCmd('v', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendFirmwareInfo(in, out, outlen); });
     mProtocol.registerCmd('r', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->resetDevice(in, out, outlen); });
     mProtocol.registerCmd('S', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendStatus(in, out, outlen); });
     mProtocol.registerCmd('c', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendChannelSettings(in, out, outlen); });
@@ -148,10 +148,16 @@ void Application::spin() {
     }
 }
 
-bool Application::sendAppVersion(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
+bool Application::sendFirmwareInfo(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
     LOG << "Getting app version";
-    strcpy(out.appVersion.string, APP_VER);
-    outlen = sizeof(out.appVersion);
+    strcpy(out.firmwareInfo.app_version, APP_VER);
+    strcpy(out.firmwareInfo.hardware_version, HARDWARE_VERSION);
+    strcpy(out.firmwareInfo.build_date, __DATE__);
+    strcpy(out.firmwareInfo.build_time, __TIME__);
+    strcpy(out.firmwareInfo.git_commit, GIT_COMMIT);
+    strcpy(out.firmwareInfo.app_version, APP_VER);
+    
+    outlen = sizeof(out.firmwareInfo);
     return true;
 }
 
@@ -220,9 +226,9 @@ bool Application::sendMonitoringData(const InProtocolData &in, OutProtocolData &
 }
 
 bool Application::simulateSwitches(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    mSinulationState.mLdgGearSwitchState = in.simulation.ldg_gear_switch_state;
-    mSinulationState.mRudderSwitchState = in.simulation.rudder_switch_state;
-    mSinulationState.mTestSwitchState = in.simulation.test_switch_state;
+    mSinulationState.mLdgGearSwitchState = in.remoteControl.ldg_gear_switch_state;
+    mSinulationState.mRudderSwitchState = in.remoteControl.rudder_switch_state;
+    mSinulationState.mTestSwitchState = in.remoteControl.test_switch_state;
     mSinulationState.mSimulationTimeout = getTime() + SysConst::kSimulationTimeout;
     return true;
 }    

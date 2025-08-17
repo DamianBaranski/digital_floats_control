@@ -6,7 +6,7 @@ from core.protocol import requests
 class DigitalFloatsTerminalApp:
     def __init__(self, port):
         self.device_client = DeviceClient()
-        self.device_client.subscribe(requests.FirmwareVersionRequest(), self.firmware_version_update)
+        self.device_client.subscribe(requests.FirmwareInfoRequest(), self.firmware_info_update)
         self.device_client.subscribe(requests.StatusRequest(), self.status_update)
 
         for i in range(6):
@@ -36,7 +36,7 @@ class DigitalFloatsTerminalApp:
     def status_update(self, status):
         self.status = status
 
-    def firmware_version_update(self, version):
+    def firmware_info_update(self, version):
         self.firmware_version = version
 
     def monitoring_update(self, channel, data):
@@ -47,6 +47,6 @@ if __name__ == "__main__":
     try:
         while True:
             app.redraw()
-            time.sleep(0.5)
+            time.sleep(0.1)
     except KeyboardInterrupt:
         pass

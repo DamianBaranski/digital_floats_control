@@ -29,7 +29,7 @@
  * @def BOOTLOADER_VER
  * @brief Bootloader version string
  */
-#define BOOTLOADER_VER "BootBS v1.0_" VERSION
+#define BOOTLOADER_VER "BootBS v1.0_" APP_VERSION
 
 /**
  * @class Bootloader

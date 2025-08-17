@@ -23,7 +23,7 @@
 /**
  * @brief Application version string macro
  */
-#define APP_VER "AppBS v" VERSION
+#define APP_VER "AppBS v" APP_VERSION
 
 /**
  * @class Application
@@ -54,19 +54,11 @@ private:
     
     /** @brief Channel identifier for operations targeting a specific channel */
     uint8_t channel_id;
-    
-    /** @brief Channel test configuration */
-    struct {
-      uint8_t ina_addr;     /**< INA219 current/voltage sensor address */
-      uint8_t pcf_addr;     /**< PCF8574 I/O expander address */
-      uint8_t pcf_channel;  /**< Channel on PCF8574 to test */
-    } channelTest;
-    
     struct {
       uint8_t test_switch_state;
       uint8_t ldg_gear_switch_state;
       uint8_t rudder_switch_state;
-    } simulation;
+    } remoteControl;
     
     /** @brief Raw byte access to the union data */
     uint8_t raw[32];
@@ -84,8 +76,13 @@ private:
     /** @brief Application version information */
     struct
     {
-      char string[32]; /**< Application version string */
-    } appVersion;
+      char app_version[20]; /**< Application version string */
+      char hardware_version[20]; /**< Hardware version string */
+      char serial_number[20]; /**< Device serial number */
+      char build_date[20]; /**< Build date of the application */
+      char build_time[20]; /**< Build time of the application */
+      char git_commit[40]; /**< Git commit hash for version control */
+    } firmwareInfo;
         
     /** @brief Control channel settings and channel identifier */
     struct {
@@ -109,13 +106,15 @@ private:
       uint8_t ldg_gear_switch: 1;
       uint8_t rudder_switch: 1;
       uint8_t test_button: 1;
+      uint8_t remote_control_status: 1;
+      uint8_t reserved: 4; /**< Reserved bits for future use */
     } statusData;
 
     /** @brief Generic result code */
     uint8_t result;
     
     /** @brief Raw byte access to the union data */
-    uint8_t raw[32];
+    uint8_t raw[150];
   };
 
 public:
@@ -145,7 +144,7 @@ private:
    * @param outlen Output length of the data being sent
    * @return true Always returns true
    */
-  bool sendAppVersion(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
+  bool sendFirmwareInfo(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 
   bool sendStatus(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
 

@@ -6,6 +6,8 @@
 #include <functional>
 #include <cstring>
 
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
 
 /// @brief Protocol Class
 ///
@@ -247,4 +249,5 @@ bool Protocol<InType, OutType, N>::findAndExecuteCommand(const InData &inData, O
     return false;
 }
 
+#pragma GCC pop_options
 #endif
