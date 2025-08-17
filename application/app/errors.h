@@ -135,8 +135,8 @@ public:
 
 
     private:
-    BitMask<ChannelError> mErrors[5];  /**< Bitmask tracking channel-specific errors */
-    BitMask<ChannelWarning> mWarnings[5]; /**< Bitmask tracking channel-specific warnings */
+    BitMask<ChannelError> mErrors[6];  /**< Bitmask tracking channel-specific errors */
+    BitMask<ChannelWarning> mWarnings[6]; /**< Bitmask tracking channel-specific warnings */
     BitMask<SystemWarning> mSystemWarnings; /**< Bitmask tracking system-wide warnings */
 };
 #endif

@@ -138,3 +138,85 @@ Python-based GUI application for device control:
 ## Build System
 The project uses CMake build system. Each major component contains its own `CMakeLists.txt` file.
 
+
+## Data Structures Overview
+
+### 1. ChannelSettings (8 bytes)
+The data is packed using `struct.pack('<BBBBHH')`:
+
+| Offset | Field               | Type    | Size | Description                                                                 |
+|--------|---------------------|---------|------|-----------------------------------------------------------------------------|
+| 0      | `channel`           | uint8   | 1    | Channel number (0–255)                                                      |
+| 1      | `bit_fields`        | uint8   | 1    | Bit-packed flags (see below)                                                |
+| 2      | `bridge_channel`    | uint8   | 1    | Channel number used when bridging                                           |
+| 3      | `timeout`           | uint8   | 1    | Movement timeout in seconds (0–255)                                         |
+| 4–5    | `max_current_limit` | uint16  | 2    | Maximum current limit                                                       |
+| 6–7    | `min_current_limit` | uint16  | 2    | Minimum current limit                                                       |
+
+ Used to **configure a single channel**.
+
+---
+
+### 2. ErrorStatus (13 bytes for 6 channels)
+| Offset | Field                 | Type   | Size | Description |
+|--------|-----------------------|--------|------|-------------|
+| 0–5    | `errors[0..5]`        | uint8×6| 6    | Error bitmasks per channel |
+| 6–11   | `warnings[0..5]`      | uint8×6| 6    | Warning bitmasks per channel |
+| 12     | `system_warnings`     | uint8  | 1    | System-wide warnings |
+
+**Enumerations:**
+- **ChannelError**: `RELAY_COMMUNICATION_ERROR`, `ENDSTOP_SHORT_CIRCUIT`, `OVER_CURRENT_ERROR`
+- **ChannelWarning**: `MOVEMENT_TIMEOUT`, `OVER_CURRENT_WARNING`, `UNDER_CURRENT_WARNING`, `ADC_COMMUNICATION_ERROR`
+- **SystemWarning**: `LOW_VOLTAGE`, `HIGH_VOLTAGE`, `EXT_MEMORY_ERROR`
+
+ Used to **report diagnostic status** across multiple channels.
+
+---
+
+### 3. FirmwareInfo (140 bytes)
+| Offset | Field              | Type    | Size | Description |
+|--------|--------------------|---------|------|-------------|
+| 0–19   | `app_version`      | char[20]| 20   | Application version |
+| 20–39  | `hardware_version` | char[20]| 20   | Hardware version |
+| 40–59  | `serial_number`    | char[20]| 20   | Device serial number |
+| 60–79  | `build_date`       | char[20]| 20   | Firmware build date |
+| 80–99  | `build_time`       | char[20]| 20   | Firmware build time |
+| 100–139| `git_commit`       | char[40]| 40   | Git commit hash |
+
+ Provides **firmware and build metadata**.
+
+---
+
+### 4. MonitoringData (8 bytes)
+| Offset | Field       | Type   | Size | Description |
+|--------|-------------|--------|------|-------------|
+| 0–3    | `timestamp` | uint32 | 4    | Timestamp in milliseconds |
+| 4–5    | `current`   | int16  | 2    | Motor current (A) |
+| 6      | `state`     | uint8  | 1    | State: `UP`, `DOWN`, `MOVING`, `ERROR` |
+| 7      | `switches`  | uint8  | 1    | Bit 0 = UP switch, Bit 1 = DOWN switch |
+
+ Used for **real-time monitoring of one channel**.
+
+---
+
+### 5. StatusData (9 bytes)
+| Offset | Field           | Type   | Size | Description |
+|--------|-----------------|--------|------|-------------|
+| 0–1    | `power_voltage` | int16  | 2    | Power supply voltage (0.1 V units) |
+| 2–3    | `memory_usage`  | int16  | 2    | Memory usage (KB) |
+| 4–7    | `uptime`        | uint32 | 4    | System uptime (seconds) |
+| 8      | `switches`      | uint8  | 1    | Bit 0 = landing gear, Bit 1 = rudder, Bit 2 = test button |
+
+ Represents **global system status**.
+
+---
+
+###  Summary
+- **ChannelSettings (8B)** → Per-channel configuration  
+- **ErrorStatus (13B)** → Errors/warnings across channels + system  
+- **FirmwareInfo (140B)** → Device firmware metadata  
+- **MonitoringData (8B)** → Real-time channel monitoring  
+- **StatusData (9B)** → Global device status  
+
+---
+
