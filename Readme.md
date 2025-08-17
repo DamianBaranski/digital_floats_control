@@ -141,17 +141,18 @@ The project uses CMake build system. Each major component contains its own `CMak
 
 ## Data Structures Overview
 
-### 1. ChannelSettings (8 bytes)
-The data is packed using `struct.pack('<BBBBHH')`:
+### 1. ChannelSettings (10 bytes)
+The data is packed using `struct.pack('<BBBBHHH')`:
 
-| Offset | Field               | Type    | Size | Description                                                                 |
-|--------|---------------------|---------|------|-----------------------------------------------------------------------------|
-| 0      | `channel`           | uint8   | 1    | Channel number (0–255)                                                      |
-| 1      | `bit_fields`        | uint8   | 1    | Bit-packed flags (see below)                                                |
-| 2      | `bridge_channel`    | uint8   | 1    | Channel number used when bridging                                           |
-| 3      | `timeout`           | uint8   | 1    | Movement timeout in seconds (0–255)                                         |
-| 4–5    | `max_current_limit` | uint16  | 2    | Maximum current limit                                                       |
-| 6–7    | `min_current_limit` | uint16  | 2    | Minimum current limit                                                       |
+| Offset | Field                       | Type    | Size | Description                                                                 |
+|--------|-----------------------------|---------|------|-----------------------------------------------------------------------------|
+| 0      | `channel`                   | uint8   | 1    | Channel number (0–255)                                                      |
+| 1      | `bit_fields`                | uint8   | 1    | Bit-packed flags (see below)                                                |
+| 2      | `bridge_channel`            | uint8   | 1    | Channel number used when bridging                                           |
+| 3      | `timeout`                   | uint8   | 1    | Movement timeout in seconds (0–255)                                         |
+| 4–5    | `max_current_warning_limit` | uint16  | 2    | Maximum current warning limit                                               |
+| 6–7    | `max_current_error_limit`   | uint16  | 2    | Maximum current error limit                                               |
+| 8–9    | `min_current_limit`         | uint16  | 2    | Minimum current limit                                                       |
 
  Used to **configure a single channel**.
 
@@ -212,7 +213,7 @@ The data is packed using `struct.pack('<BBBBHH')`:
 ---
 
 ###  Summary
-- **ChannelSettings (8B)** → Per-channel configuration  
+- **ChannelSettings (10B)** → Per-channel configuration  
 - **ErrorStatus (13B)** → Errors/warnings across channels + system  
 - **FirmwareInfo (140B)** → Device firmware metadata  
 - **MonitoringData (8B)** → Real-time channel monitoring  
