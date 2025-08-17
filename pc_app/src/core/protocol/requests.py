@@ -3,6 +3,9 @@ import base64
 from typing import Generic, TypeVar, Union, Optional
 from core.datatypes.monitoring_data import MonitoringData
 from core.datatypes.status_data import StatusData
+from core.datatypes.firmware_info import FirmwareInfo
+from core.datatypes.channel_settings import ChannelSettings
+from core.datatypes.remote_control_data import RemoteControlData
 
 # Configure logging with INFO level and log format
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -67,16 +70,18 @@ class BaseProtocolMessage:
         raise NotImplementedError
 
 
-class FirmwareVersionRequest(BaseProtocolMessage):
+class FirmwareInfoRequest(BaseProtocolMessage):
     def send_request(self):
         cmd_str = Protocol.InData(cmd='v')
         return Protocol.encode_output(cmd_str)
 
     def parse_response(self, response_bytes):
-        if len(response_bytes) == 0:
-            return "N/A"
         decoded = Protocol.decode_response(response_bytes)
-        return decoded.decode('utf-8').rstrip('\x00') if decoded else "N/A"
+        if decoded:
+            data = FirmwareInfo()
+            data.fromByteArray(decoded)
+            return data
+        return None
 
 
 class MonitoringChannelRequest(BaseProtocolMessage):
@@ -96,18 +101,12 @@ class MonitoringChannelRequest(BaseProtocolMessage):
         return None
 
 
-class SimulateControlRequest(BaseProtocolMessage):
-    def __init__(self, ldg_gear_switch_state, rudder_switch_state, test_button_state):
-        self.ldg_gear_switch_state = ldg_gear_switch_state
-        self.rudder_switch_state = rudder_switch_state
-        self.test_button_state = test_button_state
-
+class RemoteControlRequest(BaseProtocolMessage):
+    def __init__(self, data: RemoteControlData):
+        self.data = data
+        
     def send_request(self):
-        data = (
-            self.test_button_state.to_bytes(1, 'little') +
-            self.ldg_gear_switch_state.to_bytes(1, 'little') +
-            self.rudder_switch_state.to_bytes(1, 'little')
-        )
+        data = self.data.toByteArray()
         cmd_str = Protocol.InData(cmd='l', data=data)
         return Protocol.encode_output(cmd_str)
 
@@ -122,26 +121,6 @@ class I2CBusScanRequest(BaseProtocolMessage):
 
     def send_request(self):
         cmd_str = Protocol.InData(cmd='s', data=self.address.to_bytes(1, 'little'))
-        return Protocol.encode_output(cmd_str)
-
-    def parse_response(self, response_bytes):
-        decoded = Protocol.decode_response(response_bytes)
-        return bool.from_bytes(decoded, 'little') if decoded else False
-
-
-class TestRelaysRequest(BaseProtocolMessage):
-    def __init__(self, pcf_addr, pcf_channel, ina_addr):
-        self.pcf_addr = pcf_addr
-        self.pcf_channel = pcf_channel
-        self.ina_addr = ina_addr
-
-    def send_request(self):
-        data = (
-            self.ina_addr.to_bytes(1, 'little') +
-            self.pcf_addr.to_bytes(1, 'little') +
-            self.pcf_channel.to_bytes(1, 'little')
-        )
-        cmd_str = Protocol.InData(cmd='t', data=data)
         return Protocol.encode_output(cmd_str)
 
     def parse_response(self, response_bytes):
@@ -179,38 +158,10 @@ class UploadFirmwareRequest(BaseProtocolMessage):
         decoded = Protocol.decode_response(response_bytes)
         return bool.from_bytes(decoded, 'little') if decoded else False
     
-class GetUserSettingsRequest(BaseProtocolMessage):
-    def __init__(self, settings_obj):
-        self.settings = settings_obj  # Must be an instance of UserSettingsPanel
-
-    def send_request(self):
-        cmd_str = Protocol.InData(cmd='u')
-        return Protocol.encode_output(cmd_str)
-
-    def parse_response(self, response_bytes):
-        decoded = Protocol.decode_response(response_bytes)
-        if decoded:
-            self.settings.fromByteArray(decoded)
-        return self.settings
-
-
-class UpdateUserSettingsRequest(BaseProtocolMessage):
-    def __init__(self, settings_obj):
-        self.settings = settings_obj  # Must be an instance of UserSettingsPanel
-
-    def send_request(self):
-        cmd_str = Protocol.InData(cmd='U', data=self.settings.toByteArray())
-        return Protocol.encode_output(cmd_str)
-
-    def parse_response(self, response_bytes):
-        decoded = Protocol.decode_response(response_bytes)
-        return decoded  # Return as-is; calling code may decide how to interpret this
-
-
+    
 class GetChannelSettingsRequest(BaseProtocolMessage):
-    def __init__(self, channel, settings_obj):
+    def __init__(self, channel):
         self.channel = channel
-        self.settings = settings_obj  # Must be an instance of ChannelSettings
 
     def send_request(self):
         cmd_str = Protocol.InData(cmd='c', data=self.channel.to_bytes(1, 'little'))
@@ -219,17 +170,18 @@ class GetChannelSettingsRequest(BaseProtocolMessage):
     def parse_response(self, response_bytes):
         decoded = Protocol.decode_response(response_bytes)
         if decoded:
-            self.settings.fromByteArray(decoded)
-        return self.settings
+            data = ChannelSettings()
+            data.fromByteArray(decoded)
+            return data
+        return None
 
 
 class UpdateChannelSettingsRequest(BaseProtocolMessage):
-    def __init__(self, channel, settings_obj):
-        self.channel = channel
-        self.settings = settings_obj  # Must be an instance of ChannelSettings
+    def __init__(self, channel_settings: ChannelSettings):
+        self.settings = channel_settings
 
     def send_request(self):
-        data = self.settings.toByteArray() + self.channel.to_bytes(1, 'little')
+        data = self.settings.toByteArray()
         cmd_str = Protocol.InData(cmd='C', data=data)
         return Protocol.encode_output(cmd_str)
 

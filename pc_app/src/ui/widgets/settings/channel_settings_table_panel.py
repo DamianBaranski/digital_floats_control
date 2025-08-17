@@ -138,8 +138,8 @@ class ChannelSettingsTablePanel(tk.Frame):
             self.tree.delete(row)
         for idx, settings in enumerate(self.channel_settings_list):
             row_values = [idx + 1]  # Channel number starts from 1
-            row_values += [settings.values[full] for abbr, full in self.column_map[1:]]
-            self.tree.insert('', 'end', values=row_values)
+            #row_values += [settings.values[full] for abbr, full in self.column_map[1:]]
+            #self.tree.insert('', 'end', values=row_values)
 
     def edit_row(self, event):
         # Get the selected item

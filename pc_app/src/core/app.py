@@ -18,7 +18,7 @@ class DigitalFloatsApp(tk.Frame):
         self.parent.title("Digital Floats App")
         self.parent.configure(bg=DARK_BG)
         self.device_client = DeviceClient()
-        self.device_client.subscribe(requests.FirmwareVersionRequest(), self.firmware_version_update)
+        self.device_client.subscribe(requests.FirmwareInfoRequest(), self.firmware_version_update)
         self.device_client.subscribe(requests.StatusRequest(), self.status_update)
 
         # Configure ttk styles
