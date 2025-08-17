@@ -206,9 +206,19 @@ The data is packed using `struct.pack('<BBBBHHH')`:
 | 0–1    | `power_voltage` | int16  | 2    | Power supply voltage (0.1 V units) |
 | 2–3    | `memory_usage`  | int16  | 2    | Memory usage (KB) |
 | 4–7    | `uptime`        | uint32 | 4    | System uptime (seconds) |
-| 8      | `switches`      | uint8  | 1    | Bit 0 = landing gear, Bit 1 = rudder, Bit 2 = test button |
+| 8      | `switches`      | uint8  | 1    | Bit 0 = landing gear, Bit 1 = rudder, Bit 2 = test button, Bit 3 = Remote control status |
 
  Represents **global system status**.
+
+### 6. RemoteControlData (1 byte)
+| Offset | Field                  | Type   | Size | Description |
+|--------|------------------------|--------|------|-------------|
+| 0      | `bit_fields`           | uint8  | 1    | Bit-packed switch states (see below) |
+
+**Bit layout:**
+- Bit 0 → `ldg_gear_switch_state`  
+- Bit 1 → `rudder_switch_state`  
+- Bit 2 → `test_button_state`  
 
 ---
 
@@ -217,7 +227,8 @@ The data is packed using `struct.pack('<BBBBHHH')`:
 - **ErrorStatus (13B)** → Errors/warnings across channels + system  
 - **FirmwareInfo (140B)** → Device firmware metadata  
 - **MonitoringData (8B)** → Real-time channel monitoring  
-- **StatusData (9B)** → Global device status  
+- **StatusData (9B)** → Global device status
+- **RemoteControlData (1B)** → Remote control data
 
 ---
 
