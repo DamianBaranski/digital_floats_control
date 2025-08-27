@@ -10,7 +10,7 @@ int main() {
     LOG << BOOTLOADER_VER;
 
     Bootloader bootloader;
-    Protocol<Bootloader::InProtocolData, Bootloader::OutProtocolData, 10> protocol;
+    Protocol<1024, 10> protocol;
     bootloader.registerCommands(protocol);
 
     char inBuff[1024] = {};

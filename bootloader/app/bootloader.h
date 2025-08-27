@@ -29,7 +29,7 @@
  * @def BOOTLOADER_VER
  * @brief Bootloader version string
  */
-#define BOOTLOADER_VER "BootBS v1.0_" APP_VERSION
+#define BOOTLOADER_VER "BootBS v1.0"
 
 /**
  * @class Bootloader
@@ -44,51 +44,6 @@ class Bootloader
 {
 public:
     /**
-     * @union InProtocolData
-     * @brief A union representing different input data types for protocol commands.
-     *
-     * This union provides a flexible structure for handling various types of
-     * input data in the bootloader protocol.
-     */
-    union InProtocolData
-    {
-        /**
-         * @struct updateFirmware
-         * @brief Structure containing firmware update data
-         */
-        struct
-        {
-            uint16_t ptr;       /**< Pointer/address offset for firmware update */
-            uint16_t len;       /**< Length of firmware data chunk */
-            uint8_t data[512];  /**< Firmware data buffer */
-        } updateFirmware;
-        
-        uint8_t raw[1024];      /**< Raw input data buffer for generic access */
-    };
-
-    /**
-     * @union OutProtocolData
-     * @brief A union representing different output data types for protocol commands.
-     *
-     * This union provides a flexible structure for returning various types of
-     * output data in the bootloader protocol responses.
-     */
-    union OutProtocolData
-    {
-        /**
-         * @struct appVersion
-         * @brief Structure containing application version information
-         */
-        struct
-        {
-            char string[32];    /**< Application version string */
-        } appVersion;
-        
-        uint8_t result;         /**< Result code of the command */
-        uint8_t raw[32];        /**< Raw output data buffer for generic access */
-    };
-
-    /**
      * @brief Registers commands with the protocol.
      * 
      * This method sets up the command handlers to respond to different
@@ -96,7 +51,7 @@ public:
      *
      * @param protocol The protocol instance for command registration.
      */
-    void registerCommands(Protocol<InProtocolData, OutProtocolData, 10> &protocol);
+    void registerCommands(Protocol<1024, 10> &protocol);
 
     /**
      * @brief Jumps to the main application.
@@ -116,7 +71,7 @@ public:
      * @param outlen Output data length reference to update.
      * @return True if successful, false otherwise.
      */
-    bool sendBootloaderVersion(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
+    bool sendBootloaderVersion(const uint8_t &in, uint8_t &out, size_t &outlen);
 
     /**
      * @brief Updates the firmware.
@@ -129,7 +84,7 @@ public:
      * @param outlen Output data length reference to update.
      * @return True if successful, false otherwise.
      */
-    bool updateFirmware(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
+    bool updateFirmware(const uint8_t &in, uint8_t &out, size_t &outlen);
 
     /**
      * @brief Checks if the bootloader is waiting to proceed.

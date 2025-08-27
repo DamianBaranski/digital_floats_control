@@ -1,13 +1,15 @@
 #include "bootloader.h"
+#include "protocol_datatypes/firmware_chunk.h"
+#include "protocol_datatypes/firmware_info.h"
 
-void Bootloader::registerCommands(Protocol<InProtocolData, OutProtocolData, 10> &protocol) {
+void Bootloader::registerCommands(Protocol<1024, 10> &protocol) {
     // Register 'v' command to retrieve bootloader version
-    protocol.registerCmd('v', [&](const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
+    protocol.registerCmd('v', [&](const uint8_t &in, uint8_t &out, size_t &outlen) {
         return this->sendBootloaderVersion(in, out, outlen);
     });
     
     // Register 'u' command to handle firmware updates
-    protocol.registerCmd('u', [&](const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
+    protocol.registerCmd('u', [&](const uint8_t &in, uint8_t &out, size_t &outlen) {
         return this->updateFirmware(in, out, outlen);
     });
     
@@ -33,31 +35,40 @@ void Bootloader::gotoApplication() {
     app_reset_handler();
 }
 
-bool Bootloader::sendBootloaderVersion(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    // Copy the bootloader version to the output buffer
-    strcat(out.appVersion.string, BOOTLOADER_VER);
-    outlen = strlen(BOOTLOADER_VER);
+bool Bootloader::sendBootloaderVersion(const uint8_t &in, uint8_t &out, size_t &outlen) {
+    LOG << "Getting bootloader version";
+    FirmwareInfo &firmwareInfo = reinterpret_cast<FirmwareInfo&>(out);
+    strcpy(firmwareInfo.app_version, BOOTLOADER_VER);
+    strcpy(firmwareInfo.build_date, __DATE__);
+    strcpy(firmwareInfo.build_time, __TIME__);
+    strcpy(firmwareInfo.git_commit, GIT_COMMIT);
+    
+    outlen = sizeof(firmwareInfo);
     return true;
 }
 
-bool Bootloader::updateFirmware(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
+bool Bootloader::updateFirmware(const uint8_t &in, uint8_t &out, size_t &outlen) {
     // Reset the wait timer each time we receive an update command
     mTime = getTime();
-    
+
+    // Cast input and output buffers to the appropriate request/response structures
+    const UpdateFirmwareRequest &updateFirmware = reinterpret_cast<const UpdateFirmwareRequest&>(in);
+    UpdateFirmwareResponse &outResponse = reinterpret_cast<UpdateFirmwareResponse&>(out);
+
     // Check if we're at the beginning of a sector to erase it before writing
-    if ((in.updateFirmware.ptr % mFlash.getSectorSize()) == 0) {
+    if ((updateFirmware.ptr % mFlash.getSectorSize()) == 0) {
         // Erase 1 sector at the calculated address
-        mFlash.erase(ETX_APP_START_ADDRESS + in.updateFirmware.ptr, 1);
+        mFlash.erase(ETX_APP_START_ADDRESS + updateFirmware.ptr, 1);
     }
     
     // Write the firmware chunk to flash at the calculated address
     // Store the result of the write operation in the response
-    out.result = mFlash.write(ETX_APP_START_ADDRESS + in.updateFirmware.ptr, 
-                             in.updateFirmware.data, 
-                             in.updateFirmware.len);
+    outResponse.result = mFlash.write(ETX_APP_START_ADDRESS + updateFirmware.ptr, 
+                             updateFirmware.data, 
+                             updateFirmware.len);
     
     // Set the output length to the size of a boolean (results)
-    outlen = sizeof(bool);
+    outlen = sizeof(outResponse.result);
     return true;
 }
 
