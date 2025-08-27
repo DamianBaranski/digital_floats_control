@@ -13,7 +13,7 @@ public:
     /// @brief Constructor that initializes the Settings class.
     /// @param flash Reference to the Flash object used for reading and writing to flash memory.
     /// @param address The address in flash memory where the settings are stored.
-    Settings(IFlash &flash, uint32_t address);
+    Settings(IFlash &flash, uint32_t address, T &data);
 
     /// @brief Loads the settings from flash memory.
     /// @return `true` if the settings were successfully loaded, `false` otherwise.
@@ -30,43 +30,49 @@ public:
 private:
     IFlash &mFlash;         ///< Reference to the Flash object for flash memory operations.
     uint32_t mAddress;     ///< The address in flash memory where the settings are stored.
-    
+    T &mData;            ///< The settings data.
     /// @brief Structure to hold the settings data and its associated CRC.
-    struct {
+    struct SettingsData {
         T data;            ///< The settings data.
         uint16_t crc;      ///< The CRC checksum for the settings data.
-    } mData;
+    };
 };
 
 template <typename T>
-Settings<T>::Settings(IFlash &flash, uint32_t address): mFlash(flash), mAddress(address) {
+Settings<T>::Settings(IFlash &flash, uint32_t address, T &data): mFlash(flash), mAddress(address), mData(data) {
+    // Attempt to load settings from flash on initialization
     load();
 }
 
 template <typename T>
 bool Settings<T>::load() {
-    if(!mFlash.read(mAddress, reinterpret_cast<uint8_t*>(&mData), sizeof(mData))) {
+    SettingsData data = {};
+    if(!mFlash.read(mAddress, reinterpret_cast<uint8_t*>(&data), sizeof(data))) {
         return false;
     }
-    if(mData.crc != 0) {
+    if(data.crc != 0) {
         return false;
     }
 
+    memcpy(&mData, &data.data, sizeof(T));
     return true;
 }
 
 template <typename T>
 bool Settings<T>::save() {
-    mData.crc = 0;
-    if(!mFlash.erase(mAddress, sizeof(mData)/mFlash.getSectorSize()+1)) {
+    SettingsData data = {};
+    data.crc = 0;
+    data.data = mData;
+    // Erase necessary sectors before writing
+    if(!mFlash.erase(mAddress, sizeof(data)/mFlash.getSectorSize()+1)) {
         return false;
     }
-    return mFlash.write(mAddress, reinterpret_cast<uint8_t*>(&mData), sizeof(mData));
+    return mFlash.write(mAddress, reinterpret_cast<uint8_t*>(&data), sizeof(data));
 }
 
 template <typename T>
 T &Settings<T>::get() {
-    return mData.data;
+    return mData;
 }
 
 #endif // SETTINGS_H

@@ -19,12 +19,12 @@
 #include "expander.h"
 
 /**
- * @enum State
+ * @enum GearState
  * @brief Enumeration representing the operational state of a control channel.
  *
  * These states indicate the current position and movement status of the controlled mechanism.
  */
-enum class State {
+enum class GearState {
     UP,      /**< Mechanism is in fully raised position */
     DOWN,    /**< Mechanism is in fully lowered position */
     MOVING,  /**< Mechanism is in motion between positions */
@@ -51,6 +51,11 @@ enum class LimitSwitch {
  * to non-volatile memory.
  */
 typedef struct {
+    /** @name Identification */
+    /**@{*/
+    uint8_t channel_id;                /**< Unique identifier for the channel (0-5) */
+    /**@}*/
+
     /** @name Configuration Flags */
     /**@{*/
     uint8_t enable : 1;                    /**< Enable flag (1=enabled, 0=disabled) */
@@ -62,10 +67,14 @@ typedef struct {
     uint8_t rudder : 1;                    /**< Rudder control flag (1=rudder channel, 0=landing gear channel) */
     /**@}*/
 
+    uint8_t bridge_channel;            /**< Number of channel to bridge */
+    uint8_t timeout;                   /**< Timeout in seconds for motor operation before error */
+
     /** @name Safety Limits */
     /**@{*/
-    uint16_t max_current_limit;            /**< Maximum current limit in units of 0.1A (e.g. 50 = 5.0A) */
-    uint16_t min_current_limit;            /**< Minimum current limit in units of 0.1A (e.g. 1 = 0.1A) */
+    uint16_t max_current_warning_limit;   /**< Warning current limit in units of 0.1A (e.g. 50 = 5.0A) */
+    uint16_t max_current_error_limit;     /**< Error current limit in units of 0.1A (e.g. 100 = 10.0A) */
+    uint16_t min_current_limit;           /**< Minimum current limit in units of 0.1A (e.g. 1 = 0.1A) */
     /**@}*/
 } ControlChannelSettings;
 
@@ -161,7 +170,7 @@ public:
      * movement commands, and error conditions. This state determines the visual indication
      * and available commands for the channel.
      */
-    State getChannelState();
+    GearState getChannelState();
 
     /**
      * @brief Gets the last read current value and timestamp

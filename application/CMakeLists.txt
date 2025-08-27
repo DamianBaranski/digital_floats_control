@@ -13,6 +13,8 @@ app/application.cpp
 app/system_stm32f1xx.c
 app/control_channel.cpp
 bsp/stm32f103/bsp.cpp
+app/expander.cpp
+app/uart_communication.cpp
 )
 
 target_include_directories(${EXECUTABLE} PUBLIC 

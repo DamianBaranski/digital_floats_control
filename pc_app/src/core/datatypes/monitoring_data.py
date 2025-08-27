@@ -15,6 +15,7 @@ class MonitoringData:
     def setDefaults(self):
         self.values['timestamp'] = None      
         self.values['current'] = None
+        self.values['channel'] = None
         self.values['state'] = None
         self.values['up_switch'] = None
         self.values['down_switch'] = None
@@ -25,15 +26,17 @@ class MonitoringData:
     def fromByteArray(self, data):
         try:
             # Unpack the byte array into individual fields
-            unpacked_data = struct.unpack('<IhBB', data)
+            unpacked_data = struct.unpack('<IhBBB', data)
             timestamp = unpacked_data[0]  # Timestamp in milliseconds
             current = unpacked_data[1] * 0.001  # Convert current from mA to A
-            state = unpacked_data[2]  # State from the byte
-            switches = unpacked_data[3]  # Switch status from the byte
+            channel = unpacked_data[2]  # Channel number from the byte
+            state = unpacked_data[3]  # State from the byte
+            switches = unpacked_data[4]  # Switch status from the byte
 
             # Update values in the dictionary
             self.values['timestamp'] = timestamp
             self.values['current'] = f"{current:.2f}"
+            self.values['channel'] = channel
             self.values['state'] = self.getStateName(state)
             self.values['up_switch'] = 'ON' if switches & 0x01 else 'OFF'
             self.values['down_switch'] = 'ON' if switches & 0x02 else 'OFF'
@@ -55,6 +58,7 @@ class MonitoringData:
     def __str__(self):
         return (
             f"Monitoring Data:\n"
+            f"Channel: {self.values['channel']}\n"
             f"Timestamp: {self.values['timestamp']} ms\n"
             f"Current: {self.values['current']}A\n"
             f"State: {self.values['state']}\n"
@@ -85,3 +89,9 @@ class MonitoringData:
         if not self.values['down_switch']:
             return 'N/A'
         return self.values['down_switch']
+    
+    # Method to get the channel number
+    def getChannel(self):
+        if self.values['channel'] is None:
+            return 'N/A'
+        return str(self.values['channel'])

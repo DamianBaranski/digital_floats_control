@@ -43,7 +43,7 @@ bool ControlChannel::setMotor(bool dir) {
     return true;
 }
 
-State ControlChannel::getChannelState()
+GearState ControlChannel::getChannelState()
 {
     mCurrent.current = mCurrentSensor.read()*1000.0; // Read current in 0.1A units
     mCurrent.timestamp = getTime();
@@ -56,20 +56,20 @@ State ControlChannel::getChannelState()
     // Only one limit switch should be active at a time in normal operation
     if (upSwitch && !downSwitch)
     {
-        return State::UP;
+        return GearState::UP;
     }
     else if (!upSwitch && downSwitch)
     {
-        return State::DOWN;
+        return GearState::DOWN;
     }
     else if (!upSwitch && !downSwitch)
     {
-        return State::MOVING;
+        return GearState::MOVING;
     }
     else
     {
         // Both limit switches active simultaneously indicates a wiring error
-        return State::ERROR;
+        return GearState::ERROR;
     }
 }
 

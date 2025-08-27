@@ -45,8 +45,9 @@ Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
                                                ControlChannel(mExpanders[1], *mBsp.i2cBusCurrent),
                                                ControlChannel(mExpanders[2], *mBsp.i2cBusCurrent),
                                                ControlChannel(mExpanders[2], *mBsp.i2cBusCurrent)},
-                                     mChannelsSettings(*mBsp.extFlash, SysConst::kChannelSettingsFlashAddress), 
-                                     mSinulationState{} {
+                                     mChannelsSettings(*mBsp.extFlash, SysConst::kChannelSettingsFlashAddress, mState.mChannelSettings), mState(),
+                                     mUartCommunication(mState, *mBsp.uartBus)
+                                      {
     mExpanders[0].setAddress(0x22);
     mExpanders[1].setAddress(0x21);
     mExpanders[2].setAddress(0x20);
@@ -67,17 +68,7 @@ Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
     mChannels[4].setCurrentSensorAddress(0x51);
 
     mChannels[5].setExpanderChannel(0);
-    mChannels[5].setCurrentSensorAddress(0x50);
-
-    // Register command handlers for protocol communications
-    mProtocol.registerCmd('v', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendFirmwareInfo(in, out, outlen); });
-    mProtocol.registerCmd('r', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->resetDevice(in, out, outlen); });
-    mProtocol.registerCmd('S', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendStatus(in, out, outlen); });
-    mProtocol.registerCmd('c', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendChannelSettings(in, out, outlen); });
-    mProtocol.registerCmd('C', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->updateChannelSettings(in, out, outlen); });
-    mProtocol.registerCmd('m', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->sendMonitoringData(in, out, outlen); });
-    mProtocol.registerCmd('l', [this](const InProtocolData &in, OutProtocolData &out, size_t &outlen) { return this->simulateSwitches(in, out, outlen); });
-    
+    mChannels[5].setCurrentSensorAddress(0x50);    
 
     // Initialize application state
     loadSettings();
@@ -110,30 +101,31 @@ void Application::spin() {
     mExpanders[0].update();
     mExpanders[1].update();
     mExpanders[2].update();
-        
-    // Get current system state
-    uint32_t time = getTime();
-
-    mTestSwitchState = !mBsp.testSwitch->get();
-    mLdgGearSwitchState = getLdgGearSwitch();
-    mRudderSwitchState = getRudderSwitch();
-
-    if(mSinulationState.mSimulationTimeout!=0 && mSinulationState.mSimulationTimeout>time) {
-        mTestSwitchState = mSinulationState.mTestSwitchState;
-        mLdgGearSwitchState = mSinulationState.mLdgGearSwitchState;
-        mRudderSwitchState = mSinulationState.mRudderSwitchState;
+    
+    // Get current time
+    mState.mSystem.mUptime = getTime();
+    
+    // Read current switch states, considering remote control simulation
+    if(mState.mRemoteControl.mSimulationTimeout!=0 && mState.mRemoteControl.mSimulationTimeout+SysConst::kSimulationTimeout>mState.mSystem.mUptime) {
+        mState.mSwitches.mLdgGearSwitchState = mState.mRemoteControl.mLdgGearSwitchState;
+        mState.mSwitches.mRudderSwitchState = mState.mRemoteControl.mRudderSwitchState;
+        mState.mSwitches.mTestSwitchState = mState.mRemoteControl.mTestSwitchState;
     } else {
-        mSinulationState.mSimulationTimeout = 0;
+        mState.mRemoteControl.mSimulationTimeout = 0;
+        mState.mSwitches.mLdgGearSwitchState = getLdgGearSwitch();
+        mState.mSwitches.mRudderSwitchState = getRudderSwitch();
+        mState.mSwitches.mTestSwitchState = !mBsp.testSwitch->get();
     }
-     
+
     // Test mode detection - check if test switch is active
-    if (mTestSwitchState) {
+    if (mState.mSwitches.mTestSwitchState) {
         testSwitchProcedure();
     } else {
         // Process all channels with current switch states
         for (size_t channel = 0; channel < NO_CHANNELS; ++channel) {
-            processChannel(channel, mRudderSwitchState, mLdgGearSwitchState, time);
+            processChannel(channel, mState.mSwitches.mRudderSwitchState, mState.mSwitches.mLdgGearSwitchState, mState.mSystem.mUptime);
         }
+        // Write expander states to hardware
         mExpanders[0].write();
         mExpanders[1].write();
         mExpanders[2].write();
@@ -143,95 +135,10 @@ void Application::spin() {
     }
 
     // Process communication
-    while(time + SysConst::kPollIntervalMs > getTime()) {
-        handleUartCommunication();
+    while(mState.mSystem.mUptime + SysConst::kPollIntervalMs > getTime()) {
+        mUartCommunication.spin();
     }
 }
-
-bool Application::sendFirmwareInfo(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    LOG << "Getting app version";
-    strcpy(out.firmwareInfo.app_version, APP_VER);
-    strcpy(out.firmwareInfo.hardware_version, HARDWARE_VERSION);
-    strcpy(out.firmwareInfo.build_date, __DATE__);
-    strcpy(out.firmwareInfo.build_time, __TIME__);
-    strcpy(out.firmwareInfo.git_commit, GIT_COMMIT);
-    strcpy(out.firmwareInfo.app_version, APP_VER);
-    
-    outlen = sizeof(out.firmwareInfo);
-    return true;
-}
-
-bool Application::sendStatus(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    LOG << "Getting status";
-    out.statusData.ldg_gear_switch = mLdgGearSwitchState;
-    out.statusData.rudder_switch = mRudderSwitchState;
-    out.statusData.test_button = mTestSwitchState;
-    out.statusData.memory_usage = 0;
-    out.statusData.power_voltage = 0;
-    out.statusData.uptime = getTime()/1000;
-    outlen = sizeof(out.statusData);
-    return true;
-}
-
-bool Application::resetDevice(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    LOG << "Reset device";
-    mBsp.reset();
-    return true;
-}
-
-bool Application::sendChannelSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    uint8_t channel = in.channel_id;
-    if(channel >= NO_CHANNELS) {
-        return false;
-    }
-    outlen = sizeof(out.controlChannelSettings.settings);
-    memcpy(&out.raw, &mChannelsSettings.get().channelSettings[channel], outlen);
-    out.controlChannelSettings.channel = channel;
-    return true;
-}
-
-bool Application::updateChannelSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    uint8_t channel = in.controlChannelSettings.channel;
-    if(channel >= NO_CHANNELS) {
-        return false;
-    }
-    
-    // Update settings in storage
-    mChannelsSettings.get().channelSettings[channel] = in.controlChannelSettings.settings;
-    bool result = mChannelsSettings.save();
-    out.result = result;
-    outlen = sizeof(out.result);
-    
-    // Apply settings to all channels
-    for (size_t i = 0; i < NO_CHANNELS; ++i) {
-        mChannels[i].setSettings(mChannelsSettings.get().channelSettings[i]);
-    }
-    return true;
-}
-
-bool Application::sendMonitoringData(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    uint8_t channel_id = in.channel_id;
-    CurrentStatus current = {};
-    
-    current = mChannels[channel_id].getCurrent();
-    
-    // Prepare response
-    out.monitoringData.timestamp = current.timestamp;
-    out.monitoringData.current = current.current;
-    out.monitoringData.state = static_cast<uint8_t>(mChannels[channel_id].getChannelState());
-    out.monitoringData.switches = mChannels[channel_id].getLimitSwitchState(LimitSwitch::UP) |
-                                  (mChannels[channel_id].getLimitSwitchState(LimitSwitch::DOWN) << 1);
-    outlen = sizeof(out.monitoringData);
-    return true;
-}
-
-bool Application::simulateSwitches(const InProtocolData &in, OutProtocolData &out, size_t &outlen) {
-    mSinulationState.mLdgGearSwitchState = in.remoteControl.ldg_gear_switch_state;
-    mSinulationState.mRudderSwitchState = in.remoteControl.rudder_switch_state;
-    mSinulationState.mTestSwitchState = in.remoteControl.test_switch_state;
-    mSinulationState.mSimulationTimeout = getTime() + SysConst::kSimulationTimeout;
-    return true;
-}    
 
 void Application::testSwitchProcedure() {
     // Run through a sequence of colors to indicate test mode
@@ -251,25 +158,26 @@ void Application::loadSettings() {
     // Load saved settings from non-volatile storage
     
     for (int i =0; i < NO_CHANNELS; ++i) {
-        mChannelsSettings.get().channelSettings[i].enable = true;
-        mChannelsSettings.get().channelSettings[i].rudder = false;
-        mChannelsSettings.get().channelSettings[i].inverse_motor = false;
-        mChannelsSettings.get().channelSettings[i].bridge = false;                    
-        mChannelsSettings.get().channelSettings[i].inverse_up_limit_switch = false;   
-        mChannelsSettings.get().channelSettings[i].inverse_down_limit_switch = false; 
-        mChannelsSettings.get().channelSettings[i].inverse_limit_switch = false; 
-        mChannelsSettings.get().channelSettings[i].max_current_limit = 100;
-        mChannelsSettings.get().channelSettings[i].min_current_limit = 0;
+        mState.mChannelSettings[i].enable = true;
+        mState.mChannelSettings[i].rudder = false;
+        mState.mChannelSettings[i].inverse_motor = false;
+        mState.mChannelSettings[i].bridge = false;                    
+        mState.mChannelSettings[i].inverse_up_limit_switch = false;   
+        mState.mChannelSettings[i].inverse_down_limit_switch = false; 
+        mState.mChannelSettings[i].inverse_limit_switch = false; 
+        mState.mChannelSettings[i].max_current_error_limit = 100;
+        mState.mChannelSettings[i].max_current_warning_limit = 100;
+        mState.mChannelSettings[i].min_current_limit = 0;
     }    
     
-    mChannelsSettings.get().channelSettings[0].bridge = true;
-    mChannelsSettings.get().channelSettings[0].rudder = true;
-    mChannelsSettings.get().channelSettings[1].rudder = true;
+    mState.mChannelSettings[0].bridge = true;
+    mState.mChannelSettings[0].rudder = true;
+    mState.mChannelSettings[1].rudder = true;
     
     
     // Apply channel settings to all channels
     for (size_t i = 0; i < NO_CHANNELS; ++i) {
-        mChannels[i].setSettings(mChannelsSettings.get().channelSettings[i]);
+        mChannels[i].setSettings(mState.mChannelSettings[i]);
     }
 }
 
@@ -283,7 +191,7 @@ bool Application::getRudderSwitch() {
 
 void Application::processChannel(size_t channel, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time) {
     // Get current channel state
-    State state = mChannels[channel].getChannelState();
+    GearState state = mChannels[channel].getChannelState();
     uint32_t color = 0;
 
     // Set motor state based on channel type (rudder vs landing gear)
@@ -296,19 +204,19 @@ void Application::processChannel(size_t channel, bool rudderSwitchState, bool ld
 
     // Determine LED color based on channel state
     switch (state) {
-    case State::DOWN:
+    case GearState::DOWN:
         color = getColorForDownState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
         break;
 
-    case State::UP:
+    case GearState::UP:
         color = getColorForUpState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
         break;
 
-    case State::MOVING:
+    case GearState::MOVING:
         color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
         break;
 
-    case State::ERROR:
+    case GearState::ERROR:
         // In error state, blink red regardless of other conditions
         color = Colors::blinking(SysConst::kBlinkingIntervalMs, time, Colors::RED);
         break;
@@ -402,20 +310,6 @@ bool Application::relaysTest() {
     return result;
 }
 
-bool Application::handleUartCommunication() {
-    // Process UART communication if available
-    bool ret=false;
-    char inBuff[SysConst::kUartBufferSize] = {};
-    char outBuff[SysConst::kUartBufferSize] = {};
-
-    while(UartStream::getInstance()->readLine(inBuff, sizeof(inBuff), 0)) {
-        ret = true;
-        if (mProtocol.process(inBuff, outBuff, sizeof(outBuff))) {
-            Logger() << outBuff;
-        }
-    }
-    return ret;
-}
 
 void Application::setBrightness() {
     // Exit if test switch not held long enough

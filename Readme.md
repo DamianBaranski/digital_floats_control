@@ -193,8 +193,9 @@ The data is packed using `struct.pack('<BBBBHHH')`:
 |--------|-------------|--------|------|-------------|
 | 0–3    | `timestamp` | uint32 | 4    | Timestamp in milliseconds |
 | 4–5    | `current`   | int16  | 2    | Motor current (A) |
-| 6      | `state`     | uint8  | 1    | State: `UP`, `DOWN`, `MOVING`, `ERROR` |
-| 7      | `switches`  | uint8  | 1    | Bit 0 = UP switch, Bit 1 = DOWN switch |
+| 6      | `channel`   | uint8  | 1    | Channel number    |
+| 7      | `state`     | uint8  | 1    | State: `UP`, `DOWN`, `MOVING`, `ERROR` |
+| 8      | `switches`  | uint8  | 1    | Bit 0 = UP switch, Bit 1 = DOWN switch |
 
  Used for **real-time monitoring of one channel**.
 

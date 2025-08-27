@@ -47,16 +47,16 @@ class ChannelSettings:
             bit_fields,                         # 2nd byte for bitfields
             self.values['bridge_channel'],     # 3rd byte for bridge channel
             self.values['timeout'],              #4th byte for timeout
-            self.values['max_current_warning_limit'],   # 5th and 6th byte
-            self.values['max_current_error_limit'],     # 7th and 8th byte
-            self.values['min_current_limit']    # 9th and 10th byte
+            self.values['max_current_warning_limit'] * 1000,   # 5th and 6th byte
+            self.values['max_current_error_limit'] * 1000,     # 7th and 8th byte
+            self.values['min_current_limit']  * 1000           # 9th and 10th byte
         )
 
         return packed_data
 
     def fromByteArray(self, data):
         # Unpack the byte array into individual fields
-        unpacked_data = struct.unpack('<BBBHHH', data)
+        unpacked_data = struct.unpack('<BBBBHHH', data)
 
         # Extract the bitfields from the first byte
         self.values['channel'] = unpacked_data[0]  # Channel number
@@ -68,12 +68,11 @@ class ChannelSettings:
         self.values['inverse_down_limit_switch'] = bool(bit_fields & (1 << 4))
         self.values['inverse_limit_switch'] = bool(bit_fields & (1 << 5))
         self.values['rudder'] = bool(bit_fields & (1 << 6))
-
         self.values['bridge_channel'] = unpacked_data[2]  # Bridge channel
         self.values['timeout'] = unpacked_data[3]  # Movement timeout in seconds
-        self.values['max_current_warning_limit'] = unpacked_data[4]
-        self.values['max_current_error_limit'] = unpacked_data[5]        
-        self.values['min_current_limit'] = unpacked_data[6]
+        self.values['max_current_warning_limit'] = unpacked_data[4] * 0.001  # Convert back to A units
+        self.values['max_current_error_limit'] = unpacked_data[5] * 0.001  # Convert back to A units
+        self.values['min_current_limit'] = unpacked_data[6] * 0.001  # Convert back to A units
         
             # Adding the __str__ method for human-readable output
     def __str__(self):

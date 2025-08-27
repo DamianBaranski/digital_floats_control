@@ -1,30 +1,61 @@
 #ifndef ERRORS_H
 #define ERRORS_H
 
-#include <cstdint>
 #include "bit_mask.h"
+#include <cstdint>
 
 enum class ChannelError {
-    RELAY_COMMUNICATION_ERROR,  /**< Error communicating with relay module */
-    ENDSTOP_SHORT_CIRCUIT,      /**< Short circuit detected on endstop */
-    OVER_CURRENT_ERROR,         /**< Current exceeds maximum limit */
+    RELAY_COMMUNICATION_ERROR, /**< Error communicating with relay module */
+    ENDSTOP_SHORT_CIRCUIT,     /**< Short circuit detected on endstop */
+    OVER_CURRENT_ERROR,        /**< Current exceeds maximum limit */
 };
 
 enum class ChannelWarning {
-    MOVEMENT_TIMEOUT,       /**< Movement operation took too long */
-    OVER_CURRENT_WARNING,     /**< Current exceeds warning threshold but not critical */
-    UNDER_CURRENT_WARNING,    /**< Current below warning threshold but not critical */
+    MOVEMENT_TIMEOUT,        /**< Movement operation took too long */
+    OVER_CURRENT_WARNING,    /**< Current exceeds warning threshold but not critical */
+    UNDER_CURRENT_WARNING,   /**< Current below warning threshold but not critical */
     ADC_COMMUNICATION_ERROR, /**< Error communicating with ADC sensor */
 };
 
 enum class SystemWarning {
-    LOW_VOLTAGE,            /**< Power supply voltage is below recommended level */
-    HIGH_VOLTAGE,           /**< Power supply voltage is above recommended level */
-    EXT_MEMORY_ERROR,      /**< Error accessing external memory */
+    LOW_VOLTAGE,      /**< Power supply voltage is below recommended level */
+    HIGH_VOLTAGE,     /**< Power supply voltage is above recommended level */
+    EXT_MEMORY_ERROR, /**< Error accessing external memory */
 };
 
 class Errors {
-public:
+  public:
+  /**
+   * @brief Retrieves the error bitmask for a specific channel
+   * @param channel The channel index (0-5)
+   * @return The error bitmask as a byte, or 0 if the channel index is invalid
+   */
+    uint8_t getChannelErrors(uint8_t channel) const {
+        if (channel >= sizeof(mErrors) / sizeof(mErrors[0])) {
+            return 0; // Invalid channel index
+        }
+        return mErrors[channel].toByte();
+    }
+    /**
+     * @brief Retrieves the warning bitmask for a specific channel
+     * @param channel The channel index (0-5)
+     * @return The warning bitmask as a byte, or 0 if the channel index is invalid
+     */
+    uint8_t getChannelWarnings(uint8_t channel) const {
+        if (channel >= sizeof(mWarnings) / sizeof(mWarnings[0])) {
+            return 0; // Invalid channel index
+        }
+        return mWarnings[channel].toByte();
+    }
+
+    /**
+     * @brief Retrieves the system-wide warning bitmask
+     * @return The system warning bitmask as a byte
+     */
+    uint8_t getSystemWarnings() const {
+        return mSystemWarnings.toByte();
+    }
+
     /**
      * @brief Checks if a specific error is set
      * @param error The error to check
@@ -92,10 +123,10 @@ public:
         if (channel < sizeof(mWarnings) / sizeof(mWarnings[0])) {
             mWarnings[channel].clr(warning);
         }
-    }   
+    }
     void clear(SystemWarning warning) {
         mSystemWarnings.clr(warning);
-    }   
+    }
     /**
      * @brief Clears all errors for a channel
      * @param channel The channel index
@@ -133,10 +164,9 @@ public:
         return mWarnings[channel].any();
     }
 
-
-    private:
-    BitMask<ChannelError> mErrors[6];  /**< Bitmask tracking channel-specific errors */
-    BitMask<ChannelWarning> mWarnings[6]; /**< Bitmask tracking channel-specific warnings */
+  private:
+    BitMask<ChannelError> mErrors[6];       /**< Bitmask tracking channel-specific errors */
+    BitMask<ChannelWarning> mWarnings[6];   /**< Bitmask tracking channel-specific warnings */
     BitMask<SystemWarning> mSystemWarnings; /**< Bitmask tracking system-wide warnings */
 };
-#endif
+#endif // ERRORS_H

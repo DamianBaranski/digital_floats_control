@@ -6,9 +6,9 @@ from core.datatypes.status_data import StatusData
 from core.datatypes.firmware_info import FirmwareInfo
 from core.datatypes.channel_settings import ChannelSettings
 from core.datatypes.remote_control_data import RemoteControlData
+from core.datatypes.error_status import ErrorStatus
 
 # Configure logging with INFO level and log format
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 # Define generic types for protocol input and output data
@@ -34,7 +34,7 @@ class Protocol(Generic[DataInType, DataOutType]):
     def encode_output(in_data: 'Protocol.InData') -> bytes:
         try:
             data_bytes = bytes(in_data.data)
-            frame = bytes([in_data.len]) + data_bytes + in_data.crc.to_bytes(2, 'big')
+            frame = bytes([in_data.len]) + in_data.crc.to_bytes(2, 'big') + data_bytes
             frame = base64.b64encode(bytes([ord(in_data.cmd)]) + frame) + b'\r'
             logger.debug(f"Encoded frame: {frame}")
             return frame
@@ -49,8 +49,9 @@ class Protocol(Generic[DataInType, DataOutType]):
             decoded_bytes = base64.b64decode(instr)
             cmd = chr(decoded_bytes[0])
             data_len = decoded_bytes[1]
-            data = decoded_bytes[2:-2]
-            crc = int.from_bytes(decoded_bytes[-2:], 'big')
+            crc = int.from_bytes(decoded_bytes[2:3], 'big')
+            data = decoded_bytes[4:]
+            
             out_data = Protocol.OutData(cmd, data, crc)
             logger.debug(f"Decoded data: cmd={cmd}, data_len={data_len}, crc={crc}")
             return out_data.data
@@ -84,7 +85,7 @@ class FirmwareInfoRequest(BaseProtocolMessage):
         return None
 
 
-class MonitoringChannelRequest(BaseProtocolMessage):
+class MonitoringDataRequest(BaseProtocolMessage):
     def __init__(self, channel):
         self.channel = channel
 
@@ -189,12 +190,27 @@ class UpdateChannelSettingsRequest(BaseProtocolMessage):
         decoded = Protocol.decode_response(response_bytes)
         return decoded  # Could be interpreted further if needed
 
-class StatusRequest(BaseProtocolMessage):
+class StatusDataRequest(BaseProtocolMessage):
     def __init__(self):
         self.status = StatusData()
 
     def send_request(self):
         cmd_str = Protocol.InData(cmd='S')  # 'S' for status
+        return Protocol.encode_output(cmd_str)
+
+    def parse_response(self, response_bytes):
+        decoded = Protocol.decode_response(response_bytes)
+        if decoded:
+            self.status.fromByteArray(decoded)
+            return self.status
+        return None
+    
+class ErrorStatusRequest(BaseProtocolMessage):
+    def __init__(self):
+        self.status = ErrorStatus()
+
+    def send_request(self):
+        cmd_str = Protocol.InData(cmd='e')  # 'E' for error status
         return Protocol.encode_output(cmd_str)
 
     def parse_response(self, response_bytes):

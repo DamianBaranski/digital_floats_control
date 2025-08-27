@@ -46,7 +46,7 @@
 /// @tparam InType The type of the input data.
 /// @tparam OutType The type of the output data.
 /// @tparam N The maximum number of command handlers that can be registered.
-template <typename InType, typename OutType, size_t N>
+template <size_t BuffSize, size_t N>
 class Protocol
 {
 private:
@@ -55,8 +55,8 @@ private:
     {
         char cmd;     ///< Command identifier
         uint8_t len;  ///< Length of the input data
-        InType data;  ///< Input data of type InType
         uint16_t crc; ///< CRC checksum of the input data
+        uint8_t data[BuffSize];  ///< Input data of type InType
     };
 
     /// Structure representing the outgoing data format
@@ -64,15 +64,15 @@ private:
     {
         char cmd;     ///< Command identifier
         uint8_t len;  ///< Length of the output data
-        OutType data; ///< Output data of type OutType
         uint16_t crc; ///< CRC checksum of the output data
+        uint8_t data[BuffSize]; ///< Output data of type OutType
     };
 
     /// Structure representing a command and its corresponding function
     struct CmdFnc
     {
         char cmd;                                                                            ///< Command identifier
-        std::function<bool(const InType &inData, OutType &outData, size_t &outDataLen)> fnc; ///< Function to execute for the command
+        std::function<bool(const uint8_t &inData, uint8_t &outData, size_t &outDataLen)> fnc; ///< Function to execute for the command
     };
 
     CmdFnc mFncPtr[N] = {}; ///< Array of registered command functions
@@ -100,7 +100,7 @@ public:
     /// @param fnc The function to execute when the command is received.
     /// @return true if the command was registered successfully.
     /// @return false if the command could not be registered (e.g., if the command is already registered).
-    bool registerCmd(char cmd, std::function<bool(const InType &inData, OutType &outData, size_t &outDataLen)> fnc);
+    bool registerCmd(char cmd, std::function<bool(const uint8_t &inData, uint8_t &outData, size_t &outDataLen)> fnc);
 
 private:
     /// @brief Decodes a Base64 encoded input string into an InData structure.
@@ -149,8 +149,8 @@ private:
     bool findAndExecuteCommand(const InData &inData, OutData &outData, size_t &outDataLen);
 };
 
-template <typename InType, typename OutType, size_t N>
-bool Protocol<InType, OutType, N>::registerCmd(char cmd, std::function<bool(const InType &inData, OutType &outData, size_t &outDataLen)> fnc)
+template <size_t BuffSize, size_t N>
+bool Protocol<BuffSize, N>::registerCmd(char cmd, std::function<bool(const uint8_t &inData, uint8_t &outData, size_t &outDataLen)> fnc)
 {
     for (size_t i = 0; i < N; i++)
     {
@@ -168,8 +168,8 @@ bool Protocol<InType, OutType, N>::registerCmd(char cmd, std::function<bool(cons
     return false;
 }
 
-template <typename InType, typename OutType, size_t N>
-bool Protocol<InType, OutType, N>::process(const char *instr, char *outstr, size_t outlen)
+template <size_t BuffSize, size_t N>
+bool Protocol<BuffSize, N>::process(const char *instr, char *outstr, size_t outlen)
 {
     InData inData = {};
     OutData outData = {};
@@ -193,13 +193,13 @@ bool Protocol<InType, OutType, N>::process(const char *instr, char *outstr, size
     return encodeOutput(outData, outstr, outDataLen);
 }
 
-template <typename InType, typename OutType, size_t N>
-bool Protocol<InType, OutType, N>::decodeInput(const char *instr, InData &inData)
+template <size_t BuffSize, size_t N>
+bool Protocol<BuffSize, N>::decodeInput(const char *instr, InData &inData)
 {
     size_t decodedLen = 0;
     size_t expectedLen = Base64::decodedSize(instr);
 
-    if (expectedLen > sizeof(InData))
+    if (expectedLen >= sizeof(InData))
     {
         return false;
     }
@@ -208,15 +208,15 @@ bool Protocol<InType, OutType, N>::decodeInput(const char *instr, InData &inData
     return (decodedLen == expectedLen);
 }
 
-template <typename InType, typename OutType, size_t N>
-bool Protocol<InType, OutType, N>::encodeOutput(const OutData &outData, char *outstr, size_t outlen)
+template <size_t BuffSize, size_t N>
+bool Protocol<BuffSize, N>::encodeOutput(const OutData &outData, char *outstr, size_t outlen)
 {
-    Base64::encode(reinterpret_cast<const uint8_t *>(&outData), outlen+sizeof(char)+sizeof(uint16_t)+1, outstr);
+    Base64::encode(reinterpret_cast<const uint8_t *>(&outData), outlen+sizeof(OutData)-sizeof(OutData::data), outstr);
     return true;
 }
 
-template <typename InType, typename OutType, size_t N>
-bool Protocol<InType, OutType, N>::calculateCRC(const InData &inData, uint16_t &crc)
+template <size_t BuffSize, size_t N>
+bool Protocol<BuffSize, N>::calculateCRC(const InData &inData, uint16_t &crc)
 {
     // Implement CRC calculation here if needed
     // For now, we'll leave this as a placeholder that always returns true
@@ -224,11 +224,11 @@ bool Protocol<InType, OutType, N>::calculateCRC(const InData &inData, uint16_t &
     return true;
 }
 
-template <typename InType, typename OutType, size_t N>
-bool Protocol<InType, OutType, N>::findAndExecuteCommand(const InData &inData, OutData &outData, size_t &outDataLen)
+template <size_t BuffSize, size_t N>
+bool Protocol<BuffSize, N>::findAndExecuteCommand(const InData &inData, OutData &outData, size_t &outDataLen)
 {
-    InType inType = inData.data;
-    OutType outType = outData.data;
+    const uint8_t &inType = *inData.data;
+    uint8_t &outType = *outData.data;
 
     for (uint8_t i = 0; i < N; i++)
     {
@@ -238,7 +238,7 @@ bool Protocol<InType, OutType, N>::findAndExecuteCommand(const InData &inData, O
 
             if (result)
             {
-                outData.data = outType;
+                memcpy(outData.data, &outType, outDataLen);
                 outData.cmd = inData.cmd;
                 outData.len = static_cast<uint8_t>(outDataLen);
                 return true;

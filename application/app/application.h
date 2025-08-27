@@ -17,13 +17,11 @@
 #include "settings.h"
 #include "ws2812.h"
 #include "expander.h"
-#include "errors.h"
 #include "colors.h"
+#include "uart_communication.h"
+#include "state.h"
 
-/**
- * @brief Application version string macro
- */
-#define APP_VER "AppBS v" APP_VERSION
+
 
 /**
  * @class Application
@@ -36,87 +34,6 @@
  */
 class Application
 {
-private:
-  /**
-   * @union InProtocolData
-   * @brief A union representing different input data types for protocol commands.
-   * 
-   * This union allows the protocol handler to efficiently process different types of 
-   * incoming data depending on the command being executed.
-   */
-  union InProtocolData
-  {
-    /** @brief Control channel settings and channel identifier */
-    struct {
-      ControlChannelSettings settings; /**< Configuration for a control channel */
-      uint8_t channel;                 /**< Channel identifier (0-5) */
-    } controlChannelSettings;
-    
-    /** @brief Channel identifier for operations targeting a specific channel */
-    uint8_t channel_id;
-    struct {
-      uint8_t test_switch_state;
-      uint8_t ldg_gear_switch_state;
-      uint8_t rudder_switch_state;
-    } remoteControl;
-    
-    /** @brief Raw byte access to the union data */
-    uint8_t raw[32];
-  };
-
-  /**
-   * @union OutProtocolData
-   * @brief A union representing different output data types for protocol commands.
-   * 
-   * This union allows the protocol handler to efficiently return different types of 
-   * data depending on the command being processed.
-   */
-  union OutProtocolData
-  {
-    /** @brief Application version information */
-    struct
-    {
-      char app_version[20]; /**< Application version string */
-      char hardware_version[20]; /**< Hardware version string */
-      char serial_number[20]; /**< Device serial number */
-      char build_date[20]; /**< Build date of the application */
-      char build_time[20]; /**< Build time of the application */
-      char git_commit[40]; /**< Git commit hash for version control */
-    } firmwareInfo;
-        
-    /** @brief Control channel settings and channel identifier */
-    struct {
-      ControlChannelSettings settings; /**< Configuration for a control channel */
-      uint8_t channel;                 /**< Channel identifier (0-5) */
-    } controlChannelSettings;
-    
-    /** @brief Monitoring data for a channel */
-    struct {
-      uint32_t timestamp; /**< Timestamp of the last measurement in milliseconds */
-      uint16_t current;  /**< Measured current in milliamps */
-      uint8_t state;     /**< Current state of the channel */
-      uint8_t switches;  /**< State of switches (bit field) */
-    } monitoringData;
-    
-    /** @brief Status data */
-    struct __attribute__ ((packed)) {
-      uint16_t power_voltage;
-      uint16_t memory_usage;
-      uint32_t uptime;
-      uint8_t ldg_gear_switch: 1;
-      uint8_t rudder_switch: 1;
-      uint8_t test_button: 1;
-      uint8_t remote_control_status: 1;
-      uint8_t reserved: 4; /**< Reserved bits for future use */
-    } statusData;
-
-    /** @brief Generic result code */
-    uint8_t result;
-    
-    /** @brief Raw byte access to the union data */
-    uint8_t raw[150];
-  };
-
 public:
   /**
    * @brief Constructor for the Application class
@@ -137,70 +54,6 @@ public:
   void spin();
 
 private:
-  /**
-   * @brief Handles the 'v' command to send the application version
-   * @param in Input protocol data (unused)
-   * @param out Output protocol data containing the application version string
-   * @param outlen Output length of the data being sent
-   * @return true Always returns true
-   */
-  bool sendFirmwareInfo(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
-
-  bool sendStatus(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
-
-  /**
-   * @brief Handles the 'r' command to reset the device
-   * @param in Input protocol data (unused)
-   * @param out Output protocol data (unused)
-   * @param outlen Output length of the data being sent (unused)
-   * @return true Always returns true
-   */
-  bool resetDevice(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
-
-  /**
-   * @brief Sends control channel settings to the client
-   * @param in Input protocol data containing channel ID
-   * @param out Output protocol data containing channel settings
-   * @param outlen Output length of the data being sent
-   * @return true if settings were successfully sent
-   */
-  bool sendChannelSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
-
-  /**
-   * @brief Updates control channel settings with values from client
-   * @param in Input protocol data containing new channel settings
-   * @param out Output protocol data with result
-   * @param outlen Output length of the data being sent
-   * @return true if settings were successfully updated
-   */
-  bool updateChannelSettings(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
-
-  /**
-   * @brief Sends monitoring data for a specific channel to the client
-   * @param in Input protocol data containing channel ID
-   * @param out Output protocol data containing monitoring information
-   * @param outlen Output length of the data being sent
-   * @return true if monitoring data was successfully sent
-   */
-  bool sendMonitoringData(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
-
-  bool simulateSwitches(const InProtocolData &in, OutProtocolData &out, size_t &outlen);
-
-  /**
-   * @brief Performs a test procedure for switch functionality
-   * 
-   * Tests the operation of the switches by cycling through different states
-   * and verifying proper operation.
-   */
-  void testSwitchProcedure();
-
-  /**
-   * @brief Loads saved settings from non-volatile storage
-   * 
-   * Retrieves both user settings and channel configuration from persistent storage
-   * and applies them to the current system state.
-   */
-  void loadSettings();
 
   /**
    * @brief Gets the current state of the landing gear switch
@@ -277,6 +130,22 @@ private:
    */
   void setBrightness();
 
+  /**
+   * @brief Performs a test procedure for switch functionality
+   * 
+   * Tests the operation of the switches by cycling through different states
+   * and verifying proper operation.
+   */
+  void testSwitchProcedure();
+
+  /**
+   * @brief Loads saved settings from non-volatile storage
+   * 
+   * Retrieves both user settings and channel configuration from persistent storage
+   * and applies them to the current system state.
+   */
+  void loadSettings();
+
 private:
   /** @brief Number of control channels in the system */
   static constexpr size_t NO_CHANNELS = 6;
@@ -295,9 +164,6 @@ private:
   {
     ControlChannelSettings channelSettings[NO_CHANNELS]; /**< Array of settings for each channel */
   };
-
-  /** @brief Protocol handler for command processing */
-  Protocol<InProtocolData, OutProtocolData, 10> mProtocol;
   
   /** @brief Reference to the Board Support Package for hardware interactions */
   Bsp &mBsp;
@@ -311,20 +177,12 @@ private:
   ControlChannel mChannels[NO_CHANNELS];
   
   /** @brief Persistent storage for channel settings */
-  Settings<ChannelsSettings> mChannelsSettings;
+  Settings<State::ChannelSettings> mChannelsSettings;
 
-  Errors mErrors;
+  State mState;
 
-  struct {
-    uint32_t mSimulationTimeout;
-    bool mLdgGearSwitchState;
-    bool mRudderSwitchState;
-    bool mTestSwitchState;
-  } mSinulationState;
-
-  bool mTestSwitchState;
-  bool mLdgGearSwitchState;
-  bool mRudderSwitchState;
+  /** @brief UART communication */
+  UARTCommunication mUartCommunication;
 };
 
 #endif // APPLICATION_H

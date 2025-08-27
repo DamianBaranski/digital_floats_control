@@ -49,6 +49,10 @@ public:
         return mData != 0;
     }
 
+    uint8_t toByte() const {
+        return static_cast<uint8_t>(mData & 0xFF);
+    }
+
 private:
     uint32_t mData; ///< The bitmask data.
 };

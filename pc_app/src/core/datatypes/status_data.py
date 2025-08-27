@@ -67,6 +67,6 @@ class StatusData:
             f"  remote_control_status  = {self.get_remote_control_status()},\n"
             f"  power_voltage          = {self.get_power_voltage()} V,\n"
             f"  memory_usage           = {self.get_memory_usage()} KB,\n"
-            f"  uptime                 = {self.get_uptime()} s,\n"
+            f"  uptime                 = {self.get_uptime()} ms,\n"
             f")"
         )

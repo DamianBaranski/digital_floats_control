@@ -7,11 +7,11 @@ class DigitalFloatsTerminalApp:
     def __init__(self, port):
         self.device_client = DeviceClient()
         self.device_client.subscribe(requests.FirmwareInfoRequest(), self.firmware_info_update)
-        self.device_client.subscribe(requests.StatusRequest(), self.status_update)
+        self.device_client.subscribe(requests.StatusDataRequest(), self.status_update)
 
         for i in range(6):
             self.device_client.subscribe(
-                requests.MonitoringChannelRequest(i),
+                requests.MonitoringDataRequest(i),
                 lambda data, ch=i: self.monitoring_update(ch, data)
             )
 
