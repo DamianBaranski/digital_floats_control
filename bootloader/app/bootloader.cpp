@@ -2,6 +2,9 @@
 #include "protocol_datatypes/firmware_chunk.h"
 #include "protocol_datatypes/firmware_info.h"
 
+#pragma GCC push_options
+#pragma GCC optimize ("Og")
+
 void Bootloader::registerCommands(Protocol<1024, 10> &protocol) {
     // Register 'v' command to retrieve bootloader version
     protocol.registerCmd('v', [&](const uint8_t &in, uint8_t &out, size_t &outlen) {
@@ -77,3 +80,5 @@ bool Bootloader::isWaiting() {
     // This checks if current time is less than (mTime + cWaitTime)
     return (mTime + cWaitTime > getTime());
 }
+
+#pragma GCC pop_options

@@ -8,7 +8,6 @@ from core.datatypes.channel_settings import ChannelSettings
 from core.datatypes.remote_control_data import RemoteControlData
 from core.datatypes.error_status import ErrorStatus
 
-# Configure logging with INFO level and log format
 logger = logging.getLogger(__name__)
 
 # Define generic types for protocol input and output data
@@ -141,14 +140,14 @@ class ResetDeviceRequest(BaseProtocolMessage):
 
 
 class UploadFirmwareRequest(BaseProtocolMessage):
-    def __init__(self, data: bytes, ptr: int, length: int):
+    def __init__(self, data: bytes, ptr: int):
         self.data = data
         self.ptr = ptr
-        self.length = length
+        self.length = len(data)
 
     def send_request(self):
         data = (
-            self.ptr.to_bytes(2, 'little') +
+            self.ptr.to_bytes(4, 'little') +
             self.length.to_bytes(2, 'little') +
             self.data
         )

@@ -62,7 +62,7 @@ template <typename T>
 bool Settings<T>::save() {
     SettingsData data = {};
     data.crc = 0;
-    data.data = mData;
+    memcpy(data.data,mData, sizeof(T));
     // Erase necessary sectors before writing
     if(!mFlash.erase(mAddress, sizeof(data)/mFlash.getSectorSize()+1)) {
         return false;

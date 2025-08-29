@@ -10,11 +10,11 @@
  * including the pointer to the location in the firmware, the data bytes to be written,
  * and the length of the data.
  */
-struct UpdateFirmwareRequest {
+typedef struct __attribute__ ((packed)) {
     uint32_t ptr;      /**< Pointer to the location in the firmware (offset from start) */
-    uint8_t data[256]; /**< Array holding the firmware data bytes */
     uint16_t len;      /**< Length of the data in bytes */
-};
+    uint8_t data[256]; /**< Array holding the firmware data bytes */
+} UpdateFirmwareRequest;
 
 /**
  * @struct UpdateFirmwareResponse
@@ -23,8 +23,8 @@ struct UpdateFirmwareRequest {
  * This structure contains the result of the firmware write operation,
  * indicating whether the operation was successful or not.
  */
-struct UpdateFirmwareResponse {
+typedef struct __attribute__ ((packed)) {
     bool result;       /**< Result of the firmware write operation (true if successful) */
-};
+} UpdateFirmwareResponse;
 
 #endif // FIRMWARE_CHUNK_H

@@ -16,7 +16,7 @@ namespace SysConst {
     // Timing constants
     constexpr uint32_t kDefaultSleepMs = 100;
     constexpr uint32_t kTestSwitchSleepMs = 10;
-    constexpr uint32_t kPollIntervalMs = 10;
+    constexpr uint32_t kPollIntervalMs = 150;
     constexpr uint32_t kColorChangeIntervalMs = 500;
     constexpr uint32_t kBlinkingIntervalMs = 500;
     constexpr uint32_t kMaxBrightnessWaitTimeMs = 5000;
@@ -98,6 +98,15 @@ bool waitForPushRelease(uint32_t time_ms, IGpio &pin, bool expectedState) {
 }
 
 void Application::spin() {
+    if(mState.mActionRequest.mSaveSettings) {
+        mChannelsSettings.save();
+        mState.mActionRequest.mSaveSettings = false;
+    }
+    
+    if(mState.mActionRequest.mDeviceReset) {
+        mBsp.reset();
+    }
+
     mExpanders[0].update();
     mExpanders[1].update();
     mExpanders[2].update();
@@ -134,6 +143,7 @@ void Application::spin() {
         mLeds.update();
     }
 
+    mUartCommunication.spin();
     // Process communication
     while(mState.mSystem.mUptime + SysConst::kPollIntervalMs > getTime()) {
         mUartCommunication.spin();

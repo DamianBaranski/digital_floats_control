@@ -14,7 +14,7 @@ int main() {
     bootloader.registerCommands(protocol);
 
     char inBuff[1024] = {};
-    char outBuff[128] = {};
+    char outBuff[256] = {};
 
     while (bootloader.isWaiting()) {
         if (UartStream::getInstance()->readLine(inBuff, sizeof(inBuff), 0)) {
