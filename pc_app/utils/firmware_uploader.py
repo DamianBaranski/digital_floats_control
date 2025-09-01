@@ -17,7 +17,6 @@ def main():
 
     # Send a reset command and wait for device to reset
     device.command(requests.ResetDeviceRequest(), lambda _: None)
-    time.sleep(0.2)
 
     firmware_info = {}
 
@@ -25,7 +24,11 @@ def main():
         firmware_info['value'] = info
 
     device.command(requests.FirmwareInfoRequest(), firmware_info_callback)
-    time.sleep(0.2)
+
+    timeout = 3  # seconds
+    start_time = time.time()
+    while 'value' not in firmware_info and time.time() - start_time < timeout:
+        time.sleep(0.05)
 
     if 'value' not in firmware_info:
         print("Failed to retrieve firmware info.")

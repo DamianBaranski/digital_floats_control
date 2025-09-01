@@ -19,8 +19,9 @@ public:
     bool connectionTest() const;
 
     /// @brief Reads data from the PCF8574 device.
-    /// @return The data read from the device.
-    uint8_t read();
+    /// @param data Reference to a variable where the read data will be stored.
+    /// @return True if the read operation was successful, false otherwise.
+    bool read(uint8_t &data);
 
     /// @brief Writes data to the PCF8574 device.
     /// @param data The data to write to the device.

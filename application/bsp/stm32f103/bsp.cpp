@@ -1,4 +1,5 @@
 #include "bsp.h"
+#include "adc.h"
 #include "stm32f1xx_hal.h"
 #include "gpio.h"
 #include "i2c_master.h"
@@ -13,7 +14,11 @@ Bsp::Bsp()
   HAL_Init();
   __HAL_RCC_AFIO_CLK_ENABLE();
   __HAL_RCC_PWR_CLK_ENABLE();
+  __HAL_RCC_ADC1_CLK_ENABLE();
+
 	initClock();
+  mAdcPin.reset(new(std::nothrow) Gpio(GPIOA, GPIO_PIN_0, GPIO_MODE_ANALOG, GPIO_NOPULL, 0));
+  pwr_voltage.reset(new(std::nothrow) Adc(ADC1));
 	mSdaPin1.reset(new(std::nothrow) Gpio(GPIOB, GPIO_PIN_6, GPIO_MODE_AF_OD, GPIO_PULLUP, 0));
 	mSclPin1.reset(new(std::nothrow) Gpio(GPIOB, GPIO_PIN_7, GPIO_MODE_AF_OD, GPIO_PULLUP, 0));
 	i2cBusRelays.reset(new(std::nothrow) I2cMaster(I2C1));
@@ -77,6 +82,13 @@ void Bsp::initClock()
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
   HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2);
+
+  /** Configure the ADC clock
+  */
+  RCC_PeriphCLKInitTypeDef adc_clk;
+  adc_clk.PeriphClockSelection = RCC_PERIPHCLK_ADC;
+  adc_clk.AdcClockSelection = RCC_ADCPCLK2_DIV2;
+  HAL_RCCEx_PeriphCLKConfig(&adc_clk);
 }
 
 void sleep(uint32_t time_ms) {

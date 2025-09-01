@@ -31,6 +31,17 @@ struct State {
         bool mSaveSettings;
     } mActionRequest;
 
+    struct debugData {
+        uint32_t request_time;
+        uint32_t expander_update_time;
+        uint32_t switch_read_time;
+        uint32_t current_read_time;
+        uint32_t channel_process_time;
+        uint32_t expander_write_time;
+        uint32_t led_update_time;
+        uint32_t uart_time;
+        uint32_t total_time;
+    } mDebugData;
     struct MonitoringData {
       uint32_t timestamp; /**< Timestamp of the last measurement in milliseconds */
       uint16_t current;  /**< Measured current in milliamps */

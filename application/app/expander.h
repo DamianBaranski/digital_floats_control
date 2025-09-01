@@ -13,7 +13,7 @@ public:
         mAddr = address;
         mPcf.setAddress(mAddr);
     }
-    void update();
+    bool update();
     uint8_t read();
     bool configure() {
         mPcf.setAddress(mAddr);
@@ -33,6 +33,7 @@ public:
     Pcf8574 mPcf; ///< Instance of the PCF8574 driver.
     uint8_t mData; ///< Data to be written to the expander.
     uint8_t mToWrite; ///< Data to be written to the expander.
+    bool mOperationSuccessful; ///< Flag indicating if the last operation was successful.
 
     /** @name PCF8574 Configuration Constants */
     /**@{*/

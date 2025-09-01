@@ -12,7 +12,7 @@
 #define APP_VER "AppBS v" APP_VERSION
 
 #pragma GCC push_options
-#pragma GCC optimize ("Og")
+#pragma GCC optimize ("O0")
 
 UARTCommunication::UARTCommunication(State &state, IUart &uart)
     : mState(state), mUart(uart), mProtocol()
@@ -141,13 +141,15 @@ bool UARTCommunication::remoteControl(const uint8_t &in, uint8_t &out, size_t &o
 
 bool UARTCommunication::sendErrors(const uint8_t &in, uint8_t &out, size_t &outlen) {
     LOG << "Getting errors";
-    ErrorStatus &outError = reinterpret_cast<ErrorStatus&>(out);
+    //ErrorStatus &outError = reinterpret_cast<ErrorStatus&>(out);
+    ErrorStatus outError = {};
     for(int i=0; i<6; i++) {
         outError.errors[i] = mState.mErrors.getChannelErrors(i);
         outError.warnings[i] = mState.mErrors.getChannelWarnings(i);
     }
     outError.system_warnings = mState.mErrors.getSystemWarnings();
     outlen = sizeof(outError);
+    memcpy(&out, &outError, outlen);
     return true;
 }
 

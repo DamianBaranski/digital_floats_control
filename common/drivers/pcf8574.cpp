@@ -14,11 +14,10 @@ bool Pcf8574::connectionTest() const
     return mI2c.isDeviceReady(mAddr);
 }
 
-uint8_t Pcf8574::read()
+bool Pcf8574::read(uint8_t &data)
 {
-    uint8_t data = 0;
-    mI2c.read(mAddr, &data, sizeof(data));
-    return data;
+    bool result = mI2c.read(mAddr, &data, sizeof(data));
+    return result;
 }
 
 bool Pcf8574::write(uint8_t data)

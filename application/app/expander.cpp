@@ -6,9 +6,9 @@ Expander::Expander(II2cMaster &i2c)
     : mI2c(i2c), mPcf(i2c) {
 }
 
-void Expander::update() {
-    mData = mPcf.read();
+bool Expander::update() {
     mToWrite = cPcfCfg;
+    return mPcf.read(mData);
 }
 
 uint8_t Expander::read() {

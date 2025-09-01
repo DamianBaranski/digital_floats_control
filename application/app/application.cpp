@@ -3,7 +3,8 @@
 #include "version.h"
 
 #pragma GCC push_options
-#pragma GCC optimize ("Og")
+#pragma GCC optimize ("O0")
+
 /**
  * System constants namespace
  * Contains configuration values and constants used throughout the application
@@ -16,7 +17,7 @@ namespace SysConst {
     // Timing constants
     constexpr uint32_t kDefaultSleepMs = 100;
     constexpr uint32_t kTestSwitchSleepMs = 10;
-    constexpr uint32_t kPollIntervalMs = 150;
+    constexpr uint32_t kPollIntervalMs = 10;
     constexpr uint32_t kColorChangeIntervalMs = 500;
     constexpr uint32_t kBlinkingIntervalMs = 500;
     constexpr uint32_t kMaxBrightnessWaitTimeMs = 5000;
@@ -38,14 +39,14 @@ namespace SysConst {
 }
 
 Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
-                                     mExpanders{Expander(*mBsp.i2cBusRelays), Expander(*mBsp.i2cBusRelays), Expander(*mBsp.i2cBusRelays)},
+                                     mExpanders{Expander(*mBsp.i2cBusRelays), Expander(*mBsp.i2cBusRelays), Expander(*mBsp.i2cBusRelays)}, mState{},
                                      mChannels{ControlChannel(mExpanders[0], *mBsp.i2cBusCurrent),
                                                ControlChannel(mExpanders[0], *mBsp.i2cBusCurrent),
                                                ControlChannel(mExpanders[1], *mBsp.i2cBusCurrent),
                                                ControlChannel(mExpanders[1], *mBsp.i2cBusCurrent),
                                                ControlChannel(mExpanders[2], *mBsp.i2cBusCurrent),
                                                ControlChannel(mExpanders[2], *mBsp.i2cBusCurrent)},
-                                     mChannelsSettings(*mBsp.extFlash, SysConst::kChannelSettingsFlashAddress, mState.mChannelSettings), mState(),
+                                     mChannelsSettings(*mBsp.extFlash, SysConst::kChannelSettingsFlashAddress, mState.mChannelSettings),
                                      mUartCommunication(mState, *mBsp.uartBus)
                                       {
     mExpanders[0].setAddress(0x22);
@@ -73,14 +74,8 @@ Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
     // Initialize application state
     loadSettings();
     setBrightness();
-    relaysTest();
-
-    for(int i=0; i<127; i++) {
-        if(bsp.i2cBusRelays->isDeviceReady(i)) {
-            sleep(100);
-            LOG << "I2C device found at address: " << i;
-        }
-    }
+    mBsp.pwr_voltage->startConversion();
+    //relaysTest();
 }
 
 /**
@@ -98,21 +93,18 @@ bool waitForPushRelease(uint32_t time_ms, IGpio &pin, bool expectedState) {
 }
 
 void Application::spin() {
-    if(mState.mActionRequest.mSaveSettings) {
-        mChannelsSettings.save();
-        mState.mActionRequest.mSaveSettings = false;
-    }
-    
-    if(mState.mActionRequest.mDeviceReset) {
-        mBsp.reset();
-    }
-
-    mExpanders[0].update();
-    mExpanders[1].update();
-    mExpanders[2].update();
-    
     // Get current time
     mState.mSystem.mUptime = getTime();
+
+    // Handle requested actions
+    processStateRequests();
+
+    mState.mDebugData.request_time = getTime() - mState.mSystem.mUptime;
+    
+    // Update I/O expander states from hardware
+    updateExpanderState();
+
+    mState.mDebugData.expander_update_time = getTime() - mState.mDebugData.request_time - mState.mSystem.mUptime;
     
     // Read current switch states, considering remote control simulation
     if(mState.mRemoteControl.mSimulationTimeout!=0 && mState.mRemoteControl.mSimulationTimeout+SysConst::kSimulationTimeout>mState.mSystem.mUptime) {
@@ -126,41 +118,55 @@ void Application::spin() {
         mState.mSwitches.mTestSwitchState = !mBsp.testSwitch->get();
     }
 
-    // Test mode detection - check if test switch is active
-    if (mState.mSwitches.mTestSwitchState) {
-        testSwitchProcedure();
-    } else {
-        // Process all channels with current switch states
-        for (size_t channel = 0; channel < NO_CHANNELS; ++channel) {
-            processChannel(channel, mState.mSwitches.mRudderSwitchState, mState.mSwitches.mLdgGearSwitchState, mState.mSystem.mUptime);
-        }
-        // Write expander states to hardware
-        mExpanders[0].write();
-        mExpanders[1].write();
-        mExpanders[2].write();
+    mState.mDebugData.switch_read_time = getTime() - mState.mDebugData.expander_update_time - mState.mSystem.mUptime;
 
-        // Update LED indicators
-        mLeds.update();
+    // Read current sensors
+    updateMonitoringData();
+
+    mState.mDebugData.current_read_time = getTime() - mState.mDebugData.switch_read_time - mState.mSystem.mUptime;
+
+    // Process all channels with current switch states
+    for (size_t channel = 0; channel < NO_CHANNELS; ++channel) {
+        processChannel(channel, mState.mSwitches.mRudderSwitchState, mState.mSwitches.mLdgGearSwitchState, mState.mSystem.mUptime);
     }
 
+    mState.mDebugData.channel_process_time = getTime() - mState.mDebugData.current_read_time  - mState.mSystem.mUptime;
+
+    // Write expander states to hardware
+    mExpanders[0].write();
+    mExpanders[1].write();
+    mExpanders[2].write();
+
+    mState.mDebugData.expander_write_time = getTime() - mState.mDebugData.channel_process_time  - mState.mSystem.mUptime;
+
+    // Update LED indicators
+    mLeds.update();
+
+    mState.mSystem.mPowerVoltage = mBsp.pwr_voltage->readValue()*33/4096*9.11; //in mV
+    
+    mState.mDebugData.led_update_time = getTime() - mState.mDebugData.expander_write_time - mState.mSystem.mUptime;
+
     mUartCommunication.spin();
+    mState.mDebugData.uart_time = getTime() - mState.mDebugData.led_update_time - mState.mSystem.mUptime;
     // Process communication
     while(mState.mSystem.mUptime + SysConst::kPollIntervalMs > getTime()) {
         mUartCommunication.spin();
     }
-}
+    mState.mDebugData.total_time = getTime() - mState.mSystem.mUptime;
 
-void Application::testSwitchProcedure() {
-    // Run through a sequence of colors to indicate test mode
-    const uint32_t colors[] = {Colors::RED, Colors::GREEN, Colors::BLUE};
 
-    for (uint32_t color : colors) {
-        mLeds.setColor(color);
-        mLeds.update();
-        // Exit if test switch is released
-        if (waitForPushRelease(SysConst::kColorChangeIntervalMs, *mBsp.testSwitch, true)) {
-            return;
-        }
+    if(mState.mDebugData.total_time>SysConst::kPollIntervalMs) {
+        // Something went wrong with timing
+        LOG << "Loop time exceeded: " << mState.mDebugData.total_time << " ms\r\n";
+        LOG << "  Request time: " << mState.mDebugData.request_time << " ms\r\n";
+        LOG << "  Expander update time: " << mState.mDebugData.expander_update_time << " ms\r\n"; 
+        LOG << "  Switch read time: " << mState.mDebugData.switch_read_time << " ms\r\n";
+        LOG << "  Current read time: " << mState.mDebugData.current_read_time << " ms\r\n";
+        LOG << "  Channel process time: " << mState.mDebugData.channel_process_time << " ms\r\n";
+        LOG << "  Expander write time: " << mState.mDebugData.expander_write_time << " ms\r\n";
+        LOG << "  LED update time: " << mState.mDebugData.led_update_time << " ms\r\n";
+        LOG << "  UART time: " << mState.mDebugData.uart_time << " ms\r\n";
+        sleep(SysConst::kPollIntervalMs);
     }
 }
 
@@ -188,6 +194,76 @@ void Application::loadSettings() {
     // Apply channel settings to all channels
     for (size_t i = 0; i < NO_CHANNELS; ++i) {
         mChannels[i].setSettings(mState.mChannelSettings[i]);
+    }
+}
+
+void Application::processStateRequests() {
+    if(mState.mActionRequest.mSaveSettings) {
+        mChannelsSettings.save();
+        mState.mActionRequest.mSaveSettings = false;
+    }
+    
+    if(mState.mActionRequest.mDeviceReset) {
+        mBsp.reset();
+    }
+}
+
+void Application::updateExpanderState() {
+    if(mExpanders[0].update()) {
+        mState.mErrors.clear(0, ChannelError::RELAY_COMMUNICATION_ERROR);
+        mState.mErrors.clear(1, ChannelError::RELAY_COMMUNICATION_ERROR);
+    } else {
+        mState.mErrors.set(0, ChannelError::RELAY_COMMUNICATION_ERROR);
+        mState.mErrors.set(1, ChannelError::RELAY_COMMUNICATION_ERROR);
+    }
+    if(mExpanders[1].update()) {
+        mState.mErrors.clear(2, ChannelError::RELAY_COMMUNICATION_ERROR);
+        mState.mErrors.clear(3, ChannelError::RELAY_COMMUNICATION_ERROR);
+    } else {
+        mState.mErrors.set(2, ChannelError::RELAY_COMMUNICATION_ERROR);
+        mState.mErrors.set(3, ChannelError::RELAY_COMMUNICATION_ERROR);
+    }
+    if(mExpanders[2].update()) {
+        mState.mErrors.clear(4, ChannelError::RELAY_COMMUNICATION_ERROR);
+        mState.mErrors.clear(5, ChannelError::RELAY_COMMUNICATION_ERROR);
+    } else {
+        mState.mErrors.set(4, ChannelError::RELAY_COMMUNICATION_ERROR);
+        mState.mErrors.set(5, ChannelError::RELAY_COMMUNICATION_ERROR);
+    }
+}
+
+void Application::updateMonitoringData() {
+    for(int i=0; i<NO_CHANNELS; ++i) {
+        CurrentStatus current = mChannels[i].getCurrent();
+        mState.mMonitoringData[i].timestamp = current.timestamp;
+        mState.mMonitoringData[i].current = current.current;
+        mState.mMonitoringData[i].state = static_cast<uint8_t>(mChannels[i].getChannelState());
+        mState.mMonitoringData[i].switches = mChannels[i].getLimitSwitchState(LimitSwitch::UP) ? 0x01 : 0x00;
+        mState.mMonitoringData[i].switches |= mChannels[i].getLimitSwitchState(LimitSwitch::DOWN) ? 0x02 : 0x00;
+
+        if(mState.mMonitoringData[i].current > mState.mChannelSettings[i].max_current_error_limit) {
+            mState.mErrors.set(i, ChannelError::OVER_CURRENT_ERROR);
+        } else {
+            mState.mErrors.clear(i, ChannelError::OVER_CURRENT_ERROR);
+        }
+
+        if(mState.mMonitoringData[i].current > mState.mChannelSettings[i].max_current_warning_limit) {
+            mState.mErrors.set(i, ChannelWarning::OVER_CURRENT_WARNING);
+        } else {
+            mState.mErrors.clear(i, ChannelWarning::OVER_CURRENT_WARNING);
+        }
+
+        if(mState.mMonitoringData[i].current < mState.mChannelSettings[i].min_current_limit) {
+            mState.mErrors.set(i, ChannelWarning::UNDER_CURRENT_WARNING);
+        } else {
+            mState.mErrors.clear(i, ChannelWarning::UNDER_CURRENT_WARNING);
+        }
+
+        if(mState.mMonitoringData[i].switches == 3) {
+            mState.mErrors.set(i, ChannelError::ENDSTOP_SHORT_CIRCUIT);
+        } else {
+            mState.mErrors.clear(i, ChannelError::ENDSTOP_SHORT_CIRCUIT);
+        }
     }
 }
 

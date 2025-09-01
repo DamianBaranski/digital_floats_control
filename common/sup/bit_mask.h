@@ -1,6 +1,9 @@
 #ifndef BIT_MASK_H
 #define BIT_MASK_H
 
+#pragma GCC push_options
+#pragma GCC optimize ("O0")
+
 /// @brief A template class for managing a bitmask of flags.
 ///
 /// This class provides methods to set, clear, and check individual bits in a bitmask
@@ -19,7 +22,7 @@ public:
     ///
     /// @param data The bits to set (typically an enumeration value).
     void set(const T& data) {
-        mData |= static_cast<uint32_t>(data);
+        mData |= 1 << static_cast<uint32_t>(data);
     }
 
     /// @brief Clear the specified bits in the bitmask.
@@ -28,7 +31,7 @@ public:
     ///
     /// @param data The bits to clear (typically an enumeration value).
     void clr(const T& data) {
-        mData &= ~static_cast<uint32_t>(data);
+        mData &= ~(1 << static_cast<uint32_t>(data));
     }
 
     /// @brief Check if the specified bits are set in the bitmask.
@@ -38,7 +41,7 @@ public:
     /// @param data The bits to check (typically an enumeration value).
     /// @return true if the specified bits are set, false otherwise.
     bool isSet(const T& data) const {
-        return mData & static_cast<uint32_t>(data);
+        return mData & (1 << static_cast<uint32_t>(data));
     }
 
     /// @brief Check if any bits are set in the bitmask.
@@ -57,4 +60,5 @@ private:
     uint32_t mData; ///< The bitmask data.
 };
 
+#pragma GCC pop_options
 #endif // BIT_MASK_H

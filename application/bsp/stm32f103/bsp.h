@@ -1,6 +1,7 @@
 #ifndef BSP_H
 #define BSP_H
 
+#include "iadc.h"
 #include "igpio.h"
 #include "ii2c_master.h"
 #include "iuart.h"
@@ -44,6 +45,7 @@ public:
     std::unique_ptr<IPwmDma> leds;
     std::unique_ptr<IFlash> extFlash;
     std::unique_ptr<IPwm> buzzer;
+    std::unique_ptr<IAdc> pwr_voltage;
 private:
     /// @brief Unique pointer to the GPIO pin used for SDA.
     ///
@@ -77,17 +79,19 @@ private:
 
     std::unique_ptr<IGpio> mLedDataPin;
 
-    /*std::unique_ptr<IGpio> mSpiClk;
+    std::unique_ptr<IGpio> mSpiClk;
 
     std::unique_ptr<IGpio> mSpiMosi;
 
     std::unique_ptr<IGpio> mSpiMiso;
-*/
+
     std::unique_ptr<ISpi> mSpi;
 
     std::unique_ptr<IGpio> mSpiCsPin;
 
     std::unique_ptr<IGpio> mBuzzerPin;
+
+    std::unique_ptr<IGpio> mAdcPin;
 
     /// @brief Initializes the clock for the board.
     ///

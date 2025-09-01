@@ -117,26 +117,11 @@ private:
   bool relaysTest();
   
   /**
-   * @brief Handles UART communication protocol
-   * 
-   * Processes incoming protocol messages and dispatches to appropriate handler methods.
-   */
-  bool handleUartCommunication();
-  
-  /**
    * @brief Sets the LED brightness based on current user settings
    * 
    * Applies the brightness setting from UserSettings to the LED controller.
    */
   void setBrightness();
-
-  /**
-   * @brief Performs a test procedure for switch functionality
-   * 
-   * Tests the operation of the switches by cycling through different states
-   * and verifying proper operation.
-   */
-  void testSwitchProcedure();
 
   /**
    * @brief Loads saved settings from non-volatile storage
@@ -146,7 +131,18 @@ private:
    */
   void loadSettings();
 
-private:
+  /**
+   * @brief Processes any pending state requests
+   * 
+   * Handles actions requested by the user or system, such as saving settings
+   * or performing a device reset.
+   */
+  void processStateRequests();
+
+  void updateExpanderState();
+
+  void updateMonitoringData();
+public:
   /** @brief Number of control channels in the system */
   static constexpr size_t NO_CHANNELS = 6;
   
@@ -183,6 +179,7 @@ private:
 
   /** @brief UART communication */
   UARTCommunication mUartCommunication;
+
 };
 
 #endif // APPLICATION_H

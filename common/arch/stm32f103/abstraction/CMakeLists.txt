@@ -1,4 +1,5 @@
 target_sources(common_lib PRIVATE
+adc.cpp
 gpio.cpp
 i2c_master.cpp
 uart.cpp
