@@ -11,23 +11,19 @@ Adc121c::Adc121c(II2cMaster* i2c, uint8_t address)
     : mI2c(i2c), mAddress(address) {
     }
 
-float Adc121c::read() {
+bool Adc121c::read(float &value) {
     if(mI2c == nullptr) {
-        return -1;
+        return false;
     }
 
-    /*uint16_t buffer;
-    if (!mI2c->readRegister(mAddress, ADC121C_REG_RESULT, reinterpret_cast<uint8_t*>(&buffer), sizeof(buffer))) {
-        float value = calculateCurrent(buffer);
-        return value;
-    } else {
-        return -1;
-    }*/
-
     uint16_t buffer;
-    mI2c->readRegister(mAddress, ADC121C_REG_RESULT, reinterpret_cast<uint8_t*>(&buffer), sizeof(buffer));
-        float value = calculateCurrent(buffer);
-        return value;
+    bool result = mI2c->readRegister(mAddress, ADC121C_REG_RESULT, reinterpret_cast<uint8_t*>(&buffer), sizeof(buffer));
+    if(!result) {
+        return false;
+    }
+
+    value = calculateCurrent(buffer);
+    return true;
 }
 
 void Adc121c::setI2c(II2cMaster* i2c){

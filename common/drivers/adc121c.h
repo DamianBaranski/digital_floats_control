@@ -21,7 +21,7 @@ public:
     /// @param value Output variable to store the ADC value (0-4095).
     /// @return True if the read was successful, false otherwise.
     //void read(std::function<void(bool, float)> ret);
-    float read();
+    bool read(float &value);
 
     /// @brief Reads the configuration register.
     bool readConfig(uint8_t& config);

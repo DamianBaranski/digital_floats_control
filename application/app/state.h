@@ -49,6 +49,11 @@ struct State {
       uint8_t switches;  /**< State of switches (bit field) */
     } mMonitoringData[6];
 
+    struct MovementTimings {
+        bool buttons_changed; /**< Flag indicating if buttons changed since last check */
+        uint32_t start_time[6];      /**< Timestamp when movement started */
+    } mMovementTimings;
+
     typedef ControlChannelSettings ChannelSettings[6];
     ChannelSettings mChannelSettings;
 

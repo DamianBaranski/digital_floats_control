@@ -47,35 +47,31 @@ Application::Application(Bsp &bsp) : mBsp(bsp), mLeds(*mBsp.leds),
                                                ControlChannel(mExpanders[2], *mBsp.i2cBusCurrent),
                                                ControlChannel(mExpanders[2], *mBsp.i2cBusCurrent)},
                                      mChannelsSettings(*mBsp.extFlash, SysConst::kChannelSettingsFlashAddress, mState.mChannelSettings),
+                                     mCurrentSensors{},
                                      mUartCommunication(mState, *mBsp.uartBus)
                                       {
     mExpanders[0].setAddress(0x22);
     mExpanders[1].setAddress(0x21);
     mExpanders[2].setAddress(0x20);
+
+    mCurrentSensors[0] = Adc121c(mBsp.i2cBusCurrent.get(), 0x55);
+    mCurrentSensors[1] = Adc121c(mBsp.i2cBusCurrent.get(), 0x55);
+    mCurrentSensors[2] = Adc121c(mBsp.i2cBusCurrent.get(), 0x54);
+    mCurrentSensors[3] = Adc121c(mBsp.i2cBusCurrent.get(), 0x52);
+    mCurrentSensors[4] = Adc121c(mBsp.i2cBusCurrent.get(), 0x51);
+    mCurrentSensors[5] = Adc121c(mBsp.i2cBusCurrent.get(), 0x50);
     
     mChannels[0].setExpanderChannel(0);
-    mChannels[0].setCurrentSensorAddress(0x55);
-
     mChannels[1].setExpanderChannel(0);
-    mChannels[1].setCurrentSensorAddress(0x55);
-
     mChannels[2].setExpanderChannel(1);
-    mChannels[2].setCurrentSensorAddress(0x54);
-
     mChannels[3].setExpanderChannel(0);
-    mChannels[3].setCurrentSensorAddress(0x52);    
-
     mChannels[4].setExpanderChannel(1);
-    mChannels[4].setCurrentSensorAddress(0x51);
-
     mChannels[5].setExpanderChannel(0);
-    mChannels[5].setCurrentSensorAddress(0x50);    
 
     // Initialize application state
     loadSettings();
     setBrightness();
     mBsp.pwr_voltage->startConversion();
-    //relaysTest();
 }
 
 /**
@@ -106,6 +102,10 @@ void Application::spin() {
 
     mState.mDebugData.expander_update_time = getTime() - mState.mDebugData.request_time - mState.mSystem.mUptime;
     
+    // Before updating, store old states
+    bool prevLdgGear = mState.mSwitches.mLdgGearSwitchState;
+    bool prevRudder  = mState.mSwitches.mRudderSwitchState;
+    bool prevTest    = mState.mSwitches.mTestSwitchState;
     // Read current switch states, considering remote control simulation
     if(mState.mRemoteControl.mSimulationTimeout!=0 && mState.mRemoteControl.mSimulationTimeout+SysConst::kSimulationTimeout>mState.mSystem.mUptime) {
         mState.mSwitches.mLdgGearSwitchState = mState.mRemoteControl.mLdgGearSwitchState;
@@ -117,6 +117,19 @@ void Application::spin() {
         mState.mSwitches.mRudderSwitchState = getRudderSwitch();
         mState.mSwitches.mTestSwitchState = !mBsp.testSwitch->get();
     }
+    // Check if any button state changed
+    mState.mMovementTimings.buttons_changed = (prevLdgGear != mState.mSwitches.mLdgGearSwitchState)
+                                           || (prevRudder != mState.mSwitches.mRudderSwitchState) 
+                                           || (prevTest != mState.mSwitches.mTestSwitchState);
+
+    for(size_t i=0; i<Application::NO_CHANNELS; ++i) {
+        if(mChannels[i].isRudder() && prevRudder != mState.mSwitches.mRudderSwitchState) {
+            mState.mMovementTimings.start_time[i] = mState.mSystem.mUptime;
+        }
+        if(!mChannels[i].isRudder() && prevLdgGear != mState.mSwitches.mLdgGearSwitchState) {
+            mState.mMovementTimings.start_time[i] = mState.mSystem.mUptime;
+        }
+    }
 
     mState.mDebugData.switch_read_time = getTime() - mState.mDebugData.expander_update_time - mState.mSystem.mUptime;
 
@@ -126,9 +139,8 @@ void Application::spin() {
     mState.mDebugData.current_read_time = getTime() - mState.mDebugData.switch_read_time - mState.mSystem.mUptime;
 
     // Process all channels with current switch states
-    for (size_t channel = 0; channel < NO_CHANNELS; ++channel) {
-        processChannel(channel, mState.mSwitches.mRudderSwitchState, mState.mSwitches.mLdgGearSwitchState, mState.mSystem.mUptime);
-    }
+    processChannels();
+
 
     mState.mDebugData.channel_process_time = getTime() - mState.mDebugData.current_read_time  - mState.mSystem.mUptime;
 
@@ -140,6 +152,7 @@ void Application::spin() {
     mState.mDebugData.expander_write_time = getTime() - mState.mDebugData.channel_process_time  - mState.mSystem.mUptime;
 
     // Update LED indicators
+    animateLeds();
     mLeds.update();
 
     mState.mSystem.mPowerVoltage = mBsp.pwr_voltage->readValue()*33/4096*9.11; //in mV
@@ -181,9 +194,10 @@ void Application::loadSettings() {
         mState.mChannelSettings[i].inverse_up_limit_switch = false;   
         mState.mChannelSettings[i].inverse_down_limit_switch = false; 
         mState.mChannelSettings[i].inverse_limit_switch = false; 
-        mState.mChannelSettings[i].max_current_error_limit = 100;
-        mState.mChannelSettings[i].max_current_warning_limit = 100;
+        mState.mChannelSettings[i].max_current_error_limit = 1000;
+        mState.mChannelSettings[i].max_current_warning_limit = 500;
         mState.mChannelSettings[i].min_current_limit = 0;
+        mState.mChannelSettings[i].timeout = 15; //seconds
     }    
     
     mState.mChannelSettings[0].bridge = true;
@@ -234,16 +248,23 @@ void Application::updateExpanderState() {
 
 void Application::updateMonitoringData() {
     for(int i=0; i<NO_CHANNELS; ++i) {
-        CurrentStatus current = mChannels[i].getCurrent();
-        mState.mMonitoringData[i].timestamp = current.timestamp;
-        mState.mMonitoringData[i].current = current.current;
-        mState.mMonitoringData[i].state = static_cast<uint8_t>(mChannels[i].getChannelState());
-        mState.mMonitoringData[i].switches = mChannels[i].getLimitSwitchState(LimitSwitch::UP) ? 0x01 : 0x00;
-        mState.mMonitoringData[i].switches |= mChannels[i].getLimitSwitchState(LimitSwitch::DOWN) ? 0x02 : 0x00;
+        float current = -1;
+        bool result = mCurrentSensors[i].read(current);
+
+        if(!result) {
+            mState.mErrors.set(i, ChannelWarning::ADC_COMMUNICATION_ERROR);
+        } else {
+            mState.mErrors.clear(i, ChannelWarning::ADC_COMMUNICATION_ERROR);
+            mState.mMonitoringData[i].timestamp = getTime();
+            mState.mMonitoringData[i].current = current*1000; //in mA
+            mState.mMonitoringData[i].state = static_cast<uint8_t>(mChannels[i].getChannelState());
+            mState.mMonitoringData[i].switches = mChannels[i].getLimitSwitchState(LimitSwitch::UP) ? 0x01 : 0x00;
+            mState.mMonitoringData[i].switches |= mChannels[i].getLimitSwitchState(LimitSwitch::DOWN) ? 0x02 : 0x00;
+        }
 
         if(mState.mMonitoringData[i].current > mState.mChannelSettings[i].max_current_error_limit) {
             mState.mErrors.set(i, ChannelError::OVER_CURRENT_ERROR);
-        } else {
+        } else if(mState.mMovementTimings.buttons_changed){
             mState.mErrors.clear(i, ChannelError::OVER_CURRENT_ERROR);
         }
 
@@ -261,8 +282,14 @@ void Application::updateMonitoringData() {
 
         if(mState.mMonitoringData[i].switches == 3) {
             mState.mErrors.set(i, ChannelError::ENDSTOP_SHORT_CIRCUIT);
-        } else {
+        } else if(mState.mMovementTimings.buttons_changed) {
             mState.mErrors.clear(i, ChannelError::ENDSTOP_SHORT_CIRCUIT);
+        }
+
+        if(mState.mSystem.mUptime - mState.mMovementTimings.start_time[i] > mState.mChannelSettings[i].timeout * 1000 && mState.mMonitoringData[i].state == static_cast<uint8_t>(GearState::MOVING)) {
+            mState.mErrors.set(i, ChannelWarning::MOVEMENT_TIMEOUT);
+        } else {
+            mState.mErrors.clear(i, ChannelWarning::MOVEMENT_TIMEOUT);
         }
     }
 }
@@ -275,127 +302,59 @@ bool Application::getRudderSwitch() {
     return mBsp.rudSwitch->get();
 }
 
-void Application::processChannel(size_t channel, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time) {
-    // Get current channel state
-    GearState state = mChannels[channel].getChannelState();
-    uint32_t color = 0;
+void Application::processChannels() {
+    bool rudderSwitchState = mState.mSwitches.mRudderSwitchState;
+    bool ldgGearSwitchState = mState.mSwitches.mLdgGearSwitchState;
+    for(size_t channel = 0; channel < NO_CHANNELS; ++channel) {
 
-    // Set motor state based on channel type (rudder vs landing gear)
-    bool isRudder = mChannels[channel].isRudder();
-    if (isRudder) {
-        mChannels[channel].setMotor(rudderSwitchState);
-    } else {
-        mChannels[channel].setMotor(ldgGearSwitchState);
-    }
-
-    // Determine LED color based on channel state
-    switch (state) {
-    case GearState::DOWN:
-        color = getColorForDownState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
-        break;
-
-    case GearState::UP:
-        color = getColorForUpState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
-        break;
-
-    case GearState::MOVING:
-        color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
-        break;
-
-    case GearState::ERROR:
-        // In error state, blink red regardless of other conditions
-        color = Colors::blinking(SysConst::kBlinkingIntervalMs, time, Colors::RED);
-        break;
-    }
-
-    // Apply brightness setting and set LED color
-    color = Colors::setBrightness(color, 100);
-    mLeds.setColor(channel, color);
-
-    }
-
-uint32_t Application::getColorForDownState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time) {
-    uint32_t color = 0;
-    
-    // Logic for rudder channels
-    if (isRudder) {
-        if (rudderSwitchState) {
-            // Rudder switch active, color depends on landing gear switch
-            color = ldgGearSwitchState ? cRudderInactiveColor : cRudderDownColor;
+        // Set motor state based on channel type (rudder vs landing gear)
+        bool isRudder = mChannels[channel].isRudder();
+        if(mState.mErrors.getChannelErrors(channel) != 0) {
+            // In case of error disable motor
+            mChannels[channel].disableMotor();
+        } else if (isRudder) {
+            mChannels[channel].setMotor(rudderSwitchState);
         } else {
-            // Rudder switch inactive but channel is DOWN - show transition animation
-            color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
-        }
-    } 
-    // Logic for landing gear channels
-    else {
-        if (ldgGearSwitchState) {
-            // Landing gear switch active matches DOWN state - show normal color
-            color = cLdgGearDownColor;
-        } else {
-            // Landing gear switch inactive but channel is DOWN - show transition animation
-            color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
+            mChannels[channel].setMotor(ldgGearSwitchState);
         }
     }
-    return color;
 }
 
-uint32_t Application::getColorForUpState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time) {
-    uint32_t color = 0;
-    
-    // Logic for rudder channels
-    if (isRudder) {
-        if (rudderSwitchState) {
-            // Rudder switch active but channel is UP - show transition animation
-            color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);            
-        } else {
-            // Rudder switch inactive matches UP state - show normal color
-            color = cLdgGearUpColor;
-        }
-    } 
-    // Logic for landing gear channels
-    else {
-        if (ldgGearSwitchState) {
-            // Landing gear switch active but channel is UP - show transition animation
-            color = getColorForMovingState(isRudder, rudderSwitchState, ldgGearSwitchState, time);
-        } else {
-            // Landing gear switch inactive matches UP state - show normal color
-            color = cLdgGearUpColor;
-        }
-    }
-    return color;
-}
+void Application::animateLeds() {
+    for(size_t channel=0; channel<NO_CHANNELS; ++channel) {
+        GearState state = mChannels[channel].getChannelState();
+        bool isRudder = mChannels[channel].isRudder();
+        bool error = mState.mErrors.getChannelErrors(channel)!=0;
+        bool warning = mState.mErrors.getChannelWarnings(channel)!=0;
 
-uint32_t Application::getColorForMovingState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time) {
-    uint32_t color = 0;
-    
-    // For moving state, determine target color based on where it's moving to
-    if (isRudder) {
-        if (rudderSwitchState) {
-            // Moving toward down position for rudder
-            color = ldgGearSwitchState ? cRudderInactiveColor : cRudderDownColor;
-        } else {
-            // Moving toward up position for rudder
-            color = cRudderUpColor;
+        uint32_t color = 0;
+
+        if(error) {
+            color = Colors::blinking(SysConst::kBlinkingIntervalMs, mState.mSystem.mUptime, Colors::RED);
+            mLeds.setColor(channel, color);
+            continue;
         }
-    } else {
-        // For landing gear, determine color based on switch position
-        color = ldgGearSwitchState ? cLdgGearDownColor : cLdgGearUpColor;
-    }
-    
-    // Create blinking effect to indicate motion
-    return Colors::blinking(SysConst::kBlinkingIntervalMs, time, color);
-}
 
-bool Application::relaysTest() {
-    // Test all relays to verify hardware functionality
-    bool result = true;
-    for(size_t i = 0; i < NO_CHANNELS; ++i) {
-        result &= mChannels[i].relaysTest();
+        uint32_t rudder_down_color = !mState.mSwitches.mLdgGearSwitchState?cRudderDownColor:cRudderInactiveColor;
+        switch (state)
+        {
+            case GearState::UP:
+                color = isRudder ? cRudderUpColor : cLdgGearUpColor;
+            break;
+            case GearState::DOWN:
+                color = isRudder ? rudder_down_color : cLdgGearDownColor;
+            break;
+            case GearState::MOVING:
+                uint32_t rudder_color = !mState.mSwitches.mRudderSwitchState ? cRudderUpColor : rudder_down_color;
+                uint32_t ldg_color = !mState.mSwitches.mLdgGearSwitchState ? cLdgGearUpColor : cLdgGearDownColor;
+                uint32_t color1 = warning ? Colors::ORANGE : 0;
+                uint32_t color2 = isRudder ? rudder_color : ldg_color;
+                color = Colors::blinking(SysConst::kBlinkingIntervalMs, mState.mSystem.mUptime, color1, color2);
+            break;
+        }
+        mLeds.setColor(channel, color);
     }
-    return result;
 }
-
 
 void Application::setBrightness() {
     // Exit if test switch not held long enough

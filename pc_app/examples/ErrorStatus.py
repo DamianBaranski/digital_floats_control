@@ -13,4 +13,4 @@ class Example:
 
 if __name__ == "__main__":
     app = Example("/dev/ttyUSB0")
-    time.sleep(0.1)
+    time.sleep(0.5)

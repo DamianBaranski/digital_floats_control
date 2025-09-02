@@ -1,6 +1,6 @@
 #include "expander.h"
-#pragma GCC push_options
-#pragma GCC optimize ("O0")
+//#pragma GCC push_options
+//#pragma GCC optimize ("O0")
 
 Expander::Expander(II2cMaster &i2c)
     : mI2c(i2c), mPcf(i2c) {
@@ -35,4 +35,4 @@ bool Expander::write() {
         mToWrite |= cPcfCfg; // Ensure configuration bits are preserved
     }
 
-    #pragma GCC pop_options
+    //#pragma GCC pop_options

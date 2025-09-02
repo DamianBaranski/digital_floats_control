@@ -1,10 +1,7 @@
 #include "control_channel.h"
 #include "bsp.h"
 
-#pragma GCC push_options
-#pragma GCC optimize ("O0")
-
-ControlChannel::ControlChannel(Expander &expander, II2cMaster &i2c) : mSettings{}, mCurrentSensor(&i2c), mExpander(expander), mCurrent{}
+ControlChannel::ControlChannel(Expander &expander, II2cMaster &i2c) : mSettings{}, mExpander(expander)
 {
 }
 
@@ -24,11 +21,6 @@ bool ControlChannel::configure()
     return mExpander.configure();
 }
 
-bool ControlChannel::relaysTest() {
-    bool result = true;
-    return result;
-}
-
 bool ControlChannel::setMotor(bool dir) {
     // Check if motor should be activated based on limit switches:
     // - If moving up (dir=true) and the DOWN limit switch is not active, allow movement
@@ -43,11 +35,13 @@ bool ControlChannel::setMotor(bool dir) {
     return true;
 }
 
+bool ControlChannel::disableMotor() {
+    mExpander.setMotor(mPcfChannel, false, false);
+    return true;
+}
+
 GearState ControlChannel::getChannelState()
 {
-    mCurrent.current = mCurrentSensor.read()*1000.0; // Read current in 0.1A units
-    mCurrent.timestamp = getTime();
-
     // Read current limit switch states
     bool upSwitch = getLimitSwitchState(LimitSwitch::UP);
     bool downSwitch = getLimitSwitchState(LimitSwitch::DOWN);
@@ -62,19 +56,9 @@ GearState ControlChannel::getChannelState()
     {
         return GearState::DOWN;
     }
-    else if (!upSwitch && !downSwitch)
-    {
+    else {
         return GearState::MOVING;
     }
-    else
-    {
-        // Both limit switches active simultaneously indicates a wiring error
-        return GearState::ERROR;
-    }
-}
-
-CurrentStatus ControlChannel::getCurrent() {
-    return mCurrent;
 }
 
 bool ControlChannel::isRudder() const {
@@ -137,5 +121,3 @@ bool ControlChannel::getLimitSwitchState(LimitSwitch limit_switch)
 
     return result;
 }
-
-#pragma GCC pop_options

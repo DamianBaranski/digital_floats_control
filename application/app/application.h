@@ -67,54 +67,10 @@ private:
    */
   bool getRudderSwitch();
 
-  /**
-   * @brief Processes a specific control channel based on switch states
-   * @param channel Channel index to process
-   * @param rudderSwitchState Current state of the rudder switch
-   * @param ldgGearSwitchState Current state of the landing gear switch
-   * @param time Current system time in milliseconds
-   * 
-   * Updates channel state and LED indicators based on switch positions and timing.
-   */
-  void processChannel(size_t channel, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time);
+  void processChannels();
+
+  void animateLeds();
   
-  /**
-   * @brief Determines the appropriate color for a channel in the down state
-   * @param isRudder Flag indicating if the channel is for rudder control
-   * @param rudderSwitchState Current state of the rudder switch
-   * @param ldgGearSwitchState Current state of the landing gear switch
-   * @param time Current system time in milliseconds
-   * @return 32-bit RGB color value
-   */
-  uint32_t getColorForDownState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time);
-  
-  /**
-   * @brief Determines the appropriate color for a channel in the up state
-   * @param isRudder Flag indicating if the channel is for rudder control
-   * @param rudderSwitchState Current state of the rudder switch
-   * @param ldgGearSwitchState Current state of the landing gear switch
-   * @param time Current system time in milliseconds
-   * @return 32-bit RGB color value
-   */
-  uint32_t getColorForUpState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time);
-  
-  /**
-   * @brief Determines the appropriate color for a channel in the moving state
-   * @param isRudder Flag indicating if the channel is for rudder control
-   * @param rudderSwitchState Current state of the rudder switch
-   * @param ldgGearSwitchState Current state of the landing gear switch
-   * @param time Current system time in milliseconds
-   * @return 32-bit RGB color value (possibly animated based on time)
-   */
-  uint32_t getColorForMovingState(bool isRudder, bool rudderSwitchState, bool ldgGearSwitchState, uint32_t time);
-  
-  /**
-   * @brief Tests the relay functionality for all channels
-   * @return true if all relays are functioning correctly
-   * 
-   * Cycles through all relays and verifies that they properly actuate.
-   */
-  bool relaysTest();
   
   /**
    * @brief Sets the LED brightness based on current user settings
@@ -174,6 +130,8 @@ public:
   
   /** @brief Persistent storage for channel settings */
   Settings<State::ChannelSettings> mChannelsSettings;
+
+  Adc121c mCurrentSensors[NO_CHANNELS];
 
   State mState;
 

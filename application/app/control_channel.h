@@ -28,7 +28,6 @@ enum class GearState {
     UP,      /**< Mechanism is in fully raised position */
     DOWN,    /**< Mechanism is in fully lowered position */
     MOVING,  /**< Mechanism is in motion between positions */
-    ERROR,   /**< An error condition prevents normal operation */
 };
 
 /**
@@ -79,18 +78,6 @@ typedef struct {
 } ControlChannelSettings;
 
 /**
- * @struct CurrentStatus
- * @brief Structure to hold the current reading and timestamp.
- *
- * This structure is used to store the last read current value along with the timestamp
- * of when that reading was taken. It is useful for monitoring and logging purposes.
- */
-typedef struct {
-    uint16_t current;  /**< Last read current value in 0.1A units */
-    uint32_t timestamp; /**< Timestamp of the last current reading */
-} CurrentStatus;
-
-/**
  * @class ControlChannel
  * @brief Class to control a motor channel with current/voltage sensing and limit switches.
  *
@@ -114,10 +101,6 @@ public:
      */
     ControlChannel(Expander &expander, II2cMaster &i2c);
 
-    void setCurrentSensorAddress(uint8_t address) {
-        mCurrentSensor.setAddress(address);
-    }
-
     void setExpanderChannel(uint8_t channel) {
         mPcfChannel = channel;
     }
@@ -133,16 +116,6 @@ public:
     bool setSettings(const ControlChannelSettings &settings);
 
     /**
-     * @brief Tests the relay functionality
-     * @return true if all relays are functioning correctly, false if any issues were detected
-     * 
-     * Performs a comprehensive test of the relay control system by cycling through different
-     * relay states and verifying proper operation. This is typically called during system 
-     * initialization to detect hardware faults.
-     */
-    bool relaysTest();
-
-    /**
      * @brief Sets the motor direction
      * @param dir The direction to set (true = forward/up, false = reverse/down)
      * @return true if the motor direction was successfully set, false if an error occurred
@@ -152,6 +125,8 @@ public:
      * of the mechanism.
      */
     bool setMotor(bool dir);
+
+    bool disableMotor();
 
     /**
      * @brief Checks if the current control channel is configured as a rudder
@@ -171,16 +146,6 @@ public:
      * and available commands for the channel.
      */
     GearState getChannelState();
-
-    /**
-     * @brief Gets the last read current value and timestamp
-     * @return CurrentStatus structure containing the last current reading and its timestamp
-     * This function retrieves the most recent current measurement taken by the INA219 sensor,
-     * along with the timestamp of when that measurement was recorded.
-     * This is useful for monitoring power consumption and detecting anomalies
-     * in the channel's operation.
-     */
-    CurrentStatus getCurrent();
 
     /**
      * @brief Gets the state of the specified limit switch
@@ -205,10 +170,8 @@ private:
     /** @name Instance Variables */
     /**@{*/
     ControlChannelSettings mSettings; /**< Current configuration settings for this channel */
-    Adc121c mCurrentSensor;            /**< INA219 current/voltage sensor interface */
     Expander &mExpander;        /**< Reference to the PCF8574 I/O expander for relay control */
     uint8_t mPcfChannel;              /**< Channel number on the PCF8574 (0 or 1) */
-    CurrentStatus mCurrent;           /**< Last read current value and timestamp */
 
     static constexpr uint8_t cMotor1UpLimitSwitchMask = 0x01;   /**< Bit mask for Motor 1 up limit switch (pin 0) */
     static constexpr uint8_t cMotor1DownLimitSwitchMask = 0x02; /**< Bit mask for Motor 1 down limit switch (pin 1) */
