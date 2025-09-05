@@ -69,6 +69,20 @@ private:
 
   void processChannels();
 
+  /**
+   * @brief Animates LEDs to indicate errors and warnings
+   * 
+   * This function updates the LED indicators to reflect any current errors or warnings
+   * in the system, providing visual feedback to the user.
+   */
+  void animateErrorsAndWarnings();
+
+  /**
+   * @brief Animates the LEDs based on channel states
+   * 
+   * Updates the LED colors to reflect the current state of each control channel,
+   * such as UP, DOWN, MOVING, or ERROR states.
+   */
   void animateLeds();
   
   

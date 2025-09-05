@@ -47,9 +47,9 @@ class ChannelSettings:
             bit_fields,                         # 2nd byte for bitfields
             self.values['bridge_channel'],     # 3rd byte for bridge channel
             self.values['timeout'],              #4th byte for timeout
-            self.values['max_current_warning_limit'] * 1000,   # 5th and 6th byte
-            self.values['max_current_error_limit'] * 1000,     # 7th and 8th byte
-            self.values['min_current_limit']  * 1000           # 9th and 10th byte
+            int(self.values['max_current_warning_limit'] * 1000),   # 5th and 6th byte
+            int(self.values['max_current_error_limit'] * 1000),     # 7th and 8th byte
+            int(self.values['min_current_limit']  * 1000)           # 9th and 10th byte
         )
 
         return packed_data
@@ -92,3 +92,69 @@ class ChannelSettings:
             f"  max_current_error_limit: {self.values['max_current_error_limit']} (A units)\n"
             f"  min_current_limit: {self.values['min_current_limit']} (A units)\n"
         )
+        
+    def setChannel(self, channel):
+        self.values['channel'] = channel
+        
+    def setEnable(self, enable):
+        self.values['enable'] = enable
+        
+    def setBridge(self, bridge):
+        self.values['bridge'] = bridge
+        
+    def setInverseMotor(self, inverse_motor):
+        self.values['inverse_motor'] = inverse_motor
+        
+    def setInverseUpLimitSwitch(self, inverse_up_limit_switch):
+        self.values['inverse_up_limit_switch'] = inverse_up_limit_switch
+        
+    def setInverseDownLimitSwitch(self, inverse_down_limit_switch):
+        self.values['inverse_down_limit_switch'] = inverse_down_limit_switch
+        
+    def setInverseLimitSwitch(self, inverse_limit_switch):
+        self.values['inverse_limit_switch'] = inverse_limit_switch
+        
+    def setRudder(self, rudder):
+        self.values['rudder'] = rudder
+        
+    def setTimeout(self, timeout):
+        self.values['timeout'] = timeout
+        
+    def setBridgeChannel(self, bridge_channel):
+        self.values['bridge_channel'] = bridge_channel
+        
+    def setMaxCurrentWarningLimit(self, max_current_warning_limit):
+        self.values['max_current_warning_limit'] = max_current_warning_limit
+        
+    def setMaxCurrentErrorLimit(self, max_current_error_limit):
+        self.values['max_current_error_limit'] = max_current_error_limit
+        
+    def setMinCurrentLimit(self, min_current_limit):
+        self.values['min_current_limit'] = min_current_limit
+        
+    def getChannel(self):
+        return self.values['channel']
+    
+    def getEnable(self):
+        return self.values['enable']
+    
+    def getBridge(self):
+        return self.values['bridge']
+    
+    def getInverseMotor(self):
+        return self.values['inverse_motor']
+    
+    def getInverseUpLimitSwitch(self):
+        return self.values['inverse_up_limit_switch']
+    
+    def getInverseDownLimitSwitch(self):
+        return self.values['inverse_down_limit_switch']
+    
+    def getInverseLimitSwitch(self):
+        return self.values['inverse_limit_switch']
+    
+    def getRudder(self):
+        return self.values['rudder']
+    
+    def getTimeout(self):
+        return self.values['timeout']

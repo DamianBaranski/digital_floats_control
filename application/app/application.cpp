@@ -152,7 +152,22 @@ void Application::spin() {
     mState.mDebugData.expander_write_time = getTime() - mState.mDebugData.channel_process_time  - mState.mSystem.mUptime;
 
     // Update LED indicators
-    animateLeds();
+    if(mState.mSwitches.mTestSwitchState) {
+        // In test mode, reset error display if test switch state changed
+        if(prevTest != mState.mSwitches.mTestSwitchState) {
+            mState.mErrorsDisplay.channel = 0;
+            mState.mErrorsDisplay.last_led_update = 0;
+            mState.mErrorsDisplay.currentIdx = 0;
+            mState.mErrorsDisplay.blinksRemaining = 0;
+            mState.mErrorsDisplay.state = BlinkState::On;
+            mState.mErrorsDisplay.mode = DisplayMode::ERRORS;
+        }
+        // In test mode, show warnings and errors only
+        animateErrorsAndWarnings();
+        
+    } else {
+        animateLeds();
+    }
     mLeds.update();
 
     mState.mSystem.mPowerVoltage = mBsp.pwr_voltage->readValue()*33/4096*9.11; //in mV
@@ -186,25 +201,31 @@ void Application::spin() {
 void Application::loadSettings() {
     // Load saved settings from non-volatile storage
     
-    for (int i =0; i < NO_CHANNELS; ++i) {
-        mState.mChannelSettings[i].enable = true;
-        mState.mChannelSettings[i].rudder = false;
-        mState.mChannelSettings[i].inverse_motor = false;
-        mState.mChannelSettings[i].bridge = false;                    
-        mState.mChannelSettings[i].inverse_up_limit_switch = false;   
-        mState.mChannelSettings[i].inverse_down_limit_switch = false; 
-        mState.mChannelSettings[i].inverse_limit_switch = false; 
-        mState.mChannelSettings[i].max_current_error_limit = 1000;
-        mState.mChannelSettings[i].max_current_warning_limit = 500;
-        mState.mChannelSettings[i].min_current_limit = 0;
-        mState.mChannelSettings[i].timeout = 15; //seconds
-    }    
+    if(!mChannelsSettings.load()) {
+        LOG << "Failed to load channel settings, applying defaults\r\n";
+        // Apply default settings if loading fails
+        for (int i =0; i < NO_CHANNELS; ++i) {
+            mState.mChannelSettings[i].enable = true;
+            mState.mChannelSettings[i].rudder = false;
+            mState.mChannelSettings[i].inverse_motor = false;
+            mState.mChannelSettings[i].bridge = false;                    
+            mState.mChannelSettings[i].inverse_up_limit_switch = false;   
+            mState.mChannelSettings[i].inverse_down_limit_switch = false; 
+            mState.mChannelSettings[i].inverse_limit_switch = false; 
+            mState.mChannelSettings[i].max_current_error_limit = 1000;
+            mState.mChannelSettings[i].max_current_warning_limit = 500;
+            mState.mChannelSettings[i].min_current_limit = 0;
+            mState.mChannelSettings[i].timeout = 15; //seconds
+        }    
     
-    mState.mChannelSettings[0].bridge = true;
-    mState.mChannelSettings[0].rudder = true;
-    mState.mChannelSettings[1].rudder = true;
-    
-    
+        mState.mChannelSettings[0].bridge = true;
+        mState.mChannelSettings[0].rudder = true;
+        mState.mChannelSettings[1].rudder = true;
+
+        // Save default settings to non-volatile storage
+        mChannelsSettings.save();
+    }
+
     // Apply channel settings to all channels
     for (size_t i = 0; i < NO_CHANNELS; ++i) {
         mChannels[i].setSettings(mState.mChannelSettings[i]);
@@ -257,10 +278,11 @@ void Application::updateMonitoringData() {
             mState.mErrors.clear(i, ChannelWarning::ADC_COMMUNICATION_ERROR);
             mState.mMonitoringData[i].timestamp = getTime();
             mState.mMonitoringData[i].current = current*1000; //in mA
-            mState.mMonitoringData[i].state = static_cast<uint8_t>(mChannels[i].getChannelState());
-            mState.mMonitoringData[i].switches = mChannels[i].getLimitSwitchState(LimitSwitch::UP) ? 0x01 : 0x00;
-            mState.mMonitoringData[i].switches |= mChannels[i].getLimitSwitchState(LimitSwitch::DOWN) ? 0x02 : 0x00;
         }
+
+        mState.mMonitoringData[i].state = static_cast<uint8_t>(mChannels[i].getChannelState());
+        mState.mMonitoringData[i].switches = mChannels[i].getLimitSwitchState(LimitSwitch::UP) ? 0x01 : 0x00;
+        mState.mMonitoringData[i].switches |= mChannels[i].getLimitSwitchState(LimitSwitch::DOWN) ? 0x02 : 0x00;
 
         if(mState.mMonitoringData[i].current > mState.mChannelSettings[i].max_current_error_limit) {
             mState.mErrors.set(i, ChannelError::OVER_CURRENT_ERROR);
@@ -316,6 +338,102 @@ void Application::processChannels() {
             mChannels[channel].setMotor(rudderSwitchState);
         } else {
             mChannels[channel].setMotor(ldgGearSwitchState);
+        }
+    }
+}
+
+void Application::animateErrorsAndWarnings() {
+    // Pick items (bitmask of errors or warnings) for current channel
+    uint8_t items = (mState.mErrorsDisplay.mode == DisplayMode::ERRORS)
+                        ? mState.mErrors.getChannelErrors(mState.mErrorsDisplay.channel)
+                        : mState.mErrors.getChannelWarnings(mState.mErrorsDisplay.channel);
+
+    // If nothing left to display on this channel or index out of range
+    if (items == 0 || mState.mErrorsDisplay.currentIdx >= 8) {
+        if (mState.mErrorsDisplay.mode == DisplayMode::ERRORS) {
+            // Done with errors → switch to warnings on same channel
+            mState.mErrorsDisplay.mode = DisplayMode::WARNINGS;
+            mState.mErrorsDisplay.currentIdx = 0;
+        } else {
+            // Done with warnings → move to next channel, back to errors
+            mState.mErrorsDisplay.mode = DisplayMode::ERRORS;
+            mState.mErrorsDisplay.channel = (mState.mErrorsDisplay.channel + 1) % NO_CHANNELS;
+            mState.mErrorsDisplay.currentIdx = 0;
+        }
+        mState.mErrorsDisplay.blinksRemaining = 0;
+        mState.mErrorsDisplay.state = BlinkState::Idle;
+        return;
+    }
+
+    // Skip inactive bits until we find a valid one
+    while (mState.mErrorsDisplay.currentIdx < 8 &&
+           ((1 << mState.mErrorsDisplay.currentIdx) & items) == 0) {
+        mState.mErrorsDisplay.currentIdx++;
+    }
+
+    // If we ran off the end → same handling as above (switch mode or channel)
+    if (mState.mErrorsDisplay.currentIdx >= 8) {
+        if (mState.mErrorsDisplay.mode == DisplayMode::ERRORS) {
+            mState.mErrorsDisplay.mode = DisplayMode::WARNINGS;
+            mState.mErrorsDisplay.currentIdx = 0;
+        } else {
+            mState.mErrorsDisplay.mode = DisplayMode::ERRORS;
+            mState.mErrorsDisplay.channel = (mState.mErrorsDisplay.channel + 1) % NO_CHANNELS;
+            mState.mErrorsDisplay.currentIdx = 0;
+        }
+        mState.mErrorsDisplay.blinksRemaining = 0;
+        mState.mErrorsDisplay.state = BlinkState::Idle;
+        return;
+    }
+
+    // Pick color depending on mode
+    uint32_t currentColor =
+        (mState.mErrorsDisplay.mode == DisplayMode::ERRORS)
+            ? Colors::RED
+            : Colors::YELLOW;
+
+    // Update every 500 ms
+    if (getTime() - mState.mErrorsDisplay.last_led_update > 500) {
+        mState.mErrorsDisplay.last_led_update = getTime();
+
+        switch (mState.mErrorsDisplay.state) {
+        case BlinkState::Idle:
+            // Start new blink sequence: index 0 → 1 blink, 1 → 2 blinks, etc.
+            mState.mErrorsDisplay.blinksRemaining = mState.mErrorsDisplay.currentIdx + 1;
+            mState.mErrorsDisplay.state = BlinkState::On;
+            mLeds.setColor(mState.mErrorsDisplay.channel, currentColor);
+            break;
+
+        case BlinkState::On:
+            // End ON phase → LED off
+            mLeds.setColor(mState.mErrorsDisplay.channel, Colors::BLACK);
+            mState.mErrorsDisplay.state = BlinkState::Off;
+            break;
+
+        case BlinkState::Off:
+            if (--mState.mErrorsDisplay.blinksRemaining > 0) {
+                // More blinks → go ON again
+                mState.mErrorsDisplay.state = BlinkState::On;
+                mLeds.setColor(mState.mErrorsDisplay.channel, currentColor);
+            } else {
+                // Sequence finished → pause before moving to next bit
+                mState.mErrorsDisplay.state = BlinkState::Delay;
+                mLeds.setColor(mState.mErrorsDisplay.channel, Colors::BLACK);
+            }
+            break;
+
+        case BlinkState::Delay:
+            // After delay → go to next error/warning
+            mState.mErrorsDisplay.state = BlinkState::Idle;
+            mState.mErrorsDisplay.currentIdx++;
+            break;
+        }
+
+        // Ensure all other channels are OFF
+        for (int i = 0; i < NO_CHANNELS; ++i) {
+            if (i != mState.mErrorsDisplay.channel) {
+                mLeds.setColor(i, Colors::BLACK);
+            }
         }
     }
 }

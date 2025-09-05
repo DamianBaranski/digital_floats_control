@@ -40,9 +40,9 @@ Bsp::Bsp()
   leds.reset(new(std::nothrow) PwmDma(TIM2, TIM_CHANNEL_2, DMA1_Channel7, 79));
 
   mSpiCsPin.reset(new(std::nothrow) Gpio(GPIOA, GPIO_PIN_4, GPIO_MODE_OUTPUT_PP, GPIO_NOPULL, 0));
-  /*mSpiClk.reset(new(std::nothrow) Gpio(GPIOA, GPIO_PIN_5, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
+  mSpiClk.reset(new(std::nothrow) Gpio(GPIOA, GPIO_PIN_5, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
   mSpiMiso.reset(new(std::nothrow) Gpio(GPIOA, GPIO_PIN_6, GPIO_MODE_INPUT, GPIO_NOPULL, 0));
-  mSpiMosi.reset(new(std::nothrow) Gpio(GPIOA, GPIO_PIN_7, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));*/
+  mSpiMosi.reset(new(std::nothrow) Gpio(GPIOA, GPIO_PIN_7, GPIO_MODE_AF_PP, GPIO_NOPULL, 0));
   mSpi.reset(new(std::nothrow) Spi(SPI1));
 
   extFlash.reset(new(std::nothrow) W25xFlash(*mSpi, *mSpiCsPin));

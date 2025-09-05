@@ -31,6 +31,9 @@ public:
     /// @brief Predefined yellow color (0xFFFF00).
     static constexpr uint32_t YELLOW = 0xFFFF00;
 
+    /// @brief Predefined black color (0x000000).
+    static constexpr uint32_t BLACK = 0x000000;
+
     /// @brief Adjust the brightness of a color.
     ///
     /// This method scales the RGB components of the color based on the provided brightness level.
