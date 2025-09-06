@@ -5,6 +5,7 @@ from ui.widgets.settings.user_settings_panel import UserSettingsPanel
 from src.core.datatypes.channel_settings import ChannelSettings
 from ui.widgets.settings.channel_settings_table_panel import ChannelSettingsTablePanel
 from ui.widgets.settings.auto_detect import AutoDetect
+from core.protocol import requests
 from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT, SECTION_FONT
 
 class UserSettingField(tk.Frame):
@@ -48,8 +49,9 @@ class UserSettingField(tk.Frame):
             return self.color_display.cget("bg")
 
 class AppSettingsPanel(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, device_client=None):
         super().__init__(parent, bg=DARK_BG)
+        self.device_client = device_client
         self.create_widgets()
 
     def create_widgets(self):
@@ -138,6 +140,9 @@ class AppSettingsPanel(tk.Frame):
         self.channel_settings_table.display_instructions()
 
     def loadChannelSettings(self):
+        if not self.device_client:
+            return
+            
         status = [False] * 6
         def callback(channel_settings, idx):
             status[idx] = True
@@ -145,12 +150,17 @@ class AppSettingsPanel(tk.Frame):
             self.channel_settings_table.setData(idx, channel_settings) 
             if all(status):
                 self.channel_settings_table.populate_treeview()
+                print("All channel settings loaded")
 
-        #for i in range(6):
-            #self.app_protocol.getChannelSettings(i, lambda data, idx=i: callback(data, idx))
+        for i in range(6):
+            self.device_client.command(requests.GetChannelSettingsRequest(i), lambda data, idx=i: callback(data, idx))
 
     def saveChannelSettings(self):
+        if not self.device_client:
+            return
+            
         for i in range(6):
             channel_settings = self.channel_settings_table.getData(i)
-            #self.app_protocol.updateChannelSettings(i, channel_settings)
+            if channel_settings:
+                self.device_client.command(requests.UpdateChannelSettingsRequest(channel_settings), lambda success: print(f"Channel {i} settings saved: {success}"))
             

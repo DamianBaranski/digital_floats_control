@@ -18,8 +18,9 @@ class DigitalFloatsApp(tk.Frame):
         self.parent.title("Digital Floats App")
         self.parent.configure(bg=DARK_BG)
         self.device_client = DeviceClient()
-        self.device_client.subscribe(requests.FirmwareInfoRequest(), self.firmware_version_update)
-        self.device_client.subscribe(requests.StatusRequest(), self.status_update)
+        self.device_client.connect("/dev/ttyUSB0")
+        #self.device_client.subscribe(requests.FirmwareInfoRequest(), self.firmware_version_update)
+        #self.device_client.subscribe(requests.StatusDataRequest(), self.status_update)
 
         # Configure ttk styles
         style = ttk.Style()
@@ -73,7 +74,7 @@ class DigitalFloatsApp(tk.Frame):
         # Tab factories for robust detach/reattach
         tab_factories = {
             "Status": lambda parent: SystemStatusPanel(parent),
-            "Settings": lambda parent: AppSettingsPanel(parent),
+            "Settings": lambda parent: AppSettingsPanel(parent, self.device_client),
             "Monitoring": lambda parent: MonitoringPanel(parent),
             "Logs": lambda parent: LogOutputPanel(parent),
         }

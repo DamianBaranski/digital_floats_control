@@ -28,7 +28,7 @@ class ChannelSettingsTablePanel(tk.Frame):
 
         # Abbreviated column names and tooltips (add channel number as first column)
         self.column_map = [
-            ("ch", "channel number"),
+            ("ch", "channel"),
             ("en", "enable"),
             ("br", "bridge"),
             ("inv_m", "inverse_motor"),
@@ -36,13 +36,10 @@ class ChannelSettingsTablePanel(tk.Frame):
             ("inv_dn", "inverse_down_limit_switch"),
             ("inv_lim", "inverse_limit_switch"),
             ("rud", "rudder"),
-            ("ina", "ina_addr"),
-            ("ina_cal", "ina_calibration"),
-            ("pcf", "pcf_addr"),
-            ("pcf_ch", "pcf_channel"),
-            ("v_max", "max_voltage_limit"),
-            ("v_min", "min_voltage_limit"),
-            ("i_max", "max_current_limit"),
+            ("br_ch", "bridge_channel"),
+            ("time", "timeout"),
+            ("i_warn", "max_current_warning_limit"),
+            ("i_err", "max_current_error_limit"),
             ("i_min", "min_current_limit")
         ]
         column_names = [abbr for abbr, full in self.column_map]
@@ -138,8 +135,18 @@ class ChannelSettingsTablePanel(tk.Frame):
             self.tree.delete(row)
         for idx, settings in enumerate(self.channel_settings_list):
             row_values = [idx + 1]  # Channel number starts from 1
-            #row_values += [settings.values[full] for abbr, full in self.column_map[1:]]
-            #self.tree.insert('', 'end', values=row_values)
+            # Add values for each column (skip the first column which is channel number)
+            for abbr, full in self.column_map[1:]:
+                if full in settings.values:
+                    value = settings.values[full]
+                    # Convert boolean values to display format
+                    if isinstance(value, bool):
+                        row_values.append("✓" if value else "✗")
+                    else:
+                        row_values.append(str(value))
+                else:
+                    row_values.append("")  # Default empty value if field doesn't exist
+            self.tree.insert('', 'end', values=row_values)
 
     def edit_row(self, event):
         # Get the selected item
@@ -228,6 +235,7 @@ class EditDialog:
 
         # Define tooltips for each setting
         self.tooltips = {
+            'channel': 'Channel number',
             'enable': 'Enable/disable this channel',
             'bridge': 'Enable bridge mode for motor control',
             'inverse_motor': 'Invert the motor direction',
@@ -235,14 +243,11 @@ class EditDialog:
             'inverse_down_limit_switch': 'Invert the down limit switch logic',
             'inverse_limit_switch': 'Invert both limit switches logic',
             'rudder': 'Configure channel as rudder control',
-            'ina_addr': 'I2C address of the INA current sensor (hex)',
-            'ina_calibration': 'Calibration value for current measurement',
-            'pcf_addr': 'I2C address of the PCF expander (hex)',
-            'pcf_channel': 'Channel number on the PCF expander (0 or 1)',
-            'max_voltage_limit': 'Maximum voltage limit in 0.1V units',
-            'min_voltage_limit': 'Minimum voltage limit in 0.1V units',
-            'max_current_limit': 'Maximum current limit in 0.1A units',
-            'min_current_limit': 'Minimum current limit in 0.1A units'
+            'bridge_channel': 'Channel number for bridge mode',
+            'timeout': 'Movement timeout in seconds',
+            'max_current_warning_limit': 'Maximum current warning limit in A units',
+            'max_current_error_limit': 'Maximum current error limit in A units',
+            'min_current_limit': 'Minimum current limit in A units'
         }
 
         for idx, (key, value) in enumerate(settings.values.items()):
