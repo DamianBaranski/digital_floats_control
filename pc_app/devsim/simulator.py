@@ -891,6 +891,288 @@ class FirmwareInfoTab(ttk.Frame):
         )
 
 
+class MonitoringTab(ttk.Frame):
+    """Tab for MonitoringData simulation."""
+    
+    def __init__(self, parent, on_data_change: Callable, status_tab=None):
+        super().__init__(parent)
+        self.on_data_change = on_data_change
+        self.status_tab = status_tab  # Reference to status tab for uptime
+        
+        # Store monitoring data for all 6 channels (0-5)
+        self.channels = {}
+        self.current_channel = tk.IntVar(value=0)
+        
+        # Initialize default monitoring data for all channels
+        for ch in range(6):
+            self.channels[ch] = {
+                'timestamp': tk.IntVar(value=0),
+                'current': tk.DoubleVar(value=0.1),  # in A
+                'state': tk.IntVar(value=MonitoringDataEncoder.STATE_UP),
+                'up_switch': tk.BooleanVar(value=False),
+                'down_switch': tk.BooleanVar(value=False)
+            }
+        
+        self._build_ui()
+        self._start_timestamp_update()
+        
+    def _build_ui(self):
+        """Build the tab UI."""
+        # Main container with padding
+        container = ttk.Frame(self, padding=20)
+        container.pack(fill=tk.BOTH, expand=True)
+        
+        # Title
+        title = ttk.Label(container, text="Monitoring Data Simulator",
+                         font=('Segoe UI', 16, 'bold'))
+        title.pack(pady=(0, 20))
+        
+        # Channel selector
+        channel_frame = ttk.LabelFrame(container, text="Channel Selection", padding=15)
+        channel_frame.pack(fill=tk.X, pady=(0, 15))
+        
+        channel_inner = ttk.Frame(channel_frame)
+        channel_inner.pack()
+        
+        ttk.Label(channel_inner, text="Channel:", width=10).pack(side=tk.LEFT)
+        channel_spin = ttk.Spinbox(channel_inner, from_=0, to=5, increment=1,
+                                  textvariable=self.current_channel, width=10,
+                                  command=self._on_channel_change)
+        channel_spin.pack(side=tk.LEFT, padx=5)
+        self.current_channel.trace_add('write', lambda *args: self._on_channel_change())
+        
+        # Settings frame
+        settings_frame = ttk.LabelFrame(container, text="Monitoring Data", padding=15)
+        settings_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 15))
+        
+        # Timestamp
+        timestamp_row = ttk.Frame(settings_frame)
+        timestamp_row.pack(fill=tk.X, pady=5)
+        ttk.Label(timestamp_row, text="Timestamp (ms):", width=20).pack(side=tk.LEFT)
+        self.timestamp_label = ttk.Label(timestamp_row, text="0", width=15,
+                                         font=('Consolas', 10))
+        self.timestamp_label.pack(side=tk.LEFT, padx=5)
+        self.use_uptime_var = tk.BooleanVar(value=True)
+        self.use_uptime_check = ttk.Checkbutton(timestamp_row, text="Use Status Uptime",
+                                               variable=self.use_uptime_var,
+                                               command=self._on_use_uptime_toggle)
+        self.use_uptime_check.pack(side=tk.LEFT, padx=10)
+        self._use_uptime = True
+        
+        # Current
+        current_row = ttk.Frame(settings_frame)
+        current_row.pack(fill=tk.X, pady=5)
+        ttk.Label(current_row, text="Current (A):", width=20).pack(side=tk.LEFT)
+        current_spin = ttk.Spinbox(current_row, from_=0.0, to=10.0, increment=0.01,
+                                  textvariable=self._get_var('current'), width=15,
+                                  command=self._update_preview)
+        current_spin.pack(side=tk.LEFT, padx=5)
+        current_spin.bind('<KeyRelease>', lambda e: self._update_preview())
+        
+        # State
+        state_row = ttk.Frame(settings_frame)
+        state_row.pack(fill=tk.X, pady=5)
+        ttk.Label(state_row, text="State:", width=20).pack(side=tk.LEFT)
+        self.state_var = tk.StringVar(value="UP")
+        state_combo = ttk.Combobox(state_row, textvariable=self.state_var,
+                                  values=["UP", "DOWN", "MOVING", "ERROR"],
+                                  state="readonly", width=15)
+        state_combo.pack(side=tk.LEFT, padx=5)
+        state_combo.bind('<<ComboboxSelected>>', lambda e: self._on_state_change())
+        self.state_combo = state_combo
+        
+        # Switches frame
+        switches_frame = ttk.LabelFrame(settings_frame, text="Switches", padding=10)
+        switches_frame.pack(fill=tk.X, pady=5)
+        
+        switches_inner = ttk.Frame(switches_frame)
+        switches_inner.pack()
+        
+        self.up_switch_check = ttk.Checkbutton(switches_inner, text="Up Switch",
+                                              variable=self._get_var('up_switch'),
+                                              command=self._update_preview)
+        self.up_switch_check.grid(row=0, column=0, padx=20, pady=5, sticky='w')
+        
+        self.down_switch_check = ttk.Checkbutton(switches_inner, text="Down Switch",
+                                                variable=self._get_var('down_switch'),
+                                                command=self._update_preview)
+        self.down_switch_check.grid(row=0, column=1, padx=20, pady=5, sticky='w')
+        
+        # Quick presets
+        presets_frame = ttk.LabelFrame(container, text="Quick Presets", padding=15)
+        presets_frame.pack(fill=tk.X, pady=(0, 15))
+        
+        preset_buttons = ttk.Frame(presets_frame)
+        preset_buttons.pack()
+        
+        ttk.Button(preset_buttons, text="Channel UP",
+                  command=self._preset_up).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="Channel DOWN",
+                  command=self._preset_down).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="Channel MOVING",
+                  command=self._preset_moving).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="Channel ERROR",
+                  command=self._preset_error).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="All Channels UP",
+                  command=self._preset_all_up).pack(side=tk.LEFT, padx=5)
+        
+        # Protocol preview
+        preview_frame = ttk.LabelFrame(container, text="Protocol Data Preview", padding=15)
+        preview_frame.pack(fill=tk.BOTH, expand=True)
+        
+        self.preview_text = tk.Text(preview_frame, height=8, font=('Consolas', 10),
+                                   bg='#1a1a2e', fg='#0fe0a0', insertbackground='white')
+        self.preview_text.pack(fill=tk.BOTH, expand=True)
+        
+        # Bind variable changes to update preview
+        for ch in range(6):
+            for var in self.channels[ch].values():
+                var.trace_add('write', self._update_preview)
+        
+        self._update_preview()
+        
+    def _get_var(self, key: str):
+        """Get the variable for the current channel and given key."""
+        return self.channels[self.current_channel.get()][key]
+    
+    def _update_state_combo(self):
+        """Update state combo box to reflect current channel's state."""
+        ch = self.current_channel.get()
+        state_map = {
+            MonitoringDataEncoder.STATE_UP: "UP",
+            MonitoringDataEncoder.STATE_DOWN: "DOWN",
+            MonitoringDataEncoder.STATE_MOVING: "MOVING",
+            MonitoringDataEncoder.STATE_ERROR: "ERROR"
+        }
+        state_str = state_map.get(self.channels[ch]['state'].get(), "UP")
+        self.state_var.set(state_str)
+        
+    def _on_channel_change(self):
+        """Handle channel selection change."""
+        self._update_state_combo()
+        self._update_preview()
+        
+    def _on_state_change(self):
+        """Handle state change."""
+        ch = self.current_channel.get()
+        state_map_reverse = {"UP": MonitoringDataEncoder.STATE_UP,
+                            "DOWN": MonitoringDataEncoder.STATE_DOWN,
+                            "MOVING": MonitoringDataEncoder.STATE_MOVING,
+                            "ERROR": MonitoringDataEncoder.STATE_ERROR}
+        self.channels[ch]['state'].set(state_map_reverse.get(self.state_var.get(), MonitoringDataEncoder.STATE_UP))
+        self._update_preview()
+        
+    def _on_use_uptime_toggle(self):
+        """Handle use uptime toggle."""
+        self._use_uptime = self.use_uptime_var.get()
+        if not self._use_uptime:
+            # Update timestamp label with current channel's timestamp
+            ch = self.current_channel.get()
+            timestamp = self.channels[ch]['timestamp'].get()
+            self.timestamp_label.config(text=f"{timestamp:,}")
+        
+    def _start_timestamp_update(self):
+        """Start the timestamp auto-update if using status uptime."""
+        def update():
+            if self._use_uptime and self.status_tab:
+                timestamp = self.status_tab.uptime.get()
+                ch = self.current_channel.get()
+                self.channels[ch]['timestamp'].set(timestamp)
+                self.timestamp_label.config(text=f"{timestamp:,}")
+            elif not self._use_uptime:
+                # Update label with current channel's timestamp
+                ch = self.current_channel.get()
+                timestamp = self.channels[ch]['timestamp'].get()
+                self.timestamp_label.config(text=f"{timestamp:,}")
+            self.after(100, update)
+        update()
+        
+    def _update_preview(self, *args):
+        """Update the protocol data preview."""
+        data = self.get_encoded_data()
+        
+        self.preview_text.delete('1.0', tk.END)
+        
+        # Show raw bytes
+        hex_str = ' '.join(f'{b:02X}' for b in data)
+        self.preview_text.insert(tk.END, f"Channel {self.current_channel.get()} - Raw bytes ({len(data)} bytes):\n")
+        self.preview_text.insert(tk.END, f"  {hex_str}\n\n")
+        
+        # Show interpreted values
+        ch = self.current_channel.get()
+        ch_data = self.channels[ch]
+        state_map = {
+            MonitoringDataEncoder.STATE_UP: "UP",
+            MonitoringDataEncoder.STATE_DOWN: "DOWN",
+            MonitoringDataEncoder.STATE_MOVING: "MOVING",
+            MonitoringDataEncoder.STATE_ERROR: "ERROR"
+        }
+        state_name = state_map.get(ch_data['state'].get(), "UNKNOWN")
+        
+        self.preview_text.insert(tk.END, "Interpreted:\n")
+        self.preview_text.insert(tk.END, f"  Channel: {ch}\n")
+        self.preview_text.insert(tk.END, f"  Timestamp: {ch_data['timestamp'].get():,} ms\n")
+        self.preview_text.insert(tk.END, f"  Current: {ch_data['current'].get():.3f} A ({int(ch_data['current'].get() * 1000)} mA)\n")
+        self.preview_text.insert(tk.END, f"  State: {state_name}\n")
+        self.preview_text.insert(tk.END, f"  Up Switch: {'ON' if ch_data['up_switch'].get() else 'OFF'}\n")
+        self.preview_text.insert(tk.END, f"  Down Switch: {'ON' if ch_data['down_switch'].get() else 'OFF'}")
+        
+    def _preset_up(self):
+        """Apply UP preset for current channel."""
+        ch = self.current_channel.get()
+        self.channels[ch]['state'].set(MonitoringDataEncoder.STATE_UP)
+        self.channels[ch]['up_switch'].set(True)
+        self.channels[ch]['down_switch'].set(False)
+        self.channels[ch]['current'].set(0.1)
+        
+    def _preset_down(self):
+        """Apply DOWN preset for current channel."""
+        ch = self.current_channel.get()
+        self.channels[ch]['state'].set(MonitoringDataEncoder.STATE_DOWN)
+        self.channels[ch]['up_switch'].set(False)
+        self.channels[ch]['down_switch'].set(True)
+        self.channels[ch]['current'].set(0.1)
+        
+    def _preset_moving(self):
+        """Apply MOVING preset for current channel."""
+        ch = self.current_channel.get()
+        self.channels[ch]['state'].set(MonitoringDataEncoder.STATE_MOVING)
+        self.channels[ch]['current'].set(0.5)
+        
+    def _preset_error(self):
+        """Apply ERROR preset for current channel."""
+        ch = self.current_channel.get()
+        self.channels[ch]['state'].set(MonitoringDataEncoder.STATE_ERROR)
+        self.channels[ch]['current'].set(0.0)
+        
+    def _preset_all_up(self):
+        """Apply UP preset to all channels."""
+        for ch in range(6):
+            self.current_channel.set(ch)
+            self._preset_up()
+        self.current_channel.set(0)
+        
+    def get_encoded_data(self, channel: Optional[int] = None) -> bytes:
+        """Get the current channel's data encoded as protocol bytes."""
+        if channel is None:
+            channel = self.current_channel.get()
+        
+        ch_data = self.channels[channel]
+        # Get timestamp - use status tab uptime if available, otherwise use stored value
+        timestamp = ch_data['timestamp'].get()
+        if self._use_uptime and self.status_tab:
+            timestamp = self.status_tab.uptime.get()
+        
+        return MonitoringDataEncoder.encode(
+            timestamp=timestamp,
+            current_ma=int(ch_data['current'].get() * 1000),  # Convert A to mA
+            channel=channel,
+            state=ch_data['state'].get(),
+            up_switch=ch_data['up_switch'].get(),
+            down_switch=ch_data['down_switch'].get()
+        )
+
+
 class DeviceSimulatorApp:
     """Main Device Simulator Application."""
     
@@ -1001,9 +1283,12 @@ class DeviceSimulatorApp:
         self.firmware_info_tab = FirmwareInfoTab(self.notebook, self._on_data_change)
         self.notebook.add(self.firmware_info_tab, text="  Firmware Info  ")
         
+        # Monitoring tab
+        self.monitoring_tab = MonitoringTab(self.notebook, self._on_data_change, self.status_tab)
+        self.notebook.add(self.monitoring_tab, text="  Monitoring  ")
+        
         # Placeholder tabs for other data types
-        for tab_name in ["Monitoring", 
-                        "Error Status", "Remote Control"]:
+        for tab_name in ["Error Status", "Remote Control"]:
             placeholder = ttk.Frame(self.notebook, padding=40)
             label = ttk.Label(placeholder, 
                             text=f"{tab_name} simulation\n(Coming soon)",
@@ -1065,17 +1350,10 @@ class DeviceSimulatorApp:
         return self.firmware_info_tab.get_encoded_data()
     
     def _handle_monitoring(self, cmd: str, payload: bytes) -> bytes:
-        """Handle Monitoring request - placeholder."""
+        """Handle Monitoring request."""
         self._flash_activity()
         channel = payload[0] if payload else 0
-        return MonitoringDataEncoder.encode(
-            timestamp=self.status_tab.uptime.get(),
-            current_ma=100,
-            channel=channel,
-            state=MonitoringDataEncoder.STATE_UP,
-            up_switch=True,
-            down_switch=False
-        )
+        return self.monitoring_tab.get_encoded_data(channel)
     
     def _handle_channel_settings(self, cmd: str, payload: bytes) -> bytes:
         """Handle ChannelSettings request (get)."""

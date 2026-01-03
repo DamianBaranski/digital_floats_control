@@ -75,7 +75,7 @@ class DigitalFloatsApp(tk.Frame):
         tab_factories = {
             "Status": lambda parent: SystemStatusPanel(parent, self.device_client),
             "Settings": lambda parent: AppSettingsPanel(parent, self.device_client),
-            "Monitoring": lambda parent: MonitoringPanel(parent),
+            "Monitoring": lambda parent: MonitoringPanel(parent, self.device_client),
             "Logs": lambda parent: LogOutputPanel(parent),
         }
 
@@ -111,10 +111,14 @@ class DigitalFloatsApp(tk.Frame):
         else:
             self.device_client.connect(port)
             # Load firmware info and status data when connected
-            if self.device_client.isConnected() and 'Status' in self.tabs:
-                if hasattr(self.tabs['Status'], 'quick_status'):
-                    self.tabs['Status'].quick_status.loadFirmwareInfo()
-                    self.tabs['Status'].quick_status.loadStatusData()
+            if self.device_client.isConnected():
+                if 'Status' in self.tabs:
+                    if hasattr(self.tabs['Status'], 'quick_status'):
+                        self.tabs['Status'].quick_status.loadFirmwareInfo()
+                        self.tabs['Status'].quick_status.loadStatusData()
+                # Load monitoring data when connected
+                if 'Monitoring' in self.tabs:
+                    self.tabs['Monitoring'].loadMonitoringData()
         self.ui_port.setStatus(self.device_client.isConnected())
         
     def on_closing(self):
