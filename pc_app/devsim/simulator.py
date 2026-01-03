@@ -1419,6 +1419,164 @@ class ErrorStatusTab(ttk.Frame):
         )
 
 
+class RemoteControlTab(ttk.Frame):
+    """Tab for Remote Control simulation."""
+    
+    def __init__(self, parent, on_data_change: Callable):
+        super().__init__(parent)
+        self.on_data_change = on_data_change
+        
+        # Last received remote control data
+        self.last_ldg_gear = tk.BooleanVar(value=False)
+        self.last_rudder = tk.BooleanVar(value=False)
+        self.last_test_button = tk.BooleanVar(value=False)
+        self.last_received_time = tk.StringVar(value="Never")
+        
+        # Command history
+        self.command_history = []
+        self.max_history = 50
+        
+        self._build_ui()
+        
+    def _build_ui(self):
+        """Build the tab UI."""
+        # Main container with padding
+        container = ttk.Frame(self, padding=20)
+        container.pack(fill=tk.BOTH, expand=True)
+        
+        # Title
+        title = ttk.Label(container, text="Remote Control Simulator",
+                         font=('Segoe UI', 16, 'bold'))
+        title.pack(pady=(0, 20))
+        
+        # Last received command frame
+        last_cmd_frame = ttk.LabelFrame(container, text="Last Received Command", padding=15)
+        last_cmd_frame.pack(fill=tk.X, pady=(0, 15))
+        
+        # Time received
+        time_frame = ttk.Frame(last_cmd_frame)
+        time_frame.pack(fill=tk.X, pady=5)
+        ttk.Label(time_frame, text="Received at:", width=15).pack(side=tk.LEFT)
+        time_label = ttk.Label(time_frame, textvariable=self.last_received_time,
+                              font=('Consolas', 10))
+        time_label.pack(side=tk.LEFT, padx=5)
+        
+        # Switches display
+        switches_frame = ttk.Frame(last_cmd_frame)
+        switches_frame.pack(fill=tk.X, pady=10)
+        
+        # Landing Gear Switch
+        ldg_frame = ttk.Frame(switches_frame)
+        ldg_frame.pack(side=tk.LEFT, padx=20)
+        ttk.Label(ldg_frame, text="Landing Gear:", width=15).pack()
+        ldg_status = ttk.Label(ldg_frame, textvariable=self.last_ldg_gear,
+                              font=('Consolas', 11, 'bold'))
+        ldg_status.pack()
+        self._update_switch_label(ldg_status, self.last_ldg_gear)
+        self.last_ldg_gear.trace_add('write', 
+                                   lambda *args: self._update_switch_label(ldg_status, self.last_ldg_gear))
+        
+        # Rudder Switch
+        rudder_frame = ttk.Frame(switches_frame)
+        rudder_frame.pack(side=tk.LEFT, padx=20)
+        ttk.Label(rudder_frame, text="Rudder:", width=15).pack()
+        rudder_status = ttk.Label(rudder_frame, textvariable=self.last_rudder,
+                                 font=('Consolas', 11, 'bold'))
+        rudder_status.pack()
+        self._update_switch_label(rudder_status, self.last_rudder)
+        self.last_rudder.trace_add('write',
+                                   lambda *args: self._update_switch_label(rudder_status, self.last_rudder))
+        
+        # Test Button
+        test_frame = ttk.Frame(switches_frame)
+        test_frame.pack(side=tk.LEFT, padx=20)
+        ttk.Label(test_frame, text="Test Button:", width=15).pack()
+        test_status = ttk.Label(test_frame, textvariable=self.last_test_button,
+                               font=('Consolas', 11, 'bold'))
+        test_status.pack()
+        self._update_switch_label(test_status, self.last_test_button)
+        self.last_test_button.trace_add('write',
+                                       lambda *args: self._update_switch_label(test_status, self.last_test_button))
+        
+        # Command history frame
+        history_frame = ttk.LabelFrame(container, text="Command History", padding=15)
+        history_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 15))
+        
+        # History text widget with scrollbar
+        history_container = ttk.Frame(history_frame)
+        history_container.pack(fill=tk.BOTH, expand=True)
+        
+        self.history_text = tk.Text(history_container, height=15, font=('Consolas', 9),
+                                    bg='#0d0d1a', fg='#8888aa', insertbackground='white',
+                                    wrap=tk.WORD)
+        scrollbar = ttk.Scrollbar(history_container, orient=tk.VERTICAL,
+                                 command=self.history_text.yview)
+        self.history_text.config(yscrollcommand=scrollbar.set)
+        
+        self.history_text.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        # Clear history button
+        ttk.Button(history_frame, text="Clear History",
+                  command=self._clear_history).pack(anchor='e', pady=(5, 0))
+        
+        # Info frame
+        info_frame = ttk.LabelFrame(container, text="Information", padding=15)
+        info_frame.pack(fill=tk.X)
+        
+        info_text = (
+            "This tab displays remote control commands received from the PC app.\n"
+            "When a RemoteControl command is received, it updates the switches in the Status Data tab.\n"
+            "The command history shows all received remote control commands with timestamps."
+        )
+        ttk.Label(info_frame, text=info_text, justify=tk.LEFT,
+                 font=('Segoe UI', 9)).pack(anchor='w')
+    
+    def _update_switch_label(self, label: ttk.Label, var: tk.BooleanVar):
+        """Update switch label text and color based on state."""
+        if var.get():
+            label.config(text="ON", foreground='#0fe0a0')
+        else:
+            label.config(text="OFF", foreground='#8888aa')
+    
+    def _clear_history(self):
+        """Clear command history."""
+        self.command_history.clear()
+        self.history_text.delete('1.0', tk.END)
+        self.history_text.insert('1.0', "No commands received yet.\n")
+    
+    def update_from_command(self, ldg_gear: bool, rudder: bool, test_button: bool):
+        """Update display from received remote control command."""
+        import datetime
+        
+        # Update last received values
+        self.last_ldg_gear.set(ldg_gear)
+        self.last_rudder.set(rudder)
+        self.last_test_button.set(test_button)
+        
+        # Update timestamp
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
+        self.last_received_time.set(timestamp)
+        
+        # Add to history
+        cmd_str = f"[{timestamp}] LDG={ldg_gear}, Rudder={rudder}, Test={test_button}\n"
+        self.command_history.append(cmd_str)
+        
+        # Keep only last max_history entries
+        if len(self.command_history) > self.max_history:
+            self.command_history.pop(0)
+        
+        # Update history display
+        self.history_text.delete('1.0', tk.END)
+        if self.command_history:
+            self.history_text.insert('1.0', ''.join(self.command_history))
+        else:
+            self.history_text.insert('1.0', "No commands received yet.\n")
+        
+        # Scroll to bottom
+        self.history_text.see(tk.END)
+
+
 class DeviceSimulatorApp:
     """Main Device Simulator Application."""
     
@@ -1537,14 +1695,9 @@ class DeviceSimulatorApp:
         self.error_status_tab = ErrorStatusTab(self.notebook, self._on_data_change)
         self.notebook.add(self.error_status_tab, text="  Error Status  ")
         
-        # Placeholder tabs for other data types
-        for tab_name in ["Remote Control"]:
-            placeholder = ttk.Frame(self.notebook, padding=40)
-            label = ttk.Label(placeholder, 
-                            text=f"{tab_name} simulation\n(Coming soon)",
-                            font=('Segoe UI', 14), justify='center')
-            label.pack(expand=True)
-            self.notebook.add(placeholder, text=f"  {tab_name}  ")
+        # Remote Control tab
+        self.remote_control_tab = RemoteControlTab(self.notebook, self._on_data_change)
+        self.notebook.add(self.remote_control_tab, text="  Remote Control  ")
         
         # Log panel at bottom
         log_frame = ttk.LabelFrame(self.root, text="Communication Log", padding=5)
@@ -1636,6 +1789,10 @@ class DeviceSimulatorApp:
         self.status_tab.ldg_gear_switch.set(ldg)
         self.status_tab.rudder_switch.set(rudder)
         self.status_tab.test_button.set(test)
+        
+        # Update remote control tab display
+        if hasattr(self, 'remote_control_tab'):
+            self.remote_control_tab.update_from_command(ldg, rudder, test)
         
         return b'\x01'  # Success
     
