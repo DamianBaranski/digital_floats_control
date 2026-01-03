@@ -4,7 +4,7 @@ Matches the protocol used by the PC app.
 """
 import base64
 import struct
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Dict
 
 
 class Protocol:
@@ -243,4 +243,57 @@ class RemoteControlDataDecoder:
         test_button = bool(bit_fields & 0x04)
         
         return (ldg_gear, rudder, test_button)
+
+
+class ChannelSettingsDecoder:
+    """Decodes ChannelSettings from received bytes."""
+    
+    @staticmethod
+    def decode(data: bytes) -> Optional[Dict]:
+        """
+        Decode ChannelSettings from bytes.
+        
+        Format: <BBBBHHH
+        - channel: byte
+        - bit_fields: byte
+        - bridge_channel: byte
+        - timeout: byte
+        - max_current_warning: short (mA)
+        - max_current_error: short (mA)
+        - min_current: short (mA)
+        
+        Returns: Dictionary with all channel settings or None if decode fails
+        """
+        if len(data) < 10:
+            return None
+        
+        try:
+            unpacked = struct.unpack('<BBBBHHH', data[:10])
+            
+            channel = unpacked[0]
+            bit_fields = unpacked[1]
+            bridge_channel = unpacked[2]
+            timeout = unpacked[3]
+            max_current_warning = unpacked[4] * 0.001  # Convert from mA to A
+            max_current_error = unpacked[5] * 0.001
+            min_current = unpacked[6] * 0.001
+            
+            return {
+                'channel': channel,
+                'enable': bool(bit_fields & (1 << 0)),
+                'bridge': bool(bit_fields & (1 << 1)),
+                'inverse_motor': bool(bit_fields & (1 << 2)),
+                'inverse_up_limit_switch': bool(bit_fields & (1 << 3)),
+                'inverse_down_limit_switch': bool(bit_fields & (1 << 4)),
+                'inverse_limit_switch': bool(bit_fields & (1 << 5)),
+                'rudder': bool(bit_fields & (1 << 6)),
+                'bridge_channel': bridge_channel,
+                'timeout': timeout,
+                'max_current_warning_limit': max_current_warning,
+                'max_current_error_limit': max_current_error,
+                'min_current_limit': min_current
+            }
+        except Exception as e:
+            print(f"ChannelSettings decode error: {e}")
+            return None
 

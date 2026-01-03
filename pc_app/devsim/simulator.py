@@ -20,6 +20,7 @@ from protocol import (
     ChannelSettingsEncoder,
     ErrorStatusEncoder,
     RemoteControlDataDecoder,
+    ChannelSettingsDecoder,
 )
 
 
@@ -392,6 +393,338 @@ class StatusDataTab(ttk.Frame):
         )
 
 
+class ChannelSettingsTab(ttk.Frame):
+    """Tab for ChannelSettings simulation."""
+    
+    def __init__(self, parent, on_data_change: Callable):
+        super().__init__(parent)
+        self.on_data_change = on_data_change
+        
+        # Store settings for all 6 channels (0-5)
+        self.channels = {}
+        self.current_channel = tk.IntVar(value=0)
+        
+        # Initialize default settings for all channels
+        for ch in range(6):
+            self.channels[ch] = {
+                'enable': tk.BooleanVar(value=False),
+                'bridge': tk.BooleanVar(value=False),
+                'inverse_motor': tk.BooleanVar(value=False),
+                'inverse_up_limit_switch': tk.BooleanVar(value=False),
+                'inverse_down_limit_switch': tk.BooleanVar(value=False),
+                'inverse_limit_switch': tk.BooleanVar(value=False),
+                'rudder': tk.BooleanVar(value=False),
+                'timeout': tk.IntVar(value=5),
+                'bridge_channel': tk.IntVar(value=0),
+                'max_current_warning_limit': tk.DoubleVar(value=0.5),
+                'max_current_error_limit': tk.DoubleVar(value=1.0),
+                'min_current_limit': tk.DoubleVar(value=0.0)
+            }
+        
+        self._build_ui()
+        
+    def _build_ui(self):
+        """Build the tab UI."""
+        # Main container with padding
+        container = ttk.Frame(self, padding=20)
+        container.pack(fill=tk.BOTH, expand=True)
+        
+        # Title
+        title = ttk.Label(container, text="Channel Settings Simulator",
+                         font=('Segoe UI', 16, 'bold'))
+        title.pack(pady=(0, 20))
+        
+        # Channel selector
+        channel_frame = ttk.LabelFrame(container, text="Channel Selection", padding=15)
+        channel_frame.pack(fill=tk.X, pady=(0, 15))
+        
+        channel_inner = ttk.Frame(channel_frame)
+        channel_inner.pack()
+        
+        ttk.Label(channel_inner, text="Channel:", width=10).pack(side=tk.LEFT)
+        channel_spin = ttk.Spinbox(channel_inner, from_=0, to=5, increment=1,
+                                  textvariable=self.current_channel, width=10,
+                                  command=self._on_channel_change)
+        channel_spin.pack(side=tk.LEFT, padx=5)
+        self.current_channel.trace_add('write', lambda *args: self._on_channel_change())
+        
+        # Settings frame
+        settings_frame = ttk.LabelFrame(container, text="Settings", padding=15)
+        settings_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 15))
+        
+        # Create scrollable frame for settings
+        canvas = tk.Canvas(settings_frame, bg='#1a1a2e', highlightthickness=0)
+        scrollbar = ttk.Scrollbar(settings_frame, orient=tk.VERTICAL, command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        self.settings_container = scrollable_frame
+        
+        # Boolean settings frame
+        bool_frame = ttk.LabelFrame(scrollable_frame, text="Boolean Settings", padding=10)
+        bool_frame.pack(fill=tk.X, pady=5)
+        
+        bool_inner = ttk.Frame(bool_frame)
+        bool_inner.pack()
+        
+        # Create checkboxes in a grid
+        self.enable_check = ttk.Checkbutton(bool_inner, text="Enable",
+                                            variable=self._get_var('enable'),
+                                            command=self._update_preview)
+        self.enable_check.grid(row=0, column=0, padx=10, pady=5, sticky='w')
+        
+        self.bridge_check = ttk.Checkbutton(bool_inner, text="Bridge",
+                                           variable=self._get_var('bridge'),
+                                           command=self._update_preview)
+        self.bridge_check.grid(row=0, column=1, padx=10, pady=5, sticky='w')
+        
+        self.inverse_motor_check = ttk.Checkbutton(bool_inner, text="Inverse Motor",
+                                                   variable=self._get_var('inverse_motor'),
+                                                   command=self._update_preview)
+        self.inverse_motor_check.grid(row=0, column=2, padx=10, pady=5, sticky='w')
+        
+        self.inverse_up_limit_check = ttk.Checkbutton(bool_inner, text="Inverse Up Limit",
+                                                      variable=self._get_var('inverse_up_limit_switch'),
+                                                      command=self._update_preview)
+        self.inverse_up_limit_check.grid(row=1, column=0, padx=10, pady=5, sticky='w')
+        
+        self.inverse_down_limit_check = ttk.Checkbutton(bool_inner, text="Inverse Down Limit",
+                                                        variable=self._get_var('inverse_down_limit_switch'),
+                                                        command=self._update_preview)
+        self.inverse_down_limit_check.grid(row=1, column=1, padx=10, pady=5, sticky='w')
+        
+        self.inverse_limit_check = ttk.Checkbutton(bool_inner, text="Inverse Limit",
+                                                   variable=self._get_var('inverse_limit_switch'),
+                                                   command=self._update_preview)
+        self.inverse_limit_check.grid(row=1, column=2, padx=10, pady=5, sticky='w')
+        
+        self.rudder_check = ttk.Checkbutton(bool_inner, text="Rudder",
+                                           variable=self._get_var('rudder'),
+                                           command=self._update_preview)
+        self.rudder_check.grid(row=2, column=0, padx=10, pady=5, sticky='w')
+        
+        # Numeric settings frame
+        numeric_frame = ttk.LabelFrame(scrollable_frame, text="Numeric Settings", padding=10)
+        numeric_frame.pack(fill=tk.X, pady=5)
+        
+        # Timeout
+        timeout_row = ttk.Frame(numeric_frame)
+        timeout_row.pack(fill=tk.X, pady=5)
+        ttk.Label(timeout_row, text="Timeout (seconds):", width=25).pack(side=tk.LEFT)
+        timeout_spin = ttk.Spinbox(timeout_row, from_=0, to=255, increment=1,
+                                  textvariable=self._get_var('timeout'), width=15,
+                                  command=self._update_preview)
+        timeout_spin.pack(side=tk.LEFT, padx=5)
+        timeout_spin.bind('<KeyRelease>', lambda e: self._update_preview())
+        
+        # Bridge Channel
+        bridge_ch_row = ttk.Frame(numeric_frame)
+        bridge_ch_row.pack(fill=tk.X, pady=5)
+        ttk.Label(bridge_ch_row, text="Bridge Channel (0-5):", width=25).pack(side=tk.LEFT)
+        bridge_ch_spin = ttk.Spinbox(bridge_ch_row, from_=0, to=5, increment=1,
+                                    textvariable=self._get_var('bridge_channel'), width=15,
+                                    command=self._update_preview)
+        bridge_ch_spin.pack(side=tk.LEFT, padx=5)
+        bridge_ch_spin.bind('<KeyRelease>', lambda e: self._update_preview())
+        
+        # Max Current Warning Limit
+        max_warn_row = ttk.Frame(numeric_frame)
+        max_warn_row.pack(fill=tk.X, pady=5)
+        ttk.Label(max_warn_row, text="Max Current Warning (A):", width=25).pack(side=tk.LEFT)
+        max_warn_spin = ttk.Spinbox(max_warn_row, from_=0.0, to=10.0, increment=0.1,
+                                   textvariable=self._get_var('max_current_warning_limit'),
+                                   width=15, command=self._update_preview)
+        max_warn_spin.pack(side=tk.LEFT, padx=5)
+        max_warn_spin.bind('<KeyRelease>', lambda e: self._update_preview())
+        
+        # Max Current Error Limit
+        max_err_row = ttk.Frame(numeric_frame)
+        max_err_row.pack(fill=tk.X, pady=5)
+        ttk.Label(max_err_row, text="Max Current Error (A):", width=25).pack(side=tk.LEFT)
+        max_err_spin = ttk.Spinbox(max_err_row, from_=0.0, to=10.0, increment=0.1,
+                                  textvariable=self._get_var('max_current_error_limit'),
+                                  width=15, command=self._update_preview)
+        max_err_spin.pack(side=tk.LEFT, padx=5)
+        max_err_spin.bind('<KeyRelease>', lambda e: self._update_preview())
+        
+        # Min Current Limit
+        min_curr_row = ttk.Frame(numeric_frame)
+        min_curr_row.pack(fill=tk.X, pady=5)
+        ttk.Label(min_curr_row, text="Min Current Limit (A):", width=25).pack(side=tk.LEFT)
+        min_curr_spin = ttk.Spinbox(min_curr_row, from_=0.0, to=10.0, increment=0.1,
+                                   textvariable=self._get_var('min_current_limit'),
+                                   width=15, command=self._update_preview)
+        min_curr_spin.pack(side=tk.LEFT, padx=5)
+        min_curr_spin.bind('<KeyRelease>', lambda e: self._update_preview())
+        
+        # Quick presets
+        presets_frame = ttk.LabelFrame(container, text="Quick Presets", padding=15)
+        presets_frame.pack(fill=tk.X, pady=(0, 15))
+        
+        preset_buttons = ttk.Frame(presets_frame)
+        preset_buttons.pack()
+        
+        ttk.Button(preset_buttons, text="Default",
+                  command=self._preset_default).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="Rudder Channel",
+                  command=self._preset_rudder).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="Bridge Channel",
+                  command=self._preset_bridge).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="All Channels Default",
+                  command=self._preset_all_default).pack(side=tk.LEFT, padx=5)
+        
+        # Protocol preview
+        preview_frame = ttk.LabelFrame(container, text="Protocol Data Preview", padding=15)
+        preview_frame.pack(fill=tk.BOTH, expand=True)
+        
+        self.preview_text = tk.Text(preview_frame, height=8, font=('Consolas', 10),
+                                   bg='#1a1a2e', fg='#0fe0a0', insertbackground='white')
+        self.preview_text.pack(fill=tk.BOTH, expand=True)
+        
+        # Bind variable changes to update preview
+        for ch in range(6):
+            for var in self.channels[ch].values():
+                var.trace_add('write', self._update_preview)
+        
+        self._update_preview()
+        
+    def _get_var(self, key: str):
+        """Get the variable for the current channel and given key."""
+        return self.channels[self.current_channel.get()][key]
+        
+    def _on_channel_change(self):
+        """Handle channel selection change."""
+        self._update_preview()
+        
+    def _update_preview(self, *args):
+        """Update the protocol data preview."""
+        data = self.get_encoded_data()
+        
+        self.preview_text.delete('1.0', tk.END)
+        
+        # Show raw bytes
+        hex_str = ' '.join(f'{b:02X}' for b in data)
+        self.preview_text.insert(tk.END, f"Channel {self.current_channel.get()} - Raw bytes ({len(data)} bytes):\n")
+        self.preview_text.insert(tk.END, f"  {hex_str}\n\n")
+        
+        # Show interpreted values
+        ch = self.current_channel.get()
+        ch_data = self.channels[ch]
+        self.preview_text.insert(tk.END, "Interpreted:\n")
+        self.preview_text.insert(tk.END, f"  Channel: {ch}\n")
+        self.preview_text.insert(tk.END, f"  Enable: {ch_data['enable'].get()}\n")
+        self.preview_text.insert(tk.END, f"  Bridge: {ch_data['bridge'].get()}\n")
+        self.preview_text.insert(tk.END, f"  Inverse Motor: {ch_data['inverse_motor'].get()}\n")
+        self.preview_text.insert(tk.END, f"  Inverse Up Limit: {ch_data['inverse_up_limit_switch'].get()}\n")
+        self.preview_text.insert(tk.END, f"  Inverse Down Limit: {ch_data['inverse_down_limit_switch'].get()}\n")
+        self.preview_text.insert(tk.END, f"  Inverse Limit: {ch_data['inverse_limit_switch'].get()}\n")
+        self.preview_text.insert(tk.END, f"  Rudder: {ch_data['rudder'].get()}\n")
+        self.preview_text.insert(tk.END, f"  Bridge Channel: {ch_data['bridge_channel'].get()}\n")
+        self.preview_text.insert(tk.END, f"  Timeout: {ch_data['timeout'].get()} seconds\n")
+        self.preview_text.insert(tk.END, f"  Max Current Warning: {ch_data['max_current_warning_limit'].get():.3f} A\n")
+        self.preview_text.insert(tk.END, f"  Max Current Error: {ch_data['max_current_error_limit'].get():.3f} A\n")
+        self.preview_text.insert(tk.END, f"  Min Current: {ch_data['min_current_limit'].get():.3f} A")
+        
+    def _preset_default(self):
+        """Apply default preset for current channel."""
+        ch = self.current_channel.get()
+        self.channels[ch]['enable'].set(True)
+        self.channels[ch]['bridge'].set(False)
+        self.channels[ch]['inverse_motor'].set(False)
+        self.channels[ch]['inverse_up_limit_switch'].set(False)
+        self.channels[ch]['inverse_down_limit_switch'].set(False)
+        self.channels[ch]['inverse_limit_switch'].set(False)
+        self.channels[ch]['rudder'].set(False)
+        self.channels[ch]['timeout'].set(5)
+        self.channels[ch]['bridge_channel'].set(0)
+        self.channels[ch]['max_current_warning_limit'].set(0.5)
+        self.channels[ch]['max_current_error_limit'].set(1.0)
+        self.channels[ch]['min_current_limit'].set(0.0)
+        
+    def _preset_rudder(self):
+        """Apply rudder preset for current channel."""
+        ch = self.current_channel.get()
+        self.channels[ch]['enable'].set(True)
+        self.channels[ch]['rudder'].set(True)
+        self.channels[ch]['timeout'].set(5)
+        
+    def _preset_bridge(self):
+        """Apply bridge preset for current channel."""
+        ch = self.current_channel.get()
+        self.channels[ch]['enable'].set(True)
+        self.channels[ch]['bridge'].set(True)
+        self.channels[ch]['bridge_channel'].set(0)
+        
+    def _preset_all_default(self):
+        """Apply default preset to all channels."""
+        for ch in range(6):
+            self.current_channel.set(ch)
+            self._preset_default()
+        self.current_channel.set(0)
+        
+    def get_encoded_data(self, channel: Optional[int] = None) -> bytes:
+        """Get the current channel's data encoded as protocol bytes."""
+        if channel is None:
+            channel = self.current_channel.get()
+        
+        ch_data = self.channels[channel]
+        return ChannelSettingsEncoder.encode(
+            channel=channel,
+            enable=ch_data['enable'].get(),
+            bridge=ch_data['bridge'].get(),
+            inverse_motor=ch_data['inverse_motor'].get(),
+            inverse_up_limit=ch_data['inverse_up_limit_switch'].get(),
+            inverse_down_limit=ch_data['inverse_down_limit_switch'].get(),
+            inverse_limit=ch_data['inverse_limit_switch'].get(),
+            rudder=ch_data['rudder'].get(),
+            timeout=ch_data['timeout'].get(),
+            bridge_channel=ch_data['bridge_channel'].get(),
+            max_current_warning=ch_data['max_current_warning_limit'].get(),
+            max_current_error=ch_data['max_current_error_limit'].get(),
+            min_current=ch_data['min_current_limit'].get()
+        )
+    
+    def update_from_bytes(self, data: bytes):
+        """Update channel settings from received bytes."""
+        decoded = ChannelSettingsDecoder.decode(data)
+        if decoded is None:
+            return False
+        
+        channel = decoded['channel']
+        if channel not in self.channels:
+            return False
+        
+        ch_data = self.channels[channel]
+        ch_data['enable'].set(decoded['enable'])
+        ch_data['bridge'].set(decoded['bridge'])
+        ch_data['inverse_motor'].set(decoded['inverse_motor'])
+        ch_data['inverse_up_limit_switch'].set(decoded['inverse_up_limit_switch'])
+        ch_data['inverse_down_limit_switch'].set(decoded['inverse_down_limit_switch'])
+        ch_data['inverse_limit_switch'].set(decoded['inverse_limit_switch'])
+        ch_data['rudder'].set(decoded['rudder'])
+        ch_data['timeout'].set(decoded['timeout'])
+        ch_data['bridge_channel'].set(decoded['bridge_channel'])
+        ch_data['max_current_warning_limit'].set(decoded['max_current_warning_limit'])
+        ch_data['max_current_error_limit'].set(decoded['max_current_error_limit'])
+        ch_data['min_current_limit'].set(decoded['min_current_limit'])
+        
+        # Update UI if this is the current channel
+        if channel == self.current_channel.get():
+            self._update_preview()
+        
+        return True
+
+
 class DeviceSimulatorApp:
     """Main Device Simulator Application."""
     
@@ -494,8 +827,12 @@ class DeviceSimulatorApp:
         self.status_tab = StatusDataTab(self.notebook, self._on_data_change)
         self.notebook.add(self.status_tab, text="  Status Data  ")
         
+        # Channel Settings tab
+        self.channel_settings_tab = ChannelSettingsTab(self.notebook, self._on_data_change)
+        self.notebook.add(self.channel_settings_tab, text="  Channel Settings  ")
+        
         # Placeholder tabs for other data types
-        for tab_name in ["Firmware Info", "Monitoring", "Channel Settings", 
+        for tab_name in ["Firmware Info", "Monitoring", 
                         "Error Status", "Remote Control"]:
             placeholder = ttk.Frame(self.notebook, padding=40)
             label = ttk.Label(placeholder, 
@@ -535,6 +872,7 @@ class DeviceSimulatorApp:
             self.vport.register_handler(Protocol.CMD_FIRMWARE_INFO, self._handle_firmware_info)
             self.vport.register_handler(Protocol.CMD_MONITORING, self._handle_monitoring)
             self.vport.register_handler(Protocol.CMD_CHANNEL_SETTINGS, self._handle_channel_settings)
+            self.vport.register_handler(Protocol.CMD_UPDATE_CHANNEL_SETTINGS, self._handle_update_channel_settings)
             self.vport.register_handler(Protocol.CMD_ERROR_STATUS, self._handle_error_status)
             self.vport.register_handler(Protocol.CMD_REMOTE_CONTROL, self._handle_remote_control)
             
@@ -577,24 +915,20 @@ class DeviceSimulatorApp:
         )
     
     def _handle_channel_settings(self, cmd: str, payload: bytes) -> bytes:
-        """Handle ChannelSettings request - placeholder."""
+        """Handle ChannelSettings request (get)."""
         self._flash_activity()
         channel = payload[0] if payload else 0
-        return ChannelSettingsEncoder.encode(
-            channel=channel,
-            enable=True,
-            bridge=False,
-            inverse_motor=False,
-            inverse_up_limit=False,
-            inverse_down_limit=False,
-            inverse_limit=False,
-            rudder=False,
-            timeout=5,
-            bridge_channel=0,
-            max_current_warning=0.5,
-            max_current_error=1.0,
-            min_current=0.0
-        )
+        return self.channel_settings_tab.get_encoded_data(channel)
+    
+    def _handle_update_channel_settings(self, cmd: str, payload: bytes) -> bytes:
+        """Handle UpdateChannelSettings request (set)."""
+        self._flash_activity()
+        if self.channel_settings_tab.update_from_bytes(payload):
+            self._log("ChannelSettings", f"Updated channel settings from PC app")
+            return b'\x01'  # Success
+        else:
+            self._log("ChannelSettings", f"Failed to decode channel settings")
+            return b'\x00'  # Failure
     
     def _handle_error_status(self, cmd: str, payload: bytes) -> bytes:
         """Handle ErrorStatus request - placeholder (no errors)."""
