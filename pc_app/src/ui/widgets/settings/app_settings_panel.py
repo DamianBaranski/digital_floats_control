@@ -6,7 +6,7 @@ from src.core.datatypes.channel_settings import ChannelSettings
 from ui.widgets.settings.channel_settings_table_panel import ChannelSettingsTablePanel
 from ui.widgets.settings.auto_detect import AutoDetect
 from core.protocol import requests
-from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, FONT, HEADER_FONT, SECTION_FONT
+from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, SUCCESS, FONT, HEADER_FONT, SECTION_FONT
 
 class UserSettingField(tk.Frame):
     def __init__(self, parent, name, input_type="entry"):
@@ -89,27 +89,16 @@ class AppSettingsPanel(tk.Frame):
 
     def create_channel_settings_section(self):
         # Channel Settings Frame
-        channel_frame = tk.Frame(self.scrollable_frame, bg=DARK_BG)
-        channel_frame.pack(fill="x", padx=10, pady=(0, 20))
+        channel_frame = tk.LabelFrame(self.scrollable_frame, text="Channel Settings", 
+                                     bg=DARK_BG, fg=TEXT_COLOR, font=SECTION_FONT)
+        channel_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-        # Channel Settings Title
-        channel_title = tk.Label(channel_frame, text="Channel Settings", font=SECTION_FONT,
-                               bg=DARK_BG, fg=TEXT_COLOR)
-        channel_title.pack(anchor="w", pady=(0, 10))
-
-        # Channel Settings Table
-        self.channel_settings_table = ChannelSettingsTablePanel(channel_frame)
-        self.channel_settings_table.pack(fill="x", pady=(0, 10))
-
-        # Configure the treeview columns to be more compact
-        if hasattr(self.channel_settings_table, 'tree'):
-            self.channel_settings_table.tree.column("#0", width=50, minwidth=50)  # Channel column
-            for col in self.channel_settings_table.tree["columns"]:
-                self.channel_settings_table.tree.column(col, width=80, minwidth=80)
-
-        # Channel Settings Buttons
-        button_frame = tk.Frame(channel_frame, bg=DARK_BG)
-        button_frame.pack(fill="x", pady=(0, 10))
+        # Channel Settings Buttons (at top) - use separate container to avoid pack/grid conflict
+        button_container = tk.Frame(channel_frame, bg=DARK_BG)
+        button_container.pack(fill="x", padx=10, pady=10)
+        
+        button_frame = tk.Frame(button_container, bg=DARK_BG)
+        button_frame.pack(side="right")
 
         self.load_button = tk.Button(button_frame, text="Load", command=self.loadChannelSettings,
                                    bg=DARKER_BG, fg=TEXT_COLOR, font=FONT,
@@ -131,6 +120,151 @@ class AppSettingsPanel(tk.Frame):
                                    activebackground=BORDER_COLOR, activeforeground=TEXT_COLOR)
         self.help_button.pack(side="right", padx=2)
 
+        # Channels grid container (separate frame for grid to avoid pack/grid conflict)
+        channels_grid_frame = tk.Frame(channel_frame, bg=DARK_BG)
+        channels_grid_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        
+        # Create grid to display all channels (2 rows x 3 columns)
+        self.channel_frames = []
+        self.channel_labels = {}  # Store labels for each channel's settings
+        
+        # Initialize channel settings table (still needed for data storage and EditDialog)
+        self.channel_settings_table = ChannelSettingsTablePanel(channel_frame)
+        self.channel_settings_table.pack_forget()  # Hide the table, but keep it for data management
+        
+        for ch in range(6):
+            row = ch // 3
+            col = ch % 3
+            
+            # Channel frame
+            ch_frame = tk.Frame(channels_grid_frame, bg=DARK_BG, relief=tk.RAISED, bd=1)
+            ch_frame.grid(row=row, column=col, padx=5, pady=5, sticky="nsew")
+            
+            # Channel header with edit button
+            header_frame = tk.Frame(ch_frame, bg=DARKER_BG)
+            header_frame.pack(fill=tk.X, padx=2, pady=2)
+            
+            channel_header = tk.Label(header_frame, text=f"Channel {ch}", 
+                                     bg=DARKER_BG, fg=TEXT_COLOR, font=(FONT[0], FONT[1], 'bold'))
+            channel_header.pack(side=tk.LEFT, padx=5)
+            
+            edit_btn = tk.Button(header_frame, text="Edit", 
+                              command=lambda idx=ch: self._edit_channel(idx),
+                              bg=BORDER_COLOR, fg=TEXT_COLOR, font=("TkDefaultFont", 8),
+                              activebackground=TEXT_COLOR, activeforeground=DARK_BG)
+            edit_btn.pack(side=tk.RIGHT, padx=2)
+            
+            # Settings display section
+            settings_frame = tk.LabelFrame(ch_frame, text="Settings", 
+                                          bg=DARK_BG, fg=TEXT_COLOR, font=FONT)
+            settings_frame.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
+            
+            # Enable
+            enable_label = tk.Label(settings_frame, text="Enable: N/A",
+                                  bg=DARK_BG, fg=SECONDARY_TEXT, font=FONT, anchor='w')
+            enable_label.pack(fill=tk.X, padx=5, pady=1)
+            self.channel_labels[(ch, 'enable')] = enable_label
+            
+            # Bridge
+            bridge_label = tk.Label(settings_frame, text="Bridge: N/A",
+                                  bg=DARK_BG, fg=SECONDARY_TEXT, font=FONT, anchor='w')
+            bridge_label.pack(fill=tk.X, padx=5, pady=1)
+            self.channel_labels[(ch, 'bridge')] = bridge_label
+            
+            # Rudder
+            rudder_label = tk.Label(settings_frame, text="Rudder: N/A",
+                                  bg=DARK_BG, fg=SECONDARY_TEXT, font=FONT, anchor='w')
+            rudder_label.pack(fill=tk.X, padx=5, pady=1)
+            self.channel_labels[(ch, 'rudder')] = rudder_label
+            
+            # Timeout
+            timeout_label = tk.Label(settings_frame, text="Timeout: N/A",
+                                    bg=DARK_BG, fg=SECONDARY_TEXT, font=FONT, anchor='w')
+            timeout_label.pack(fill=tk.X, padx=5, pady=1)
+            self.channel_labels[(ch, 'timeout')] = timeout_label
+            
+            # Current limits (summary)
+            current_label = tk.Label(settings_frame, text="Current: N/A",
+                                   bg=DARK_BG, fg=SECONDARY_TEXT, font=FONT, anchor='w')
+            current_label.pack(fill=tk.X, padx=5, pady=1)
+            self.channel_labels[(ch, 'current')] = current_label
+            
+            self.channel_frames.append(ch_frame)
+        
+        # Configure grid weights for equal sizing
+        channels_grid_frame.grid_columnconfigure(0, weight=1)
+        channels_grid_frame.grid_columnconfigure(1, weight=1)
+        channels_grid_frame.grid_columnconfigure(2, weight=1)
+        channels_grid_frame.grid_rowconfigure(0, weight=1)
+        channels_grid_frame.grid_rowconfigure(1, weight=1)
+    
+    def _edit_channel(self, channel_idx):
+        """Open edit dialog for a specific channel."""
+        # Ensure data exists for this channel
+        self.channel_settings_table.addData(channel_idx + 1)
+        
+        # Get or create settings for this channel
+        try:
+            settings = self.channel_settings_table.getData(channel_idx)
+        except:
+            settings = ChannelSettings()
+            settings.setChannel(channel_idx)
+            self.channel_settings_table.setData(channel_idx, settings)
+        
+        if not settings:
+            settings = ChannelSettings()
+            settings.setChannel(channel_idx)
+            self.channel_settings_table.setData(channel_idx, settings)
+        
+        # Open edit dialog (EditDialog is in channel_settings_table_panel)
+        from ui.widgets.settings.channel_settings_table_panel import EditDialog
+        EditDialog(self, settings, lambda s: self._on_channel_updated(channel_idx, s))
+    
+    def _on_channel_updated(self, channel_idx, settings):
+        """Callback when channel settings are updated via edit dialog."""
+        self.channel_settings_table.setData(channel_idx, settings)
+        self.updateChannelDisplay(channel_idx)
+    
+    def updateChannelDisplay(self, channel_idx):
+        """Update the display for a specific channel."""
+        settings = self.channel_settings_table.getData(channel_idx)
+        if settings:
+            # Enable
+            enable_label = self.channel_labels.get((channel_idx, 'enable'))
+            if enable_label:
+                enabled = settings.getEnable()
+                enable_label.config(text=f"Enable: {'✓' if enabled else '✗'}", 
+                                  fg=SUCCESS if enabled else SECONDARY_TEXT)
+            
+            # Bridge
+            bridge_label = self.channel_labels.get((channel_idx, 'bridge'))
+            if bridge_label:
+                bridge = settings.getBridge()
+                bridge_label.config(text=f"Bridge: {'✓' if bridge else '✗'}", 
+                                  fg=SUCCESS if bridge else SECONDARY_TEXT)
+            
+            # Rudder
+            rudder_label = self.channel_labels.get((channel_idx, 'rudder'))
+            if rudder_label:
+                rudder = settings.getRudder()
+                rudder_label.config(text=f"Rudder: {'✓' if rudder else '✗'}", 
+                                  fg=SUCCESS if rudder else SECONDARY_TEXT)
+            
+            # Timeout
+            timeout_label = self.channel_labels.get((channel_idx, 'timeout'))
+            if timeout_label:
+                timeout = settings.getTimeout()
+                timeout_label.config(text=f"Timeout: {timeout}s", fg=TEXT_COLOR)
+            
+            # Current limits (summary)
+            current_label = self.channel_labels.get((channel_idx, 'current'))
+            if current_label:
+                warn = settings.get('max_current_warning_limit')
+                err = settings.get('max_current_error_limit')
+                min_curr = settings.get('min_current_limit')
+                current_label.config(text=f"Current: W:{warn:.2f}A E:{err:.2f}A", 
+                                   fg=TEXT_COLOR)
+
     def autoDetect(self):
         pass
         #auto_detect = AutoDetect(self.app_protocol, self.channel_settings_table)
@@ -146,10 +280,10 @@ class AppSettingsPanel(tk.Frame):
         status = [False] * 6
         def callback(channel_settings, idx):
             status[idx] = True
-            self.channel_settings_table.addData(idx)
-            self.channel_settings_table.setData(idx, channel_settings) 
+            self.channel_settings_table.addData(idx + 1)
+            self.channel_settings_table.setData(idx, channel_settings)
+            self.updateChannelDisplay(idx)
             if all(status):
-                self.channel_settings_table.populate_treeview()
                 print("All channel settings loaded")
 
         for i in range(6):
