@@ -3,8 +3,13 @@ import serial.tools.list_ports
 import threading
 import time
 import logging
+import glob
+import os
 from typing import Callable, List, Tuple
 from core.protocol.requests import BaseProtocolMessage
+
+# SIM_ENABLED: Set to 1 to enable simulator port detection, 0 to disable
+SIM_ENABLED = 1
 
 logger = logging.getLogger(__name__)
 
@@ -18,12 +23,41 @@ class DeviceClient:
         self.thread = None
 
     def getPortList(self):
+        # Get regular serial ports
         ports = serial.tools.list_ports.comports()
-        return [
-            (port.device)
+        port_list = [
+            port.device
             for port in ports
             if port.description.strip().lower() != 'n/a'
         ]
+        
+        # Add simulator ports (pts devices) if enabled
+        if SIM_ENABLED:
+            sim_ports = self._get_simulator_ports()
+            port_list.extend(sim_ports)
+        
+        return port_list
+    
+    def _get_simulator_ports(self) -> List[str]:
+        """Find available simulator ports (pseudo-terminals)."""
+        sim_ports = []
+        
+        # Look for pts devices that could be simulators
+        pts_pattern = '/dev/pts/*'
+        for pts_path in glob.glob(pts_pattern):
+            try:
+                # Skip ptmx and non-numeric pts
+                basename = os.path.basename(pts_path)
+                if basename == 'ptmx' or not basename.isdigit():
+                    continue
+                    
+                # Check if it's accessible (read/write)
+                if os.access(pts_path, os.R_OK | os.W_OK):
+                    sim_ports.append(f"sim:{pts_path}")
+            except (OSError, ValueError):
+                continue
+        
+        return sim_ports
         
     def subscribe(self, message: BaseProtocolMessage, callback: Callable):
         self.subscriptions.append((message, callback))
@@ -40,7 +74,14 @@ class DeviceClient:
             self.disconnect()
 
         self._stop_flag.clear()
-        self.serial = serial.Serial(port, baudrate=baudrate, timeout=timeout)
+        
+        # Handle simulator port prefix (only if SIM_ENABLED)
+        actual_port = port
+        if SIM_ENABLED and port.startswith('sim:'):
+            actual_port = port[4:]  # Strip 'sim:' prefix
+            logger.info(f"Connecting to simulator port: {actual_port}")
+        
+        self.serial = serial.Serial(actual_port, baudrate=baudrate, timeout=timeout)
 
         if self.serial.is_open:
             self.thread = threading.Thread(target=self._thread_fn, daemon=True)  # recreate thread
