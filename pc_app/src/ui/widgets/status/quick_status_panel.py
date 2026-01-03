@@ -7,10 +7,11 @@ from tkinter import ttk
 import datetime
 
 class QuickStatusPanel(tk.Frame):
-    def __init__(self, parent, device_client=None):
+    def __init__(self, parent, device_client=None, status_panel=None):
         super().__init__(parent, bg=DARK_BG)
         self.configure(bg=DARK_BG)
         self.device_client = device_client
+        self.status_panel = status_panel
         self.create_widgets()
 
     def create_widgets(self):
@@ -208,6 +209,10 @@ class QuickStatusPanel(tk.Frame):
                     self.remote_btn.config(text="Disable Remote Control Mode", bg=ACCENT)
                 else:
                     self.remote_btn.config(text="Enable Remote Control Mode", bg=DARKER_BG)
+        
+        # Update hardware status canvas if available
+        if self.status_panel:
+            self._update_hardware_status(status_data)
     
     def loadFirmwareInfo(self):
         """Load firmware info from device."""
@@ -238,3 +243,28 @@ class QuickStatusPanel(tk.Frame):
                 print("Status data loaded:", status_data)
         
         self.device_client.command(requests.StatusDataRequest(), callback)
+    
+    def _update_hardware_status(self, status_data):
+        """Update hardware status canvas indicators based on StatusData."""
+        if not self.status_panel:
+            return
+        
+        # Map StatusData fields to hardware status canvas indicators
+        # ROCKER1: Landing gear switch (ldg_gear_switch)
+        # Inverted logic: True = DOWN position, False = UP position
+        ldg_gear = status_data.get_ldg_gear_switch()
+        if ldg_gear is not None:
+            # Invert: True means switch is ON, which should show DOWN (False)
+            self.status_panel.set_indicator("ROCKER1", not ldg_gear)
+        
+        # ROCKER2: Rudder switch (rudder_switch)
+        # Inverted logic: True = DOWN position, False = UP position
+        rudder_switch = status_data.get_rudder_switch()
+        if rudder_switch is not None:
+            # Invert: True means switch is ON, which should show DOWN (False)
+            self.status_panel.set_indicator("ROCKER2", not rudder_switch)
+        
+        # TEST: Test button indicator
+        test_button = status_data.get_test_button()
+        if test_button is not None:
+            self.status_panel.set_indicator("TEST", test_button)

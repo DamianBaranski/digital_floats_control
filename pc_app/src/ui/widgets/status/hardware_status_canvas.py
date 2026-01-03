@@ -349,6 +349,7 @@ class HardwareStatusCanvas(tk.Canvas):
         r = color_uint32 & 0xFF
  
         self.animated_bg_color[key] = (r, g, b, 0xFF)
+        self.draw_panel()
 
 def main():
     root = tk.Tk()
