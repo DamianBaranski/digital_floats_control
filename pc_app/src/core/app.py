@@ -73,7 +73,7 @@ class DigitalFloatsApp(tk.Frame):
 
         # Tab factories for robust detach/reattach
         tab_factories = {
-            "Status": lambda parent: SystemStatusPanel(parent),
+            "Status": lambda parent: SystemStatusPanel(parent, self.device_client),
             "Settings": lambda parent: AppSettingsPanel(parent, self.device_client),
             "Monitoring": lambda parent: MonitoringPanel(parent),
             "Logs": lambda parent: LogOutputPanel(parent),
@@ -110,6 +110,10 @@ class DigitalFloatsApp(tk.Frame):
             self.device_client.disconnect()
         else:
             self.device_client.connect(port)
+            # Load firmware info when connected
+            if self.device_client.isConnected() and 'Status' in self.tabs:
+                if hasattr(self.tabs['Status'], 'quick_status'):
+                    self.tabs['Status'].quick_status.loadFirmwareInfo()
         self.ui_port.setStatus(self.device_client.isConnected())
         
     def on_closing(self):

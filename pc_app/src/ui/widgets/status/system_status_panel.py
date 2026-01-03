@@ -18,8 +18,9 @@ except ImportError:
     import Tkinter as tk
 
 class SystemStatusPanel(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, device_client=None):
         tk.Frame.__init__(self, parent, bg=DARK_BG)
+        self.device_client = device_client
         self.ver_label = tk.Label(self, text="Firmware ver:", bg=DARK_BG, fg=TEXT_COLOR, font=FONT)
         self.ver_value = tk.Label(self, text="N/A", bg=DARK_BG, fg=TEXT_COLOR, font=FONT)
         self.firmware_upload_button = tk.Button(self, text="Update firmware", command=self.firmware_upload,
@@ -50,7 +51,7 @@ class SystemStatusPanel(tk.Frame):
         main_paned.add(left_paned)
 
         # Right: quick status
-        self.quick_status = QuickStatusPanel(main_paned)
+        self.quick_status = QuickStatusPanel(main_paned, self.device_client)
         main_paned.add(self.quick_status)
 
     def setStatus(self, status):
@@ -58,13 +59,10 @@ class SystemStatusPanel(tk.Frame):
         
         
     def update(self):
-        pass
-        #if not self.app_protocol.uart.isOpen():
-        #    self.updateVersion('N/A')
-        #    return
-        
-        #if self.updating.value == False:
-        #    self.app_protocol.getVersion(self.updateVersion)
+        if self.device_client and self.device_client.isConnected():
+            # Load firmware info via QuickStatusPanel
+            if hasattr(self, 'quick_status'):
+                self.quick_status.loadFirmwareInfo()
         #    
         #if self.quick_status.remote_enabled:
         #    self.app_protocol.simulate(lambda response: None, 0, 0, 0)

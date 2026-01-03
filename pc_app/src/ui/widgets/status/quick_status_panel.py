@@ -1,14 +1,16 @@
 from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, SUCCESS, ERROR, FONT, HEADER_FONT, SECTION_FONT, ACCENT
 from ui.widgets.base.tooltip import Tooltip
+from core.protocol import requests
 
 import tkinter as tk
 from tkinter import ttk
 import datetime
 
 class QuickStatusPanel(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, device_client=None):
         super().__init__(parent, bg=DARK_BG)
         self.configure(bg=DARK_BG)
+        self.device_client = device_client
         self.create_widgets()
 
     def create_widgets(self):
@@ -18,12 +20,13 @@ class QuickStatusPanel(tk.Frame):
         Tooltip(title, "This section displays information about the currently connected device.")
 
         # Section: System Information
-        sysinfo_frame = self.section_frame("System Information", "Displays basic system information about the connected device including firmware version, hardware details, and manufacturing information.")
-        self.fw_version = self.info_row(sysinfo_frame, "Firmware Version:", "N/A", col=2)
-        self.hw_version = self.info_row(sysinfo_frame, "Hardware Version:", "N/A", col=2)
-        self.hw_config = self.info_row(sysinfo_frame, "Hardware Configuration:", "N/A", col=2)
-        self.mfg_date = self.info_row(sysinfo_frame, "Mfg Date:", "N/A", col=2)
-        self.last_update = self.info_row(sysinfo_frame, "Last FW Update:", "N/A", col=2)
+        sysinfo_frame = self.section_frame("System Information", "Displays firmware information from the device protocol including version, hardware details, serial number, build information, and git commit.")
+        self.app_version = self.info_row(sysinfo_frame, "App Version:", "N/A", col=2)
+        self.hardware_version = self.info_row(sysinfo_frame, "Hardware Version:", "N/A", col=2)
+        self.serial_number = self.info_row(sysinfo_frame, "Serial Number:", "N/A", col=2)
+        self.build_date = self.info_row(sysinfo_frame, "Build Date:", "N/A", col=2)
+        self.build_time = self.info_row(sysinfo_frame, "Build Time:", "N/A", col=2)
+        self.git_commit = self.info_row(sysinfo_frame, "Git Commit:", "N/A", col=2)
         sysinfo_frame.pack(fill="x", padx=10, pady=(10, 0))
 
         # Section: System Health
@@ -140,7 +143,7 @@ class QuickStatusPanel(tk.Frame):
         option_var.trace_add("write", on_option_change)
         def do_update():
             # Here you would trigger the real update
-            self.last_update.config(text=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+            # Note: Firmware update would reload firmware info, which would update build_date/build_time
             popup.destroy()
         tk.Button(btn_frame, text="Update", command=do_update, bg=SUCCESS, fg=TEXT_COLOR).pack(side="left", expand=True, fill="x", padx=(0,5))
         tk.Button(btn_frame, text="Cancel", command=popup.destroy, bg=DARKER_BG, fg=TEXT_COLOR).pack(side="left", expand=True, fill="x", padx=(5,0))
@@ -150,3 +153,21 @@ class QuickStatusPanel(tk.Frame):
         minutes, secs = divmod(int(uptime), 60)
         hours, minutes = divmod(minutes, 60)
         self.uptime.config(text=f"{hours:02d}:{minutes:02d}:{secs:02d}")
+    
+    def loadFirmwareInfo(self):
+        """Load firmware info from device."""
+        if not self.device_client:
+            return
+        
+        def callback(firmware_info):
+            if firmware_info:
+                # Map protocol fields directly to UI fields
+                self.app_version.config(text=firmware_info.get_app_version() or "N/A")
+                self.hardware_version.config(text=firmware_info.get_hardware_version() or "N/A")
+                self.serial_number.config(text=firmware_info.get_serial_number() or "N/A")
+                self.build_date.config(text=firmware_info.get_build_date() or "N/A")
+                self.build_time.config(text=firmware_info.get_build_time() or "N/A")
+                self.git_commit.config(text=firmware_info.get_git_commit() or "N/A")
+                print("Firmware info loaded:", firmware_info)
+        
+        self.device_client.command(requests.FirmwareInfoRequest(), callback)

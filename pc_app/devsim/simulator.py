@@ -725,6 +725,172 @@ class ChannelSettingsTab(ttk.Frame):
         return True
 
 
+class FirmwareInfoTab(ttk.Frame):
+    """Tab for FirmwareInfo simulation."""
+    
+    def __init__(self, parent, on_data_change: Callable):
+        super().__init__(parent)
+        self.on_data_change = on_data_change
+        
+        # Data values
+        self.app_version = tk.StringVar(value="1.0.0-sim")
+        self.hardware_version = tk.StringVar(value="SIM-1.0")
+        self.serial_number = tk.StringVar(value="DEVSIM-001")
+        self.build_date = tk.StringVar(value="2026-01-03")
+        self.build_time = tk.StringVar(value="12:00:00")
+        self.git_commit = tk.StringVar(value="simulator")
+        
+        self._build_ui()
+        
+    def _build_ui(self):
+        """Build the tab UI."""
+        # Main container with padding
+        container = ttk.Frame(self, padding=20)
+        container.pack(fill=tk.BOTH, expand=True)
+        
+        # Title
+        title = ttk.Label(container, text="Firmware Info Simulator",
+                         font=('Segoe UI', 16, 'bold'))
+        title.pack(pady=(0, 20))
+        
+        # Info frame
+        info_frame = ttk.LabelFrame(container, text="Firmware Information", padding=15)
+        info_frame.pack(fill=tk.BOTH, expand=True, pady=(0, 15))
+        
+        # Create fields in a grid
+        fields = [
+            ("App Version:", self.app_version, 20),
+            ("Hardware Version:", self.hardware_version, 20),
+            ("Serial Number:", self.serial_number, 20),
+            ("Build Date:", self.build_date, 20),
+            ("Build Time:", self.build_time, 20),
+            ("Git Commit:", self.git_commit, 40),
+        ]
+        
+        for i, (label_text, var, max_len) in enumerate(fields):
+            row = ttk.Frame(info_frame)
+            row.pack(fill=tk.X, pady=8)
+            
+            ttk.Label(row, text=label_text, width=18).pack(side=tk.LEFT, padx=5)
+            
+            entry = ttk.Entry(row, textvariable=var, width=40, font=('Consolas', 10))
+            entry.pack(side=tk.LEFT, padx=5, fill=tk.X, expand=True)
+            entry.bind('<KeyRelease>', self._update_preview)
+            
+            # Add length indicator
+            length_label = ttk.Label(row, text=f"max {max_len}", width=8,
+                                    font=('Segoe UI', 8), foreground='#888888')
+            length_label.pack(side=tk.LEFT, padx=5)
+        
+        # Quick presets
+        presets_frame = ttk.LabelFrame(container, text="Quick Presets", padding=15)
+        presets_frame.pack(fill=tk.X, pady=(0, 15))
+        
+        preset_buttons = ttk.Frame(presets_frame)
+        preset_buttons.pack()
+        
+        ttk.Button(preset_buttons, text="Default Simulator",
+                  command=self._preset_default).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="Development Build",
+                  command=self._preset_dev).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="Production Build",
+                  command=self._preset_production).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="Custom Serial",
+                  command=self._preset_custom_serial).pack(side=tk.LEFT, padx=5)
+        
+        # Protocol preview
+        preview_frame = ttk.LabelFrame(container, text="Protocol Data Preview", padding=15)
+        preview_frame.pack(fill=tk.BOTH, expand=True)
+        
+        self.preview_text = tk.Text(preview_frame, height=10, font=('Consolas', 10),
+                                   bg='#1a1a2e', fg='#0fe0a0', insertbackground='white')
+        self.preview_text.pack(fill=tk.BOTH, expand=True)
+        
+        # Bind variable changes to update preview
+        for var in [self.app_version, self.hardware_version, self.serial_number,
+                   self.build_date, self.build_time, self.git_commit]:
+            var.trace_add('write', self._update_preview)
+        
+        self._update_preview()
+        
+    def _update_preview(self, *args):
+        """Update the protocol data preview."""
+        data = self.get_encoded_data()
+        
+        self.preview_text.delete('1.0', tk.END)
+        
+        # Show raw bytes (first 80 bytes for readability)
+        hex_str = ' '.join(f'{b:02X}' for b in data[:80])
+        if len(data) > 80:
+            hex_str += f" ... ({len(data) - 80} more bytes)"
+        self.preview_text.insert(tk.END, f"Raw bytes ({len(data)} bytes total):\n")
+        self.preview_text.insert(tk.END, f"  {hex_str}\n\n")
+        
+        # Show interpreted values
+        self.preview_text.insert(tk.END, "Interpreted:\n")
+        self.preview_text.insert(tk.END, f"  App Version:      '{self.app_version.get()}'\n")
+        self.preview_text.insert(tk.END, f"  Hardware Version: '{self.hardware_version.get()}'\n")
+        self.preview_text.insert(tk.END, f"  Serial Number:    '{self.serial_number.get()}'\n")
+        self.preview_text.insert(tk.END, f"  Build Date:       '{self.build_date.get()}'\n")
+        self.preview_text.insert(tk.END, f"  Build Time:       '{self.build_time.get()}'\n")
+        self.preview_text.insert(tk.END, f"  Git Commit:       '{self.git_commit.get()}'\n")
+        
+        # Show byte lengths
+        self.preview_text.insert(tk.END, f"\nField Lengths:\n")
+        self.preview_text.insert(tk.END, f"  App Version:      {len(self.app_version.get().encode('utf-8'))} bytes (max 20)\n")
+        self.preview_text.insert(tk.END, f"  Hardware Version: {len(self.hardware_version.get().encode('utf-8'))} bytes (max 20)\n")
+        self.preview_text.insert(tk.END, f"  Serial Number:    {len(self.serial_number.get().encode('utf-8'))} bytes (max 20)\n")
+        self.preview_text.insert(tk.END, f"  Build Date:       {len(self.build_date.get().encode('utf-8'))} bytes (max 20)\n")
+        self.preview_text.insert(tk.END, f"  Build Time:       {len(self.build_time.get().encode('utf-8'))} bytes (max 20)\n")
+        self.preview_text.insert(tk.END, f"  Git Commit:       {len(self.git_commit.get().encode('utf-8'))} bytes (max 40)\n")
+        
+    def _preset_default(self):
+        """Apply default simulator preset."""
+        self.app_version.set("1.0.0-sim")
+        self.hardware_version.set("SIM-1.0")
+        self.serial_number.set("DEVSIM-001")
+        self.build_date.set("2026-01-03")
+        self.build_time.set("12:00:00")
+        self.git_commit.set("simulator")
+        
+    def _preset_dev(self):
+        """Apply development build preset."""
+        import datetime
+        now = datetime.datetime.now()
+        self.app_version.set("2.0.0-dev")
+        self.hardware_version.set("HW-2.0")
+        self.serial_number.set("DEV-001")
+        self.build_date.set(now.strftime("%Y-%m-%d"))
+        self.build_time.set(now.strftime("%H:%M:%S"))
+        self.git_commit.set("abc123def456")
+        
+    def _preset_production(self):
+        """Apply production build preset."""
+        self.app_version.set("1.0.0")
+        self.hardware_version.set("HW-1.0")
+        self.serial_number.set("PROD-001")
+        self.build_date.set("2025-12-01")
+        self.build_time.set("10:00:00")
+        self.git_commit.set("release-v1.0.0")
+        
+    def _preset_custom_serial(self):
+        """Apply custom serial number preset."""
+        import random
+        serial = f"SN-{random.randint(1000, 9999)}"
+        self.serial_number.set(serial)
+        
+    def get_encoded_data(self) -> bytes:
+        """Get the current data encoded as protocol bytes."""
+        return FirmwareInfoEncoder.encode(
+            app_version=self.app_version.get(),
+            hardware_version=self.hardware_version.get(),
+            serial_number=self.serial_number.get(),
+            build_date=self.build_date.get(),
+            build_time=self.build_time.get(),
+            git_commit=self.git_commit.get()
+        )
+
+
 class DeviceSimulatorApp:
     """Main Device Simulator Application."""
     
@@ -831,8 +997,12 @@ class DeviceSimulatorApp:
         self.channel_settings_tab = ChannelSettingsTab(self.notebook, self._on_data_change)
         self.notebook.add(self.channel_settings_tab, text="  Channel Settings  ")
         
+        # Firmware Info tab
+        self.firmware_info_tab = FirmwareInfoTab(self.notebook, self._on_data_change)
+        self.notebook.add(self.firmware_info_tab, text="  Firmware Info  ")
+        
         # Placeholder tabs for other data types
-        for tab_name in ["Firmware Info", "Monitoring", 
+        for tab_name in ["Monitoring", 
                         "Error Status", "Remote Control"]:
             placeholder = ttk.Frame(self.notebook, padding=40)
             label = ttk.Label(placeholder, 
@@ -890,16 +1060,9 @@ class DeviceSimulatorApp:
         return self.status_tab.get_encoded_data()
     
     def _handle_firmware_info(self, cmd: str, payload: bytes) -> bytes:
-        """Handle FirmwareInfo request - placeholder."""
+        """Handle FirmwareInfo request."""
         self._flash_activity()
-        return FirmwareInfoEncoder.encode(
-            app_version="1.0.0-sim",
-            hardware_version="SIM-1.0",
-            serial_number="DEVSIM-001",
-            build_date="2026-01-03",
-            build_time="12:00:00",
-            git_commit="simulator"
-        )
+        return self.firmware_info_tab.get_encoded_data()
     
     def _handle_monitoring(self, cmd: str, payload: bytes) -> bytes:
         """Handle Monitoring request - placeholder."""
