@@ -19,8 +19,8 @@ class DigitalFloatsApp(tk.Frame):
         self.parent.configure(bg=DARK_BG)
         self.device_client = DeviceClient()
         self.device_client.connect("/dev/ttyUSB0")
-        #self.device_client.subscribe(requests.FirmwareInfoRequest(), self.firmware_version_update)
-        #self.device_client.subscribe(requests.StatusDataRequest(), self.status_update)
+        # Status data will be loaded on connection via SystemStatusPanel.update()
+        # Firmware info will be loaded on connection via QuickStatusPanel.loadFirmwareInfo()
 
         # Configure ttk styles
         style = ttk.Style()
@@ -110,10 +110,11 @@ class DigitalFloatsApp(tk.Frame):
             self.device_client.disconnect()
         else:
             self.device_client.connect(port)
-            # Load firmware info when connected
+            # Load firmware info and status data when connected
             if self.device_client.isConnected() and 'Status' in self.tabs:
                 if hasattr(self.tabs['Status'], 'quick_status'):
                     self.tabs['Status'].quick_status.loadFirmwareInfo()
+                    self.tabs['Status'].quick_status.loadStatusData()
         self.ui_port.setStatus(self.device_client.isConnected())
         
     def on_closing(self):

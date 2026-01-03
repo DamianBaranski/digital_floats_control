@@ -30,19 +30,18 @@ class QuickStatusPanel(tk.Frame):
         sysinfo_frame.pack(fill="x", padx=10, pady=(10, 0))
 
         # Section: System Health
-        health_frame = self.section_frame("System Health", "Shows the current health status of the system including uptime, power status, memory usage, and communication load.")
+        health_frame = self.section_frame("System Health", "Shows the current health status from device protocol including uptime, power voltage, and memory usage.")
         self.uptime = self.info_row(health_frame, "System Uptime:", "N/A", col=2, pady=6)
-        self.power_status = self.info_row(health_frame, "Power Status:", "N/A", fg=SUCCESS, col=2, pady=6)
-        self.health_label = self.health_text_row(health_frame, "Overall Health:", 98, "Good", color=SUCCESS, col=2, pady=6)
-        self.mem_label, self.mem_bar = self.health_row_3col(health_frame, "Memory Usage:", 45, "180/400 MB (45%)", color=SUCCESS, pady=6)
-        self.uart_label, self.uart_bar = self.health_row_3col(health_frame, "UART Load:", 12, "1.2 kB/s (12%)", color=SUCCESS, pady=6)
+        self.power_voltage = self.info_row(health_frame, "Power Voltage:", "N/A", fg=SUCCESS, col=2, pady=6)
+        self.mem_label, self.mem_bar = self.health_row_3col(health_frame, "Memory Usage:", 0, "N/A", color=SUCCESS, pady=6)
         health_frame.pack(fill="x", padx=10, pady=(15, 0))
 
         # Section: Operation Status
-        op_frame = self.section_frame("Operation Status", "Displays the current operational status of the device including remote control mode and test results.")
+        op_frame = self.section_frame("Operation Status", "Displays the current operational status from device protocol including switches and remote control mode.")
+        self.ldg_gear_switch = self.info_row(op_frame, "Landing Gear Switch:", "OFF", fg=ERROR, col=2, pady=6)
+        self.rudder_switch = self.info_row(op_frame, "Rudder Switch:", "OFF", fg=ERROR, col=2, pady=6)
+        self.test_button = self.info_row(op_frame, "Test Button:", "OFF", fg=ERROR, col=2, pady=6)
         self.remote_mode = self.info_row(op_frame, "Remote Control Mode:", "OFF", fg=ERROR, col=2, pady=6)
-        self.last_test = self.info_row(op_frame, "Last Test Status:", "Success (2025-05-07 12:10)", fg=SUCCESS, col=2, pady=6)
-        self.last_comm = self.info_row(op_frame, "Last Communication:", "2025-05-07 12:12", col=2, pady=6)
         op_frame.pack(fill="x", padx=10, pady=(15, 0))
 
         # Section: Controls
@@ -103,14 +102,13 @@ class QuickStatusPanel(tk.Frame):
         return label2, bar
 
     def mock_update(self):
-        # This would be replaced with real data updates
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.uptime.config(text="00:13:37")
-        self.last_comm.config(text=now)
-        self.after(1000, self.mock_update)
+        # This would be replaced with real data updates via loadStatusData()
+        # Status data is now loaded from device protocol
+        pass
 
     def mock_reset(self):
-        self.last_test.config(text="Reset ({} Success)".format(datetime.datetime.now().strftime("%H:%M:%S")), fg=SUCCESS)
+        # Reset functionality would be handled via device protocol
+        pass
 
     def toggle_remote_mode(self):
         self.remote_enabled = not self.remote_enabled
@@ -150,9 +148,66 @@ class QuickStatusPanel(tk.Frame):
         entry.focus_set()
         
     def update_uptime(self, uptime):
-        minutes, secs = divmod(int(uptime), 60)
+        """Update uptime from milliseconds."""
+        if uptime is None:
+            self.uptime.config(text="N/A")
+            return
+        total_seconds = int(uptime) // 1000  # Convert ms to seconds
+        minutes, secs = divmod(total_seconds, 60)
         hours, minutes = divmod(minutes, 60)
         self.uptime.config(text=f"{hours:02d}:{minutes:02d}:{secs:02d}")
+    
+    def updateStatusData(self, status_data):
+        """Update all status data fields from StatusData protocol."""
+        if not status_data:
+            return
+        
+        # System Health
+        uptime = status_data.get_uptime()
+        if uptime is not None:
+            self.update_uptime(uptime)
+        
+        power_voltage = status_data.get_power_voltage()
+        if power_voltage is not None:
+            self.power_voltage.config(text=f"{power_voltage:.1f} V", fg=SUCCESS if power_voltage >= 10.0 else ERROR)
+        
+        memory_usage = status_data.get_memory_usage()
+        if memory_usage is not None:
+            # Assuming max memory is around 8192 KB for display purposes
+            max_memory = 8192
+            mem_percent = min(100, int((memory_usage / max_memory) * 100)) if max_memory > 0 else 0
+            mem_text = f"{memory_usage} KB ({mem_percent}%)"
+            color = SUCCESS if mem_percent < 80 else ERROR
+            self.mem_label.config(text=mem_text, fg=color)
+            self.mem_bar.config(value=mem_percent)
+        
+        # Operation Status - Switches
+        ldg_gear = status_data.get_ldg_gear_switch()
+        if ldg_gear is not None:
+            self.ldg_gear_switch.config(text="ON" if ldg_gear else "OFF", 
+                                       fg=SUCCESS if ldg_gear else ERROR)
+        
+        rudder = status_data.get_rudder_switch()
+        if rudder is not None:
+            self.rudder_switch.config(text="ON" if rudder else "OFF",
+                                     fg=SUCCESS if rudder else ERROR)
+        
+        test_btn = status_data.get_test_button()
+        if test_btn is not None:
+            self.test_button.config(text="ON" if test_btn else "OFF",
+                                   fg=SUCCESS if test_btn else ERROR)
+        
+        remote = status_data.get_remote_control_status()
+        if remote is not None:
+            self.remote_mode.config(text="ON" if remote else "OFF",
+                                   fg=SUCCESS if remote else ERROR)
+            self.remote_enabled = remote
+            # Update button text
+            if hasattr(self, 'remote_btn'):
+                if remote:
+                    self.remote_btn.config(text="Disable Remote Control Mode", bg=ACCENT)
+                else:
+                    self.remote_btn.config(text="Enable Remote Control Mode", bg=DARKER_BG)
     
     def loadFirmwareInfo(self):
         """Load firmware info from device."""
@@ -171,3 +226,15 @@ class QuickStatusPanel(tk.Frame):
                 print("Firmware info loaded:", firmware_info)
         
         self.device_client.command(requests.FirmwareInfoRequest(), callback)
+    
+    def loadStatusData(self):
+        """Load status data from device."""
+        if not self.device_client:
+            return
+        
+        def callback(status_data):
+            if status_data:
+                self.updateStatusData(status_data)
+                print("Status data loaded:", status_data)
+        
+        self.device_client.command(requests.StatusDataRequest(), callback)

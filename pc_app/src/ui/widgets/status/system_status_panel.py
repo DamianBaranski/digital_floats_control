@@ -55,14 +55,17 @@ class SystemStatusPanel(tk.Frame):
         main_paned.add(self.quick_status)
 
     def setStatus(self, status):
-        self.quick_status.update_uptime(status.get_uptime())
+        """Update status data from StatusData protocol."""
+        if hasattr(self, 'quick_status') and status:
+            self.quick_status.updateStatusData(status)
         
         
     def update(self):
         if self.device_client and self.device_client.isConnected():
-            # Load firmware info via QuickStatusPanel
+            # Load firmware info and status data via QuickStatusPanel
             if hasattr(self, 'quick_status'):
                 self.quick_status.loadFirmwareInfo()
+                self.quick_status.loadStatusData()
         #    
         #if self.quick_status.remote_enabled:
         #    self.app_protocol.simulate(lambda response: None, 0, 0, 0)
