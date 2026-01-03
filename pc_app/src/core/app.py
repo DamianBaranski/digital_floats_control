@@ -4,6 +4,7 @@ from ui.widgets.base.serial_port_panel import SerialPortPanel
 from ui.widgets.status.system_status_panel import SystemStatusPanel
 from ui.widgets.settings.app_settings_panel import AppSettingsPanel
 from ui.widgets.monitoring.monitoring_panel import MonitoringPanel
+from ui.widgets.error_status.channel_error_status_panel import ChannelErrorStatusPanel
 from ui.widgets.logs.log_output_panel import LogOutputPanel
 from ui.widgets.base.detachable_notebook import DetachableNotebook
 from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, FONT, HEADER_FONT
@@ -76,6 +77,7 @@ class DigitalFloatsApp(tk.Frame):
             "Status": lambda parent: SystemStatusPanel(parent, self.device_client),
             "Settings": lambda parent: AppSettingsPanel(parent, self.device_client),
             "Monitoring": lambda parent: MonitoringPanel(parent, self.device_client),
+            "Channel Error Status": lambda parent: ChannelErrorStatusPanel(parent, self.device_client),
             "Logs": lambda parent: LogOutputPanel(parent),
         }
 
@@ -85,7 +87,7 @@ class DigitalFloatsApp(tk.Frame):
 
         self.tabs = {}
         # Create and add tabs to the notebook using factories
-        for tab_name in ["Status", "Settings", "Monitoring", "Logs"]:
+        for tab_name in ["Status", "Settings", "Monitoring", "Channel Error Status", "Logs"]:
             frame = tk.Frame(self.ui_tabs, bg=DARK_BG)
             widget = tab_factories[tab_name](frame)
             widget.pack(fill='both', expand=True)
@@ -119,6 +121,9 @@ class DigitalFloatsApp(tk.Frame):
                 # Load monitoring data when connected
                 if 'Monitoring' in self.tabs:
                     self.tabs['Monitoring'].loadMonitoringData()
+                # Load error status when connected
+                if 'Channel Error Status' in self.tabs:
+                    self.tabs['Channel Error Status'].loadErrorStatus()
         self.ui_port.setStatus(self.device_client.isConnected())
         
     def on_closing(self):

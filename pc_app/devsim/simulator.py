@@ -1173,6 +1173,252 @@ class MonitoringTab(ttk.Frame):
         )
 
 
+class ErrorStatusTab(ttk.Frame):
+    """Tab for ErrorStatus simulation."""
+    
+    # Error and warning types matching the protocol
+    CHANNEL_ERRORS = [
+        "RELAY_COMMUNICATION_ERROR",
+        "ENDSTOP_SHORT_CIRCUIT",
+        "OVER_CURRENT_ERROR"
+    ]
+    
+    CHANNEL_WARNINGS = [
+        "MOVEMENT_TIMEOUT",
+        "OVER_CURRENT_WARNING",
+        "UNDER_CURRENT_WARNING",
+        "ADC_COMMUNICATION_ERROR"
+    ]
+    
+    SYSTEM_WARNINGS = [
+        "LOW_VOLTAGE",
+        "HIGH_VOLTAGE",
+        "EXT_MEMORY_ERROR"
+    ]
+    
+    def __init__(self, parent, on_data_change: Callable):
+        super().__init__(parent)
+        self.on_data_change = on_data_change
+        
+        # Store error/warning states for all 6 channels
+        self.channel_errors = {}  # {channel: {error_type: BooleanVar}}
+        self.channel_warnings = {}  # {channel: {warning_type: BooleanVar}}
+        self.system_warnings = {}  # {warning_type: BooleanVar}
+        
+        # Initialize all channels
+        for ch in range(6):
+            self.channel_errors[ch] = {
+                error: tk.BooleanVar(value=False) 
+                for error in self.CHANNEL_ERRORS
+            }
+            self.channel_warnings[ch] = {
+                warning: tk.BooleanVar(value=False) 
+                for warning in self.CHANNEL_WARNINGS
+            }
+        
+        # Initialize system warnings
+        for warning in self.SYSTEM_WARNINGS:
+            self.system_warnings[warning] = tk.BooleanVar(value=False)
+        
+        self._build_ui()
+        
+    def _build_ui(self):
+        """Build the tab UI."""
+        # Main container with padding
+        container = ttk.Frame(self, padding=20)
+        container.pack(fill=tk.BOTH, expand=True)
+        
+        # Title
+        title = ttk.Label(container, text="Error Status Simulator",
+                         font=('Segoe UI', 16, 'bold'))
+        title.pack(pady=(0, 20))
+        
+        # Create scrollable frame
+        canvas = tk.Canvas(container, bg='#1a1a2e', highlightthickness=0)
+        scrollbar = ttk.Scrollbar(container, orient=tk.VERTICAL, command=canvas.yview)
+        scrollable_frame = ttk.Frame(canvas)
+        
+        scrollable_frame.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+        )
+        
+        canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
+        
+        canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        
+        # Channel errors and warnings frame
+        channels_frame = ttk.LabelFrame(scrollable_frame, text="Channel Errors & Warnings", padding=15)
+        channels_frame.pack(fill=tk.X, pady=5)
+        
+        # Create a notebook for channels
+        channel_notebook = ttk.Notebook(channels_frame)
+        channel_notebook.pack(fill=tk.BOTH, expand=True)
+        
+        for ch in range(6):
+            channel_frame = ttk.Frame(channel_notebook, padding=10)
+            
+            # Errors section
+            errors_frame = ttk.LabelFrame(channel_frame, text=f"Channel {ch} Errors", padding=10)
+            errors_frame.pack(fill=tk.X, pady=5)
+            
+            for error in self.CHANNEL_ERRORS:
+                check = ttk.Checkbutton(errors_frame, text=error.replace('_', ' ').title(),
+                                       variable=self.channel_errors[ch][error],
+                                       command=self._update_preview)
+                check.pack(anchor='w', pady=2)
+            
+            # Warnings section
+            warnings_frame = ttk.LabelFrame(channel_frame, text=f"Channel {ch} Warnings", padding=10)
+            warnings_frame.pack(fill=tk.X, pady=5)
+            
+            for warning in self.CHANNEL_WARNINGS:
+                check = ttk.Checkbutton(warnings_frame, text=warning.replace('_', ' ').title(),
+                                       variable=self.channel_warnings[ch][warning],
+                                       command=self._update_preview)
+                check.pack(anchor='w', pady=2)
+            
+            channel_notebook.add(channel_frame, text=f"Ch {ch}")
+        
+        # System warnings frame
+        system_frame = ttk.LabelFrame(scrollable_frame, text="System Warnings", padding=15)
+        system_frame.pack(fill=tk.X, pady=5)
+        
+        for warning in self.SYSTEM_WARNINGS:
+            check = ttk.Checkbutton(system_frame, text=warning.replace('_', ' ').title(),
+                                   variable=self.system_warnings[warning],
+                                   command=self._update_preview)
+            check.pack(anchor='w', pady=5)
+        
+        # Quick presets
+        presets_frame = ttk.LabelFrame(scrollable_frame, text="Quick Presets", padding=15)
+        presets_frame.pack(fill=tk.X, pady=5)
+        
+        preset_buttons = ttk.Frame(presets_frame)
+        preset_buttons.pack()
+        
+        ttk.Button(preset_buttons, text="Clear All",
+                  command=self._preset_clear_all).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="All Errors",
+                  command=self._preset_all_errors).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="All Warnings",
+                  command=self._preset_all_warnings).pack(side=tk.LEFT, padx=5)
+        ttk.Button(preset_buttons, text="System Warnings",
+                  command=self._preset_system_warnings).pack(side=tk.LEFT, padx=5)
+        
+        # Protocol preview
+        preview_frame = ttk.LabelFrame(container, text="Protocol Data Preview", padding=15)
+        preview_frame.pack(fill=tk.BOTH, expand=True)
+        
+        self.preview_text = tk.Text(preview_frame, height=10, font=('Consolas', 10),
+                                   bg='#1a1a2e', fg='#0fe0a0', insertbackground='white')
+        self.preview_text.pack(fill=tk.BOTH, expand=True)
+        
+        # Bind variable changes to update preview
+        for ch in range(6):
+            for var in list(self.channel_errors[ch].values()) + list(self.channel_warnings[ch].values()):
+                var.trace_add('write', self._update_preview)
+        for var in self.system_warnings.values():
+            var.trace_add('write', self._update_preview)
+        
+        self._update_preview()
+        
+    def _update_preview(self, *args):
+        """Update the protocol data preview."""
+        data = self.get_encoded_data()
+        
+        self.preview_text.delete('1.0', tk.END)
+        
+        # Show raw bytes
+        hex_str = ' '.join(f'{b:02X}' for b in data)
+        self.preview_text.insert(tk.END, f"Raw bytes ({len(data)} bytes):\n")
+        self.preview_text.insert(tk.END, f"  {hex_str}\n\n")
+        
+        # Show interpreted values
+        self.preview_text.insert(tk.END, "Channel Errors:\n")
+        for ch in range(6):
+            errors = [err for err in self.CHANNEL_ERRORS if self.channel_errors[ch][err].get()]
+            if errors:
+                self.preview_text.insert(tk.END, f"  Ch {ch}: {', '.join(errors)}\n")
+        
+        self.preview_text.insert(tk.END, "\nChannel Warnings:\n")
+        for ch in range(6):
+            warnings = [warn for warn in self.CHANNEL_WARNINGS if self.channel_warnings[ch][warn].get()]
+            if warnings:
+                self.preview_text.insert(tk.END, f"  Ch {ch}: {', '.join(warnings)}\n")
+        
+        sys_warnings = [warn for warn in self.SYSTEM_WARNINGS if self.system_warnings[warn].get()]
+        if sys_warnings:
+            self.preview_text.insert(tk.END, f"\nSystem Warnings: {', '.join(sys_warnings)}\n")
+        
+        if not any(self.channel_errors[ch][err].get() for ch in range(6) for err in self.CHANNEL_ERRORS) and \
+           not any(self.channel_warnings[ch][warn].get() for ch in range(6) for warn in self.CHANNEL_WARNINGS) and \
+           not any(self.system_warnings[warn].get() for warn in self.SYSTEM_WARNINGS):
+            self.preview_text.insert(tk.END, "\nNo errors or warnings")
+        
+    def _preset_clear_all(self):
+        """Clear all errors and warnings."""
+        for ch in range(6):
+            for error in self.CHANNEL_ERRORS:
+                self.channel_errors[ch][error].set(False)
+            for warning in self.CHANNEL_WARNINGS:
+                self.channel_warnings[ch][warning].set(False)
+        for warning in self.SYSTEM_WARNINGS:
+            self.system_warnings[warning].set(False)
+        
+    def _preset_all_errors(self):
+        """Set all channel errors."""
+        for ch in range(6):
+            for error in self.CHANNEL_ERRORS:
+                self.channel_errors[ch][error].set(True)
+        
+    def _preset_all_warnings(self):
+        """Set all channel warnings."""
+        for ch in range(6):
+            for warning in self.CHANNEL_WARNINGS:
+                self.channel_warnings[ch][warning].set(True)
+        
+    def _preset_system_warnings(self):
+        """Set all system warnings."""
+        for warning in self.SYSTEM_WARNINGS:
+            self.system_warnings[warning].set(True)
+        
+    def get_encoded_data(self) -> bytes:
+        """Get the current data encoded as protocol bytes."""
+        channel_errors = []
+        channel_warnings = []
+        
+        # Encode channel errors (bit flags)
+        for ch in range(6):
+            error_mask = 0
+            for i, error in enumerate(self.CHANNEL_ERRORS):
+                if self.channel_errors[ch][error].get():
+                    error_mask |= (1 << i)
+            channel_errors.append(error_mask & 0xFF)
+        
+        # Encode channel warnings (bit flags)
+        for ch in range(6):
+            warning_mask = 0
+            for i, warning in enumerate(self.CHANNEL_WARNINGS):
+                if self.channel_warnings[ch][warning].get():
+                    warning_mask |= (1 << i)
+            channel_warnings.append(warning_mask & 0xFF)
+        
+        # Encode system warnings (bit flags)
+        system_mask = 0
+        for i, warning in enumerate(self.SYSTEM_WARNINGS):
+            if self.system_warnings[warning].get():
+                system_mask |= (1 << i)
+        
+        return ErrorStatusEncoder.encode(
+            channel_errors=channel_errors,
+            channel_warnings=channel_warnings,
+            system_warnings=system_mask & 0xFF
+        )
+
+
 class DeviceSimulatorApp:
     """Main Device Simulator Application."""
     
@@ -1287,8 +1533,12 @@ class DeviceSimulatorApp:
         self.monitoring_tab = MonitoringTab(self.notebook, self._on_data_change, self.status_tab)
         self.notebook.add(self.monitoring_tab, text="  Monitoring  ")
         
+        # Error Status tab
+        self.error_status_tab = ErrorStatusTab(self.notebook, self._on_data_change)
+        self.notebook.add(self.error_status_tab, text="  Error Status  ")
+        
         # Placeholder tabs for other data types
-        for tab_name in ["Error Status", "Remote Control"]:
+        for tab_name in ["Remote Control"]:
             placeholder = ttk.Frame(self.notebook, padding=40)
             label = ttk.Label(placeholder, 
                             text=f"{tab_name} simulation\n(Coming soon)",
@@ -1372,13 +1622,9 @@ class DeviceSimulatorApp:
             return b'\x00'  # Failure
     
     def _handle_error_status(self, cmd: str, payload: bytes) -> bytes:
-        """Handle ErrorStatus request - placeholder (no errors)."""
+        """Handle ErrorStatus request."""
         self._flash_activity()
-        return ErrorStatusEncoder.encode(
-            channel_errors=[0] * 6,
-            channel_warnings=[0] * 6,
-            system_warnings=0
-        )
+        return self.error_status_tab.get_encoded_data()
     
     def _handle_remote_control(self, cmd: str, payload: bytes) -> bytes:
         """Handle RemoteControl command."""
