@@ -1,14 +1,17 @@
 from ui.theme import DARK_BG, DARKER_BG, BORDER_COLOR, TEXT_COLOR, SECONDARY_TEXT, SUCCESS, ERROR, FONT, HEADER_FONT, SECTION_FONT, ACCENT
 from ui.widgets.base.tooltip import Tooltip
+from core.protocol import requests
 
 import tkinter as tk
 from tkinter import ttk
 import datetime
 
 class QuickStatusPanel(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, device_client=None, status_panel=None):
         super().__init__(parent, bg=DARK_BG)
         self.configure(bg=DARK_BG)
+        self.device_client = device_client
+        self.status_panel = status_panel
         self.create_widgets()
 
     def create_widgets(self):
@@ -18,28 +21,28 @@ class QuickStatusPanel(tk.Frame):
         Tooltip(title, "This section displays information about the currently connected device.")
 
         # Section: System Information
-        sysinfo_frame = self.section_frame("System Information", "Displays basic system information about the connected device including firmware version, hardware details, and manufacturing information.")
-        self.fw_version = self.info_row(sysinfo_frame, "Firmware Version:", "N/A", col=2)
-        self.hw_version = self.info_row(sysinfo_frame, "Hardware Version:", "N/A", col=2)
-        self.hw_config = self.info_row(sysinfo_frame, "Hardware Configuration:", "N/A", col=2)
-        self.mfg_date = self.info_row(sysinfo_frame, "Mfg Date:", "N/A", col=2)
-        self.last_update = self.info_row(sysinfo_frame, "Last FW Update:", "N/A", col=2)
+        sysinfo_frame = self.section_frame("System Information", "Displays firmware information from the device protocol including version, hardware details, serial number, build information, and git commit.")
+        self.app_version = self.info_row(sysinfo_frame, "App Version:", "N/A", col=2)
+        self.hardware_version = self.info_row(sysinfo_frame, "Hardware Version:", "N/A", col=2)
+        self.serial_number = self.info_row(sysinfo_frame, "Serial Number:", "N/A", col=2)
+        self.build_date = self.info_row(sysinfo_frame, "Build Date:", "N/A", col=2)
+        self.build_time = self.info_row(sysinfo_frame, "Build Time:", "N/A", col=2)
+        self.git_commit = self.info_row(sysinfo_frame, "Git Commit:", "N/A", col=2)
         sysinfo_frame.pack(fill="x", padx=10, pady=(10, 0))
 
         # Section: System Health
-        health_frame = self.section_frame("System Health", "Shows the current health status of the system including uptime, power status, memory usage, and communication load.")
+        health_frame = self.section_frame("System Health", "Shows the current health status from device protocol including uptime, power voltage, and memory usage.")
         self.uptime = self.info_row(health_frame, "System Uptime:", "N/A", col=2, pady=6)
-        self.power_status = self.info_row(health_frame, "Power Status:", "N/A", fg=SUCCESS, col=2, pady=6)
-        self.health_label = self.health_text_row(health_frame, "Overall Health:", 98, "Good", color=SUCCESS, col=2, pady=6)
-        self.mem_label, self.mem_bar = self.health_row_3col(health_frame, "Memory Usage:", 45, "180/400 MB (45%)", color=SUCCESS, pady=6)
-        self.uart_label, self.uart_bar = self.health_row_3col(health_frame, "UART Load:", 12, "1.2 kB/s (12%)", color=SUCCESS, pady=6)
+        self.power_voltage = self.info_row(health_frame, "Power Voltage:", "N/A", fg=SUCCESS, col=2, pady=6)
+        self.mem_label, self.mem_bar = self.health_row_3col(health_frame, "Memory Usage:", 0, "N/A", color=SUCCESS, pady=6)
         health_frame.pack(fill="x", padx=10, pady=(15, 0))
 
         # Section: Operation Status
-        op_frame = self.section_frame("Operation Status", "Displays the current operational status of the device including remote control mode and test results.")
+        op_frame = self.section_frame("Operation Status", "Displays the current operational status from device protocol including switches and remote control mode.")
+        self.ldg_gear_switch = self.info_row(op_frame, "Landing Gear Switch:", "OFF", fg=ERROR, col=2, pady=6)
+        self.rudder_switch = self.info_row(op_frame, "Rudder Switch:", "OFF", fg=ERROR, col=2, pady=6)
+        self.test_button = self.info_row(op_frame, "Test Button:", "OFF", fg=ERROR, col=2, pady=6)
         self.remote_mode = self.info_row(op_frame, "Remote Control Mode:", "OFF", fg=ERROR, col=2, pady=6)
-        self.last_test = self.info_row(op_frame, "Last Test Status:", "Success (2025-05-07 12:10)", fg=SUCCESS, col=2, pady=6)
-        self.last_comm = self.info_row(op_frame, "Last Communication:", "2025-05-07 12:12", col=2, pady=6)
         op_frame.pack(fill="x", padx=10, pady=(15, 0))
 
         # Section: Controls
@@ -100,14 +103,13 @@ class QuickStatusPanel(tk.Frame):
         return label2, bar
 
     def mock_update(self):
-        # This would be replaced with real data updates
-        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        self.uptime.config(text="00:13:37")
-        self.last_comm.config(text=now)
-        self.after(1000, self.mock_update)
+        # This would be replaced with real data updates via loadStatusData()
+        # Status data is now loaded from device protocol
+        pass
 
     def mock_reset(self):
-        self.last_test.config(text="Reset ({} Success)".format(datetime.datetime.now().strftime("%H:%M:%S")), fg=SUCCESS)
+        # Reset functionality would be handled via device protocol
+        pass
 
     def toggle_remote_mode(self):
         self.remote_enabled = not self.remote_enabled
@@ -140,13 +142,129 @@ class QuickStatusPanel(tk.Frame):
         option_var.trace_add("write", on_option_change)
         def do_update():
             # Here you would trigger the real update
-            self.last_update.config(text=datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+            # Note: Firmware update would reload firmware info, which would update build_date/build_time
             popup.destroy()
         tk.Button(btn_frame, text="Update", command=do_update, bg=SUCCESS, fg=TEXT_COLOR).pack(side="left", expand=True, fill="x", padx=(0,5))
         tk.Button(btn_frame, text="Cancel", command=popup.destroy, bg=DARKER_BG, fg=TEXT_COLOR).pack(side="left", expand=True, fill="x", padx=(5,0))
         entry.focus_set()
         
     def update_uptime(self, uptime):
-        minutes, secs = divmod(int(uptime), 60)
+        """Update uptime from milliseconds."""
+        if uptime is None:
+            self.uptime.config(text="N/A")
+            return
+        total_seconds = int(uptime) // 1000  # Convert ms to seconds
+        minutes, secs = divmod(total_seconds, 60)
         hours, minutes = divmod(minutes, 60)
         self.uptime.config(text=f"{hours:02d}:{minutes:02d}:{secs:02d}")
+    
+    def updateStatusData(self, status_data):
+        """Update all status data fields from StatusData protocol."""
+        if not status_data:
+            return
+        
+        # System Health
+        uptime = status_data.get_uptime()
+        if uptime is not None:
+            self.update_uptime(uptime)
+        
+        power_voltage = status_data.get_power_voltage()
+        if power_voltage is not None:
+            self.power_voltage.config(text=f"{power_voltage:.1f} V", fg=SUCCESS if power_voltage >= 10.0 else ERROR)
+        
+        memory_usage = status_data.get_memory_usage()
+        if memory_usage is not None:
+            # Assuming max memory is around 8192 KB for display purposes
+            max_memory = 8192
+            mem_percent = min(100, int((memory_usage / max_memory) * 100)) if max_memory > 0 else 0
+            mem_text = f"{memory_usage} KB ({mem_percent}%)"
+            color = SUCCESS if mem_percent < 80 else ERROR
+            self.mem_label.config(text=mem_text, fg=color)
+            self.mem_bar.config(value=mem_percent)
+        
+        # Operation Status - Switches
+        ldg_gear = status_data.get_ldg_gear_switch()
+        if ldg_gear is not None:
+            self.ldg_gear_switch.config(text="ON" if ldg_gear else "OFF", 
+                                       fg=SUCCESS if ldg_gear else ERROR)
+        
+        rudder = status_data.get_rudder_switch()
+        if rudder is not None:
+            self.rudder_switch.config(text="ON" if rudder else "OFF",
+                                     fg=SUCCESS if rudder else ERROR)
+        
+        test_btn = status_data.get_test_button()
+        if test_btn is not None:
+            self.test_button.config(text="ON" if test_btn else "OFF",
+                                   fg=SUCCESS if test_btn else ERROR)
+        
+        remote = status_data.get_remote_control_status()
+        if remote is not None:
+            self.remote_mode.config(text="ON" if remote else "OFF",
+                                   fg=SUCCESS if remote else ERROR)
+            self.remote_enabled = remote
+            # Update button text
+            if hasattr(self, 'remote_btn'):
+                if remote:
+                    self.remote_btn.config(text="Disable Remote Control Mode", bg=ACCENT)
+                else:
+                    self.remote_btn.config(text="Enable Remote Control Mode", bg=DARKER_BG)
+        
+        # Update hardware status canvas if available
+        if self.status_panel:
+            self._update_hardware_status(status_data)
+    
+    def loadFirmwareInfo(self):
+        """Load firmware info from device."""
+        if not self.device_client:
+            return
+        
+        def callback(firmware_info):
+            if firmware_info:
+                # Map protocol fields directly to UI fields
+                self.app_version.config(text=firmware_info.get_app_version() or "N/A")
+                self.hardware_version.config(text=firmware_info.get_hardware_version() or "N/A")
+                self.serial_number.config(text=firmware_info.get_serial_number() or "N/A")
+                self.build_date.config(text=firmware_info.get_build_date() or "N/A")
+                self.build_time.config(text=firmware_info.get_build_time() or "N/A")
+                self.git_commit.config(text=firmware_info.get_git_commit() or "N/A")
+                print("Firmware info loaded:", firmware_info)
+        
+        self.device_client.command(requests.FirmwareInfoRequest(), callback)
+    
+    def loadStatusData(self):
+        """Load status data from device."""
+        if not self.device_client:
+            return
+        
+        def callback(status_data):
+            if status_data:
+                self.updateStatusData(status_data)
+                print("Status data loaded:", status_data)
+        
+        self.device_client.command(requests.StatusDataRequest(), callback)
+    
+    def _update_hardware_status(self, status_data):
+        """Update hardware status canvas indicators based on StatusData."""
+        if not self.status_panel:
+            return
+        
+        # Map StatusData fields to hardware status canvas indicators
+        # ROCKER1: Landing gear switch (ldg_gear_switch)
+        # Inverted logic: True = DOWN position, False = UP position
+        ldg_gear = status_data.get_ldg_gear_switch()
+        if ldg_gear is not None:
+            # Invert: True means switch is ON, which should show DOWN (False)
+            self.status_panel.set_indicator("ROCKER1", not ldg_gear)
+        
+        # ROCKER2: Rudder switch (rudder_switch)
+        # Inverted logic: True = DOWN position, False = UP position
+        rudder_switch = status_data.get_rudder_switch()
+        if rudder_switch is not None:
+            # Invert: True means switch is ON, which should show DOWN (False)
+            self.status_panel.set_indicator("ROCKER2", not rudder_switch)
+        
+        # TEST: Test button indicator
+        test_button = status_data.get_test_button()
+        if test_button is not None:
+            self.status_panel.set_indicator("TEST", test_button)

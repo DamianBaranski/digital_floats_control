@@ -19,6 +19,7 @@ class MonitoringData:
         self.values['state'] = None
         self.values['up_switch'] = None
         self.values['down_switch'] = None
+        self.values['voltage'] = None  # Voltage from StatusData (system-wide)
 
     def get(self, key):
         return self.values.get(key, '')
@@ -95,3 +96,13 @@ class MonitoringData:
         if self.values['channel'] is None:
             return 'N/A'
         return str(self.values['channel'])
+    
+    # Method to get voltage (from StatusData, set externally)
+    def getVoltage(self):
+        if self.values['voltage'] is None:
+            return 'N/A'
+        return f"{self.values['voltage']:.1f} V"
+    
+    # Method to set voltage (from StatusData)
+    def setVoltage(self, voltage):
+        self.values['voltage'] = voltage

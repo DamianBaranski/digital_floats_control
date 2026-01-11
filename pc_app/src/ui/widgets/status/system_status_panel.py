@@ -18,8 +18,9 @@ except ImportError:
     import Tkinter as tk
 
 class SystemStatusPanel(tk.Frame):
-    def __init__(self, parent):
+    def __init__(self, parent, device_client=None):
         tk.Frame.__init__(self, parent, bg=DARK_BG)
+        self.device_client = device_client
         self.ver_label = tk.Label(self, text="Firmware ver:", bg=DARK_BG, fg=TEXT_COLOR, font=FONT)
         self.ver_value = tk.Label(self, text="N/A", bg=DARK_BG, fg=TEXT_COLOR, font=FONT)
         self.firmware_upload_button = tk.Button(self, text="Update firmware", command=self.firmware_upload,
@@ -50,21 +51,25 @@ class SystemStatusPanel(tk.Frame):
         main_paned.add(left_paned)
 
         # Right: quick status
-        self.quick_status = QuickStatusPanel(main_paned)
+        self.quick_status = QuickStatusPanel(main_paned, self.device_client, status_panel=self.status_panel)
         main_paned.add(self.quick_status)
 
     def setStatus(self, status):
-        self.quick_status.update_uptime(status.get_uptime())
+        """Update status data from StatusData protocol."""
+        if hasattr(self, 'quick_status') and status:
+            self.quick_status.updateStatusData(status)
+        
+        # Update hardware status canvas indicators from StatusData
+        if hasattr(self, 'status_panel') and status:
+            self._update_hardware_status(status)
         
         
     def update(self):
-        pass
-        #if not self.app_protocol.uart.isOpen():
-        #    self.updateVersion('N/A')
-        #    return
-        
-        #if self.updating.value == False:
-        #    self.app_protocol.getVersion(self.updateVersion)
+        if self.device_client and self.device_client.isConnected():
+            # Load firmware info and status data via QuickStatusPanel
+            if hasattr(self, 'quick_status'):
+                self.quick_status.loadFirmwareInfo()
+                self.quick_status.loadStatusData()
         #    
         #if self.quick_status.remote_enabled:
         #    self.app_protocol.simulate(lambda response: None, 0, 0, 0)
@@ -75,6 +80,31 @@ class SystemStatusPanel(tk.Frame):
     def _update_callback(self, data, idx):
         pass
         #self.status_panel.
+    
+    def _update_hardware_status(self, status_data):
+        """Update hardware status canvas indicators based on StatusData."""
+        if not hasattr(self, 'status_panel'):
+            return
+        
+        # Map StatusData fields to hardware status canvas indicators
+        # ROCKER1: Landing gear switch (ldg_gear_switch)
+        # Inverted logic: True = DOWN position, False = UP position
+        ldg_gear = status_data.get_ldg_gear_switch()
+        if ldg_gear is not None:
+            # Invert: True means switch is ON, which should show DOWN (False)
+            self.status_panel.set_indicator("ROCKER1", not ldg_gear)
+        
+        # ROCKER2: Rudder switch (rudder_switch)
+        # Inverted logic: True = DOWN position, False = UP position
+        rudder_switch = status_data.get_rudder_switch()
+        if rudder_switch is not None:
+            # Invert: True means switch is ON, which should show DOWN (False)
+            self.status_panel.set_indicator("ROCKER2", not rudder_switch)
+        
+        # TEST: Test button indicator
+        test_button = status_data.get_test_button()
+        if test_button is not None:
+            self.status_panel.set_indicator("TEST", test_button)
         
     def updateVersion(self, version):
         if self.updating.value == True:
